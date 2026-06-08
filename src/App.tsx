@@ -1,41 +1,76 @@
-import { useCallback, useState, type CSSProperties } from "react";
+import { useCallback, useMemo, useState, type CSSProperties } from "react";
 import heroImage from "./assets/hero.png";
 import GameCanvas from "./components/GameCanvas";
 import HUD from "./components/HUD";
 import PortfolioModal from "./components/PortfolioModal";
-import { portfolioSections } from "./data/portfolioData";
+import {
+  portfolioSections,
+  stationOrder,
+  type StationId,
+} from "./data/portfolioData";
 
 export default function App() {
-  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
-  const [visitedSectionIds, setVisitedSectionIds] = useState<Set<string>>(
+  const [activeSectionId, setActiveSectionId] = useState<StationId | null>(null);
+  const [completedIds, setCompletedIds] = useState<Set<StationId>>(
     () => new Set()
+  );
+
+  const completedCount = completedIds.size;
+
+  const nextStationId = useMemo(() => {
+    return stationOrder.find((id) => !completedIds.has(id)) ?? null;
+  }, [completedIds]);
+
+  const nextStation =
+    portfolioSections.find((section) => section.id === nextStationId) ?? null;
+
+  const isUnlocked = useCallback(
+    (sectionId: StationId) => {
+      const sectionIndex = stationOrder.indexOf(sectionId);
+      return sectionIndex <= completedIds.size;
+    },
+    [completedIds]
+  );
+
+  const openSection = useCallback(
+    (sectionId: StationId) => {
+      if (!isUnlocked(sectionId)) return;
+
+      setActiveSectionId(sectionId);
+
+      setCompletedIds((previous) => {
+        if (previous.has(sectionId)) return previous;
+
+        const next = new Set(previous);
+        next.add(sectionId);
+        return next;
+      });
+    },
+    [isUnlocked]
   );
 
   const activeSection =
     portfolioSections.find((section) => section.id === activeSectionId) ?? null;
-  const completedSections = visitedSectionIds.size;
+
   const projectsCount =
     portfolioSections.find((section) => section.id === "projects")?.projects
       ?.length ?? 0;
 
-  const openSection = useCallback((sectionId: string) => {
-    setActiveSectionId(sectionId);
-    setVisitedSectionIds((previousIds) => {
-      if (previousIds.has(sectionId)) return previousIds;
-
-      const nextIds = new Set(previousIds);
-      nextIds.add(sectionId);
-      return nextIds;
-    });
-  }, []);
-
   return (
     <main className="app-shell">
-      <HUD completed={completedSections} total={portfolioSections.length} />
+      <HUD
+        completed={completedCount}
+        total={stationOrder.length}
+        nextStationTitle={nextStation?.title ?? "Complete"}
+      />
 
       <section className="playdeck" aria-label="Interactive portfolio game">
         <div className="game-wrapper">
-          <GameCanvas onOpenSection={openSection} />
+          <GameCanvas
+            onOpenSection={openSection}
+            completedIds={[...completedIds]}
+            unlockedIds={stationOrder.filter((id) => isUnlocked(id))}
+          />
         </div>
 
         <aside className="mission-panel">
@@ -43,15 +78,15 @@ export default function App() {
           <p className="panel-label">Route Console</p>
           <h1>Signal Run</h1>
           <p>
-            Explore four portfolio stations, collect sparks, and open the work
-            samples as you move through the grid.
+            Follow the route in order. Each station unlocks the next part of the
+            portfolio.
           </p>
 
           <div className="mission-metrics">
             <div>
               <span>Stations</span>
               <strong>
-                {completedSections}/{portfolioSections.length}
+                {completedCount}/{stationOrder.length}
               </strong>
             </div>
             <div>
@@ -61,10 +96,19 @@ export default function App() {
           </div>
 
           <div className="mission-actions">
-            <button type="button" onClick={() => openSection("projects")}>
+            <button
+              type="button"
+              disabled={!isUnlocked("projects")}
+              onClick={() => openSection("projects")}
+            >
               Open Projects
             </button>
-            <button type="button" onClick={() => openSection("contact")}>
+
+            <button
+              type="button"
+              disabled={!isUnlocked("contact")}
+              onClick={() => openSection("contact")}
+            >
               Contact
             </button>
           </div>
@@ -83,22 +127,30 @@ export default function App() {
         </div>
 
         <div className="quick-grid">
-          {portfolioSections.map((section) => (
-            <button
-              className="quick-card"
-              key={section.id}
-              type="button"
-              style={
-                { "--section-accent": section.accent } as CSSProperties
-              }
-              onClick={() => openSection(section.id)}
-            >
-              <span>{section.subtitle}</span>
-              <strong>{section.title}</strong>
-              <small>{section.summary}</small>
-              {visitedSectionIds.has(section.id) && <em>Logged</em>}
-            </button>
-          ))}
+          {portfolioSections.map((section) => {
+            const unlocked = isUnlocked(section.id);
+            const completed = completedIds.has(section.id);
+
+            return (
+              <button
+                className={`quick-card ${!unlocked ? "is-locked" : ""} ${
+                  completed ? "is-completed" : ""
+                }`}
+                key={section.id}
+                type="button"
+                disabled={!unlocked}
+                style={
+                  { "--section-accent": section.accent } as CSSProperties
+                }
+                onClick={() => openSection(section.id)}
+              >
+                <span>{section.subtitle}</span>
+                <strong>{section.title}</strong>
+                <small>{section.summary}</small>
+                <em>{completed ? "Completed" : unlocked ? "Unlocked" : "Locked"}</em>
+              </button>
+            );
+          })}
         </div>
       </section>
     </main>

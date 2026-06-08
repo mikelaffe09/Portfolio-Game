@@ -1,9 +1,10 @@
 type Props = {
   completed: number;
   total: number;
+  nextStationTitle: string;
 };
 
-export default function HUD({ completed, total }: Props) {
+export default function HUD({ completed, total, nextStationTitle }: Props) {
   return (
     <header className="hud">
       <div className="hud-title">
@@ -22,7 +23,11 @@ export default function HUD({ completed, total }: Props) {
         <span>{total}</span>
       </div>
 
-      <div className="hud-controls" aria-label="Game controls">
+      <div className="hud-next">
+        Next: <strong>{nextStationTitle}</strong>
+      </div>
+
+      <div className="hud-controls">
         <kbd>WASD</kbd>
         <kbd>Arrows</kbd>
         <kbd>E</kbd>

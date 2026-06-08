@@ -1,12 +1,19 @@
 import { useEffect, useRef } from "react";
 import kaboom from "kaboom";
 import { createMainScene } from "../game/scenes/MainScene";
+import type { StationId } from "../data/portfolioData";
 
 type Props = {
-  onOpenSection: (sectionId: string) => void;
+  onOpenSection: (sectionId: StationId) => void;
+  completedIds: StationId[];
+  unlockedIds: StationId[];
 };
 
-export default function GameCanvas({ onOpenSection }: Props) {
+export default function GameCanvas({
+  onOpenSection,
+  completedIds,
+  unlockedIds,
+}: Props) {
   const gameRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -17,18 +24,22 @@ export default function GameCanvas({ onOpenSection }: Props) {
     const k = kaboom({
       width: 960,
       height: 540,
-      background: [9, 9, 11],
+      background: [7, 7, 10],
       global: false,
       scale: 1,
       root: gameRef.current,
     });
 
-    createMainScene(k, onOpenSection);
+    createMainScene(k, {
+      onOpenSection,
+      completedIds,
+      unlockedIds,
+    });
 
     return () => {
       k.quit();
     };
-  }, [onOpenSection]);
+  }, [onOpenSection, completedIds, unlockedIds]);
 
   return <div ref={gameRef} className="game-canvas" />;
 }

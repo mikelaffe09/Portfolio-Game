@@ -642,4 +642,28 @@ kbd {
   .modal-card h2 {
     font-size: 28px;
   }
+
+  .hud-next {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.hud-next strong {
+  color: #f8fafc;
+}
+
+.quick-card.is-locked {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.quick-card.is-completed {
+  box-shadow: 0 0 28px color-mix(in srgb, var(--section-accent), transparent 78%);
+}
+
+.mission-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 }
