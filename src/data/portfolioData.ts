@@ -77,7 +77,7 @@ export const portfolioSections: PortfolioSection[] = [
     summary: "A few builds with product shape, interaction, and personality.",
     accent: "#f8c537",
     sceneColor: [248, 197, 55],
-    body: "These are some of the projects I have built. Swap the placeholders with your final URLs when you are ready to publish.",
+    body: "These are some of the projects I have built. Add final project URLs when you are ready to publish.",
     stats: [
       { label: "Featured", value: "3 builds" },
       { label: "Stack", value: "Web + mobile" },
