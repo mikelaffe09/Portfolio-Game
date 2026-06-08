@@ -1,187 +1,802 @@
 import type { KaboomCtx } from "kaboom";
-import type { StationId } from "../../data/portfolioData";
-import { portfolioSections } from "../../data/portfolioData";
+import {
+  portfolioSectionById,
+  stationOrder,
+  type StationId,
+} from "../../data/portfolioData";
+import {
+  collectibleConfigs,
+  droneConfigs,
+  routePoints,
+  stationWorldConfig,
+  worldSize,
+} from "../config/worldConfig";
+import {
+  createSparkBurst,
+  createAmbientSparks,
+  createPortalShimmer,
+  createRingPulse,
+} from "../utils/createParticles";
+import { createFloatingLabel } from "../utils/createFloatingLabel";
+import type { RgbColor, StationWorldConfig } from "../types";
 
 type CreateMainSceneOptions = {
   onOpenSection: (sectionId: StationId) => void;
+  onLockedSection: (sectionId: StationId) => void;
+  onCollectOrb: (orbId: string) => void;
   completedIds: StationId[];
   unlockedIds: StationId[];
+  collectedOrbIds: string[];
+  reducedMotion: boolean;
 };
 
-export function createMainScene(k: KaboomCtx, options: CreateMainSceneOptions) {
-  const { onOpenSection, completedIds, unlockedIds } = options;
+type Direction = {
+  x: number;
+  y: number;
+};
 
-  const speed = 250;
-  let nearbySection: StationId | null = null;
-  let nearbyLabel = "";
-  let nearbyLocked = false;
+function hasStationId(value: unknown): value is StationId {
+  return typeof value === "string" && stationOrder.includes(value as StationId);
+}
 
-  k.add([k.rect(960, 540), k.pos(0, 0), k.color(7, 7, 10)]);
+function getRgb(k: KaboomCtx, color: RgbColor) {
+  return k.rgb(color[0], color[1], color[2]);
+}
 
-  for (let x = 0; x < 960; x += 40) {
-    k.add([k.rect(1, 540), k.pos(x, 0), k.color(18, 18, 24), k.opacity(0.45)]);
-  }
+function drawRouteSegment(
+  k: KaboomCtx,
+  start: { x: number; y: number },
+  end: { x: number; y: number },
+  index: number,
+  reducedMotion: boolean
+) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
+  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const midX = start.x + dx / 2;
+  const midY = start.y + dy / 2;
 
-  for (let y = 0; y < 540; y += 40) {
-    k.add([k.rect(960, 1), k.pos(0, y), k.color(18, 18, 24), k.opacity(0.45)]);
-  }
-
-  k.add([
-    k.text("SIGNAL RUN", { size: 32 }),
-    k.pos(480, 48),
+  const base = k.add([
+    k.rect(length, 5, { radius: 999 }),
+    k.pos(midX, midY),
     k.anchor("center"),
-    k.color(255, 255, 255),
+    k.rotate(angle),
+    k.color(33, 45, 62),
+    k.opacity(0.52),
+    k.z(3),
+    "ambient",
   ]);
 
-  k.add([
-    k.text("Unlock each station in order", { size: 15 }),
-    k.pos(480, 82),
+  const energy = k.add([
+    k.rect(length * 0.78, 2, { radius: 999 }),
+    k.pos(midX, midY),
     k.anchor("center"),
-    k.color(160, 160, 175),
+    k.rotate(angle),
+    k.color(45, 212, 191),
+    k.opacity(0.22),
+    k.z(4),
+    "ambient",
   ]);
 
-  k.add([k.rect(920, 2), k.pos(20, 110), k.color(70, 70, 90)]);
-  k.add([k.rect(920, 2), k.pos(20, 510), k.color(70, 70, 90)]);
-  k.add([k.rect(2, 400), k.pos(20, 110), k.color(70, 70, 90)]);
-  k.add([k.rect(2, 400), k.pos(940, 110), k.color(70, 70, 90)]);
+  if (!reducedMotion) {
+    base.onUpdate(() => {
+      base.opacity = 0.42 + Math.sin(k.time() * 1.5 + index) * 0.08;
+      energy.opacity = 0.2 + Math.sin(k.time() * 2.4 + index) * 0.13;
+    });
+  }
+}
 
-  function createStationCard(
-    x: number,
-    y: number,
-    sectionId: StationId,
-    index: number
-  ) {
-    const section = portfolioSections.find((item) => item.id === sectionId);
-    if (!section) return;
+function createGridLights(k: KaboomCtx, reducedMotion: boolean) {
+  const lights = [
+    { x: 92, y: 372, color: [45, 212, 191] as RgbColor },
+    { x: 260, y: 132, color: [255, 107, 107] as RgbColor },
+    { x: 624, y: 116, color: [96, 165, 250] as RgbColor },
+    { x: 828, y: 324, color: [248, 197, 55] as RgbColor },
+    { x: 430, y: 452, color: [167, 139, 250] as RgbColor },
+  ];
 
-    const unlocked = unlockedIds.includes(sectionId);
-    const completed = completedIds.includes(sectionId);
-    const color = section.sceneColor;
-    const opacity = unlocked ? 1 : 0.32;
-    const status = completed ? "COMPLETE" : unlocked ? "READY" : "LOCKED";
-
-    k.add([
-      k.circle(82),
-      k.pos(x + 66, y + 68),
+  lights.forEach((light, index) => {
+    const node = k.add([
+      k.rect(10, 10, { radius: 3 }),
+      k.pos(light.x, light.y),
       k.anchor("center"),
-      k.color(color[0], color[1], color[2]),
-      k.opacity(completed ? 0.22 : unlocked ? 0.12 : 0.04),
+      k.color(light.color[0], light.color[1], light.color[2]),
+      k.opacity(0.2),
+      k.scale(1),
+      k.z(5),
+      "ambient",
     ]);
 
+    if (reducedMotion) return;
+
+    node.onUpdate(() => {
+      const pulse = Math.max(0, Math.sin(k.time() * 1.8 + index * 0.7));
+      node.opacity = 0.12 + pulse * 0.32;
+      node.scale = k.vec2(0.92 + pulse * 0.18);
+    });
+  });
+}
+
+function createDrones(k: KaboomCtx, reducedMotion: boolean) {
+  droneConfigs.forEach((config, index) => {
+    const body = k.add([
+      k.rect(34, 18, { radius: 8 }),
+      k.pos(config.position.x, config.position.y),
+      k.anchor("center"),
+      k.color(9, 15, 25),
+      k.outline(1, getRgb(k, config.color)),
+      k.opacity(0.82),
+      k.z(18),
+      "ambient",
+    ]);
+
+    const eye = k.add([
+      k.rect(14, 4, { radius: 999 }),
+      k.pos(config.position.x, config.position.y),
+      k.anchor("center"),
+      k.color(config.color[0], config.color[1], config.color[2]),
+      k.opacity(0.78),
+      k.z(19),
+      "ambient",
+    ]);
+
+    const label = k.add([
+      k.text(config.label, { size: 7 }),
+      k.pos(config.position.x, config.position.y + 19),
+      k.anchor("center"),
+      k.color(210, 230, 245),
+      k.opacity(0.7),
+      k.z(19),
+      "ambient",
+    ]);
+
+    if (reducedMotion) return;
+
+    let trailTimer = index * 0.1;
+    const phase = index * 1.4;
+
+    body.onUpdate(() => {
+      const t = k.time() * config.speed + phase;
+      const driftX = Math.sin(t) * config.travel.x;
+      const driftY = Math.sin(t * 0.72) * config.travel.y;
+      body.pos.x = config.position.x + driftX;
+      body.pos.y = config.position.y + driftY;
+      eye.pos.x = body.pos.x + Math.cos(t) * 3;
+      eye.pos.y = body.pos.y;
+      label.pos.x = body.pos.x;
+      label.pos.y = body.pos.y + 19;
+
+      trailTimer -= k.dt();
+      if (trailTimer <= 0) {
+        trailTimer = 0.36;
+        k.add([
+          k.rect(10, 2, { radius: 999 }),
+          k.pos(body.pos.x - Math.cos(t) * 18, body.pos.y),
+          k.anchor("center"),
+          k.color(config.color[0], config.color[1], config.color[2]),
+          k.opacity(0.24),
+          k.z(17),
+          k.lifespan(0.58, { fade: 0.44 }),
+          "ambient",
+        ]);
+      }
+    });
+  });
+}
+
+function createBackground(k: KaboomCtx, reducedMotion: boolean) {
+  k.add([
+    k.rect(worldSize.width, worldSize.height),
+    k.pos(0, 0),
+    k.color(4, 7, 12),
+    k.z(0),
+  ]);
+
+  k.add([
+    k.circle(220),
+    k.pos(150, 90),
+    k.anchor("center"),
+    k.color(45, 212, 191),
+    k.opacity(0.07),
+    k.z(1),
+    "ambient",
+  ]);
+
+  k.add([
+    k.circle(260),
+    k.pos(820, 430),
+    k.anchor("center"),
+    k.color(167, 139, 250),
+    k.opacity(0.08),
+    k.z(1),
+    "ambient",
+  ]);
+
+  for (let x = 0; x <= worldSize.width; x += 48) {
+    const line = k.add([
+      k.rect(1, worldSize.height),
+      k.pos(x, 0),
+      k.color(43, 53, 72),
+      k.opacity(0.28),
+      k.z(1),
+      "ambient",
+    ]);
+
+    if (!reducedMotion) {
+      line.onUpdate(() => {
+        line.opacity = 0.16 + Math.sin(k.time() * 1.2 + x * 0.03) * 0.08;
+      });
+    }
+  }
+
+  for (let y = 72; y <= worldSize.height; y += 48) {
+    const line = k.add([
+      k.rect(worldSize.width, 1),
+      k.pos(0, y),
+      k.color(43, 53, 72),
+      k.opacity(0.24),
+      k.z(1),
+      "ambient",
+    ]);
+
+    if (!reducedMotion) {
+      line.onUpdate(() => {
+        line.opacity = 0.14 + Math.sin(k.time() * 1.4 + y * 0.025) * 0.08;
+      });
+    }
+  }
+
+  createAmbientSparks(k, {
+    color: [103, 232, 249],
+    height: worldSize.height,
+    reducedMotion,
+    width: worldSize.width,
+  });
+
+  createGridLights(k, reducedMotion);
+  createDrones(k, reducedMotion);
+
+  routePoints.slice(0, -1).forEach((point, index) => {
+    drawRouteSegment(k, point, routePoints[index + 1], index, reducedMotion);
+  });
+
+  k.add([
+    k.text("NEON PORTFOLIO QUEST", { size: 25 }),
+    k.pos(480, 36),
+    k.anchor("center"),
+    k.color(245, 250, 255),
+    k.z(8),
+  ]);
+
+  k.add([
+    k.text("Collect signal fragments and activate each portfolio zone", {
+      size: 12,
+    }),
+    k.pos(480, 63),
+    k.anchor("center"),
+    k.color(154, 168, 186),
+    k.z(8),
+  ]);
+}
+
+function createStationCore(
+  k: KaboomCtx,
+  config: StationWorldConfig,
+  unlocked: boolean,
+  completed: boolean,
+  reducedMotion: boolean
+) {
+  const { x, y } = config.position;
+  const accent = config.accent;
+  const opacity = completed ? 0.94 : unlocked ? 0.78 : 0.34;
+
+  if (config.kind === "terminal") {
     k.add([
-      k.rect(132, 150, { radius: 14 }),
+      k.rect(88, 54, { radius: 8 }),
       k.pos(x, y),
-      k.color(16, 16, 22),
-      k.outline(2, k.rgb(color[0], color[1], color[2])),
+      k.anchor("center"),
+      k.color(10, 16, 24),
+      k.outline(2, getRgb(k, accent)),
       k.opacity(opacity),
-      k.area(),
-      {
-        sectionId,
-        label: section.title,
-        locked: !unlocked,
-      },
-      "zone",
+      k.z(15),
     ]);
 
-    k.add([
-      k.rect(76, 76, { radius: 12 }),
-      k.pos(x + 28, y + 24),
-      k.color(color[0], color[1], color[2]),
-      k.opacity(unlocked ? 0.88 : 0.18),
-    ]);
-
-    k.add([
-      k.text(String(index).padStart(2, "0"), { size: 28 }),
-      k.pos(x + 46, y + 63),
-      k.anchor("center"),
-      k.color(unlocked ? 10 : 120, unlocked ? 10 : 120, unlocked ? 12 : 130),
-    ]);
-
-    k.add([
-      k.text(section.subtitle.toUpperCase(), { size: 8, width: 58 }),
-      k.pos(x + 80, y + 50),
-      k.anchor("center"),
-      k.color(210, 210, 220),
-      k.opacity(opacity),
-    ]);
-
-    k.add([
-      k.text(section.title.toUpperCase(), { size: 16 }),
-      k.pos(x + 66, y + 112),
-      k.anchor("center"),
-      k.color(255, 255, 255),
-      k.opacity(opacity),
-    ]);
-
-    k.add([
-      k.text(status, { size: 10 }),
-      k.pos(x + 66, y + 136),
-      k.anchor("center"),
-      k.color(
-        completed ? 120 : unlocked ? 190 : 120,
-        completed ? 255 : unlocked ? 190 : 120,
-        completed ? 160 : unlocked ? 200 : 120
-      ),
-    ]);
-
-    if (completed) {
+    for (let index = 0; index < 3; index += 1) {
       k.add([
-        k.text("✓", { size: 26 }),
-        k.pos(x + 116, y + 18),
+        k.rect(48 - index * 7, 3, { radius: 999 }),
+        k.pos(x - 2, y - 14 + index * 13),
         k.anchor("center"),
-        k.color(120, 255, 160),
-      ]);
-    }
-
-    if (!unlocked) {
-      k.add([
-        k.text("LOCK", { size: 11 }),
-        k.pos(x + 66, y + 76),
-        k.anchor("center"),
-        k.color(200, 200, 210),
+        k.color(accent[0], accent[1], accent[2]),
+        k.opacity(unlocked ? 0.72 : 0.24),
+        k.z(16),
       ]);
     }
   }
 
-  createStationCard(100, 210, "about", 1);
-  createStationCard(310, 210, "skills", 2);
-  createStationCard(520, 210, "projects", 3);
-  createStationCard(730, 210, "contact", 4);
+  if (config.kind === "reactor") {
+    k.add([
+      k.circle(30),
+      k.pos(x, y),
+      k.anchor("center"),
+      k.color(8, 22, 27),
+      k.outline(2, getRgb(k, accent)),
+      k.opacity(opacity),
+      k.z(15),
+    ]);
 
-  const player = k.add([
-    k.rect(34, 42, { radius: 8 }),
-    k.pos(463, 430),
-    k.color(70, 170, 255),
-    k.area(),
-    "player",
+    config.orbLabels.forEach((label, index) => {
+      const orbit = 45 + index * 9;
+      const orb = k.add([
+        k.circle(7),
+        k.pos(x + orbit, y),
+        k.anchor("center"),
+        k.color(accent[0], accent[1], accent[2]),
+        k.opacity(unlocked ? 0.82 : 0.22),
+        k.z(16),
+      ]);
+
+      if (!reducedMotion) {
+        const phase = (Math.PI * 2 * index) / config.orbLabels.length;
+
+        orb.onUpdate(() => {
+          const angle = k.time() * (0.8 + index * 0.14) + phase;
+          orb.pos.x = x + Math.cos(angle) * orbit;
+          orb.pos.y = y + Math.sin(angle) * (orbit * 0.58);
+        });
+      }
+
+      k.add([
+        k.text(label.toUpperCase(), { size: 7 }),
+        k.pos(x - 42 + index * 42, y + 51),
+        k.anchor("center"),
+        k.color(210, 230, 235),
+        k.opacity(unlocked ? 0.74 : 0.18),
+        k.z(17),
+      ]);
+    });
+  }
+
+  if (config.kind === "gate") {
+    k.add([
+      k.rect(18, 82, { radius: 6 }),
+      k.pos(x - 38, y),
+      k.anchor("center"),
+      k.color(35, 28, 14),
+      k.outline(2, getRgb(k, accent)),
+      k.opacity(opacity),
+      k.z(15),
+    ]);
+
+    k.add([
+      k.rect(18, 82, { radius: 6 }),
+      k.pos(x + 38, y),
+      k.anchor("center"),
+      k.color(35, 28, 14),
+      k.outline(2, getRgb(k, accent)),
+      k.opacity(opacity),
+      k.z(15),
+    ]);
+
+    k.add([
+      k.rect(92, 16, { radius: 6 }),
+      k.pos(x, y - 42),
+      k.anchor("center"),
+      k.color(35, 28, 14),
+      k.outline(2, getRgb(k, accent)),
+      k.opacity(opacity),
+      k.z(15),
+    ]);
+
+    k.add([
+      k.circle(24),
+      k.pos(x, y - 3),
+      k.anchor("center"),
+      k.color(accent[0], accent[1], accent[2]),
+      k.opacity(unlocked ? 0.24 : 0.08),
+      k.z(14),
+    ]);
+  }
+
+  if (config.kind === "tower") {
+    k.add([
+      k.rect(16, 92, { radius: 5 }),
+      k.pos(x, y + 18),
+      k.anchor("center"),
+      k.color(16, 14, 31),
+      k.outline(2, getRgb(k, accent)),
+      k.opacity(opacity),
+      k.z(15),
+    ]);
+
+    k.add([
+      k.circle(26),
+      k.pos(x, y - 42),
+      k.anchor("center"),
+      k.color(accent[0], accent[1], accent[2]),
+      k.opacity(unlocked ? 0.28 : 0.08),
+      k.z(15),
+    ]);
+
+    k.add([
+      k.rect(76, 10, { radius: 999 }),
+      k.pos(x, y + 66),
+      k.anchor("center"),
+      k.color(16, 14, 31),
+      k.outline(1, getRgb(k, accent)),
+      k.opacity(opacity),
+      k.z(15),
+    ]);
+  }
+}
+
+function createStation(
+  k: KaboomCtx,
+  config: StationWorldConfig,
+  completedIds: StationId[],
+  unlockedIds: StationId[],
+  reducedMotion: boolean,
+  getNearbySection: () => StationId | null
+) {
+  const section = portfolioSectionById[config.sectionId];
+  const unlocked = unlockedIds.includes(config.sectionId);
+  const completed = completedIds.includes(config.sectionId);
+  const { x, y } = config.position;
+  const status = completed ? "COMPLETE" : unlocked ? "READY" : "LOCKED";
+  const statusColor: RgbColor = completed
+    ? [132, 255, 178]
+    : unlocked
+      ? config.accent
+      : [128, 137, 153];
+
+  const floor = k.add([
+    k.circle(config.radius),
+    k.pos(x, y),
+    k.anchor("center"),
+    k.color(config.deepAccent[0], config.deepAccent[1], config.deepAccent[2]),
+    k.opacity(completed ? 0.34 : unlocked ? 0.22 : 0.1),
+    k.z(6),
+    "portal",
   ]);
 
-  const head = k.add([
-    k.circle(13),
-    k.pos(player.pos.x + 17, player.pos.y - 10),
-    k.color(130, 220, 255),
+  const ring = k.add([
+    k.circle(config.radius - 8),
+    k.pos(x, y),
+    k.anchor("center"),
+    k.color(config.accent[0], config.accent[1], config.accent[2]),
+    k.outline(2, getRgb(k, config.accent)),
+    k.opacity(completed ? 0.3 : unlocked ? 0.22 : 0.08),
+    k.scale(1),
+    k.z(7),
+    "portal",
   ]);
 
-  const shadow = k.add([
-  k.rect(52, 14, { radius: 999 }),
-  k.pos(player.pos.x - 9, player.pos.y + 39),
-  k.color(0, 0, 0),
-  k.opacity(0.35),
-]);
+  const innerRing = k.add([
+    k.circle(config.radius - 32),
+    k.pos(x, y),
+    k.anchor("center"),
+    k.color(config.accent[0], config.accent[1], config.accent[2]),
+    k.opacity(completed ? 0.16 : unlocked ? 0.1 : 0.04),
+    k.scale(1),
+    k.z(8),
+    "portal",
+  ]);
 
-  const promptBox = k.add([
-    k.rect(420, 38, { radius: 999 }),
-    k.pos(270, 475),
-    k.color(20, 20, 28),
-    k.outline(1, k.rgb(80, 80, 100)),
+  const nearbyRing = k.add([
+    k.circle(config.radius + 14),
+    k.pos(x, y),
+    k.anchor("center"),
+    k.color(config.accent[0], config.accent[1], config.accent[2]),
+    k.outline(1, getRgb(k, config.accent)),
     k.opacity(0),
+    k.scale(1),
+    k.z(9),
+    "portal",
+  ]);
+
+  createStationCore(k, config, unlocked, completed, reducedMotion);
+
+  k.add([
+    k.rect(44, 30, { radius: 8 }),
+    k.pos(x, y - 2),
+    k.anchor("center"),
+    k.color(4, 8, 14),
+    k.outline(1, getRgb(k, config.accent)),
+    k.opacity(unlocked ? 0.82 : 0.38),
+    k.z(23),
+  ]);
+
+  k.add([
+    k.text(config.icon, { size: 14 }),
+    k.pos(x, y - 2),
+    k.anchor("center"),
+    k.color(
+      unlocked ? config.accent[0] : 148,
+      unlocked ? config.accent[1] : 154,
+      unlocked ? config.accent[2] : 164
+    ),
+    k.opacity(unlocked ? 0.96 : 0.5),
+    k.z(24),
+  ]);
+
+  k.add([
+    k.text(status, { size: 9 }),
+    k.pos(x, y + config.radius + 19),
+    k.anchor("center"),
+    k.color(statusColor[0], statusColor[1], statusColor[2]),
+    k.z(22),
+  ]);
+
+  createFloatingLabel(k, {
+    title: config.zoneTitle,
+    subtitle: section.subtitle,
+    x,
+    y: y - config.radius - 32,
+    color: config.accent,
+    reducedMotion,
+  });
+
+  if (completed) {
+    k.add([
+      k.circle(config.radius + 2),
+      k.pos(x, y),
+      k.anchor("center"),
+      k.color(132, 255, 178),
+      k.opacity(0.08),
+      k.z(11),
+      "portal",
+    ]);
+
+    k.add([
+      k.rect(38, 22, { radius: 999 }),
+      k.pos(x + config.radius * 0.62, y - config.radius * 0.62),
+      k.anchor("center"),
+      k.color(9, 22, 16),
+      k.outline(1, k.rgb(132, 255, 178)),
+      k.opacity(0.94),
+      k.z(26),
+    ]);
+
+    k.add([
+      k.text("OK", { size: 11 }),
+      k.pos(x + config.radius * 0.62, y - config.radius * 0.62 + 1),
+      k.anchor("center"),
+      k.color(132, 255, 178),
+      k.z(27),
+    ]);
+
+    k.add([
+      k.text("SYNCED", { size: 11 }),
+      k.pos(x, y - 2),
+      k.anchor("center"),
+      k.color(234, 255, 241),
+      k.z(25),
+    ]);
+  }
+
+  if (!unlocked) {
+    k.add([
+      k.circle(26),
+      k.pos(x + config.radius * 0.58, y - config.radius * 0.5),
+      k.anchor("center"),
+      k.color(10, 12, 18),
+      k.outline(1, k.rgb(128, 137, 153)),
+      k.opacity(0.92),
+      k.z(26),
+    ]);
+
+    k.add([
+      k.rect(17, 12, { radius: 3 }),
+      k.pos(x + config.radius * 0.58, y - config.radius * 0.5 + 4),
+      k.anchor("center"),
+      k.color(74, 85, 104),
+      k.opacity(0.86),
+      k.z(27),
+    ]);
+
+    k.add([
+      k.circle(7),
+      k.pos(x + config.radius * 0.58, y - config.radius * 0.5 - 5),
+      k.anchor("center"),
+      k.color(10, 12, 18),
+      k.outline(2, k.rgb(128, 137, 153)),
+      k.opacity(0.86),
+      k.z(27),
+    ]);
+
+    k.add([
+      k.rect(92, 24, { radius: 999 }),
+      k.pos(x, y + 2),
+      k.anchor("center"),
+      k.color(9, 11, 17),
+      k.outline(1, k.rgb(112, 121, 136)),
+      k.opacity(0.78),
+      k.z(24),
+    ]);
+
+    k.add([
+      k.text("LOCKED", { size: 11 }),
+      k.pos(x, y + 3),
+      k.anchor("center"),
+      k.color(203, 213, 225),
+      k.z(25),
+    ]);
+  }
+
+  const enterHint = k.add([
+    k.rect(118, 26, { radius: 999 }),
+    k.pos(x, y + config.radius + 45),
+    k.anchor("center"),
+    k.color(5, 12, 20),
+    k.outline(1, getRgb(k, config.accent)),
+    k.opacity(0),
+    k.scale(1),
+    k.z(32),
+    "ambient",
+  ]);
+
+  const enterHintText = k.add([
+    k.text(unlocked ? "PRESS E / ENTER" : "LOCKED", { size: 9 }),
+    k.pos(x, y + config.radius + 46),
+    k.anchor("center"),
+    k.color(unlocked ? config.accent[0] : 255, unlocked ? config.accent[1] : 107, unlocked ? config.accent[2] : 107),
+    k.opacity(0),
+    k.z(33),
+    "ambient",
+  ]);
+
+  k.add([
+    k.circle(config.radius + 24),
+    k.pos(x, y),
+    k.anchor("center"),
+    k.area(),
+    k.opacity(0),
+    k.z(30),
+    {
+      completed,
+      hint: completed
+        ? config.completedHint
+        : unlocked
+          ? config.readyHint
+          : config.lockedHint,
+      label: section.title,
+      locked: !unlocked,
+      sectionId: config.sectionId,
+    },
+    "station",
+  ]);
+
+  if (!reducedMotion) {
+    const phase = x * 0.01 + y * 0.02;
+
+    if (unlocked) {
+      k.loop(2.6 + (x % 80) / 90, () => {
+        createPortalShimmer(k, {
+          x,
+          y,
+          color: completed ? [132, 255, 178] : config.accent,
+          radius: config.radius - 6,
+          reducedMotion,
+        });
+      });
+    }
+
+    ring.onUpdate(() => {
+      const nearby = getNearbySection() === config.sectionId;
+      const pulse = Math.sin(k.time() * 2.3 + phase);
+      const boost = nearby ? 0.1 : 0;
+      ring.scale = k.vec2(1 + pulse * 0.035 + boost);
+      ring.opacity = (completed ? 0.32 : unlocked ? 0.2 : 0.08) + boost;
+      innerRing.scale = k.vec2(1 + Math.sin(k.time() * 3 + phase) * 0.08);
+      nearbyRing.opacity = nearby ? 0.24 + Math.max(0, pulse) * 0.12 : 0;
+      nearbyRing.scale = k.vec2(1 + (nearby ? 0.05 + pulse * 0.02 : 0));
+      enterHint.opacity = nearby ? 0.92 : 0;
+      enterHint.scale = k.vec2(nearby ? 1 + Math.max(0, pulse) * 0.025 : 0.96);
+      enterHintText.opacity = nearby ? 1 : 0;
+      floor.opacity = completed
+        ? 0.32
+        : unlocked
+          ? 0.2 + Math.max(0, pulse) * 0.08
+          : 0.1;
+    });
+  } else {
+    ring.onUpdate(() => {
+      const nearby = getNearbySection() === config.sectionId;
+      nearbyRing.opacity = nearby ? 0.18 : 0;
+      enterHint.opacity = nearby ? 0.92 : 0;
+      enterHintText.opacity = nearby ? 1 : 0;
+    });
+  }
+}
+
+function createPrompt(k: KaboomCtx) {
+  const promptBox = k.add([
+    k.rect(560, 44, { radius: 999 }),
+    k.pos(200, 480),
+    k.color(8, 12, 20),
+    k.outline(1, k.rgb(55, 68, 92)),
+    k.opacity(0),
+    k.z(70),
   ]);
 
   const promptText = k.add([
-    k.text("", { size: 16 }),
-    k.pos(480, 494),
+    k.text("", { size: 14, width: 500 }),
+    k.pos(480, 503),
     k.anchor("center"),
-    k.color(255, 255, 255),
+    k.color(244, 248, 255),
+    k.opacity(0),
+    k.z(71),
+  ]);
+
+  return {
+    hide() {
+      promptBox.opacity = 0;
+      promptText.opacity = 0;
+      promptText.text = "";
+    },
+    show(message: string, color: RgbColor) {
+      promptBox.opacity = 0.92;
+      promptBox.outline.color = getRgb(k, color);
+      promptText.opacity = 1;
+      promptText.text = message;
+      promptText.color = getRgb(k, color);
+    },
+  };
+}
+
+function createPlayer(k: KaboomCtx, reducedMotion: boolean) {
+  const spawn = { x: 112, y: 420 };
+  const speed = 250;
+  let trailTimer = 0;
+  const lastDirection: Direction = { x: 1, y: 0 };
+
+  const shadow = k.add([
+    k.rect(52, 12, { radius: 999 }),
+    k.pos(spawn.x, spawn.y + 20),
+    k.anchor("center"),
+    k.color(0, 0, 0),
+    k.opacity(0.38),
+    k.scale(1),
+    k.z(35),
+  ]);
+
+  const halo = k.add([
+    k.circle(28),
+    k.pos(spawn.x, spawn.y),
+    k.anchor("center"),
+    k.color(80, 190, 255),
+    k.opacity(0.16),
+    k.scale(1),
+    k.z(36),
+  ]);
+
+  const player = k.add([
+    k.circle(15),
+    k.pos(spawn.x, spawn.y),
+    k.anchor("center"),
+    k.color(74, 181, 255),
+    k.scale(1),
+    k.area({ scale: 0.92 }),
+    k.z(42),
+    "player",
+  ]);
+
+  const core = k.add([
+    k.circle(8),
+    k.pos(spawn.x, spawn.y - 2),
+    k.anchor("center"),
+    k.color(229, 246, 255),
+    k.opacity(0.92),
+    k.z(43),
+  ]);
+
+  const visor = k.add([
+    k.rect(18, 4, { radius: 999 }),
+    k.pos(spawn.x + 5, spawn.y - 4),
+    k.anchor("center"),
+    k.color(4, 12, 22),
+    k.opacity(0.82),
+    k.z(44),
   ]);
 
   player.onUpdate(() => {
@@ -192,48 +807,333 @@ export function createMainScene(k: KaboomCtx, options: CreateMainSceneOptions) {
     if (k.isKeyDown("up") || k.isKeyDown("w")) dir.y -= 1;
     if (k.isKeyDown("down") || k.isKeyDown("s")) dir.y += 1;
 
-    if (dir.x !== 0 || dir.y !== 0) {
-      player.move(dir.unit().scale(speed));
+    const moving = dir.x !== 0 || dir.y !== 0;
+
+    if (moving) {
+      const unit = dir.unit();
+      lastDirection.x = unit.x;
+      lastDirection.y = unit.y;
+      player.move(unit.scale(speed));
     }
 
-    player.pos.x = k.clamp(player.pos.x, 30, 896);
-    player.pos.y = k.clamp(player.pos.y, 145, 455);
+    player.pos.x = k.clamp(player.pos.x, 32, worldSize.width - 32);
+    player.pos.y = k.clamp(player.pos.y, 96, worldSize.height - 42);
 
-    head.pos.x = player.pos.x + 17;
-    head.pos.y = player.pos.y - 10;
+    shadow.pos.x = player.pos.x;
+    shadow.pos.y = player.pos.y + 20;
+    halo.pos = player.pos;
+    core.pos.x = player.pos.x + lastDirection.x * 2;
+    core.pos.y = player.pos.y - 2 + lastDirection.y * 2;
+    visor.pos.x = player.pos.x + lastDirection.x * 6;
+    visor.pos.y = player.pos.y - 4 + lastDirection.y * 4;
 
-    shadow.pos.x = player.pos.x - 9;
-shadow.pos.y = player.pos.y + 39;
+    if (!reducedMotion) {
+      const idlePulse = Math.sin(k.time() * 5) * 0.08;
+      const moveLean = Math.abs(lastDirection.x) > Math.abs(lastDirection.y);
+      halo.scale = k.vec2(1 + idlePulse + (moving ? 0.05 : 0));
+      halo.opacity = moving ? 0.23 : 0.14 + Math.max(0, idlePulse) * 0.2;
+      core.opacity = moving ? 1 : 0.86 + Math.max(0, idlePulse) * 0.14;
+      player.scale = moving
+        ? k.vec2(moveLean ? 1.12 : 0.94, moveLean ? 0.92 : 1.12)
+        : k.vec2(1 + idlePulse * 0.32, 1 - idlePulse * 0.18);
+      shadow.scale = k.vec2(moving ? 1.08 : 1, moving ? 0.92 : 1);
+
+      trailTimer -= k.dt();
+      if (moving && trailTimer <= 0) {
+        trailTimer = 0.045;
+        const trail = k.add([
+          k.circle(8),
+          k.pos(
+            player.pos.x - lastDirection.x * 10,
+            player.pos.y - lastDirection.y * 10
+          ),
+          k.anchor("center"),
+          k.color(74, 181, 255),
+          k.opacity(0.22),
+          k.scale(1),
+          k.z(34),
+          k.lifespan(0.34, { fade: 0.28 }),
+          "ambient",
+        ]);
+
+        trail.onUpdate(() => {
+          trail.scale = trail.scale.add(k.vec2(2.8 * k.dt()));
+        });
+      }
+    }
   });
 
-  player.onCollide("zone", (zone) => {
-    nearbySection = zone.sectionId ?? null;
-    nearbyLabel = zone.label ?? "";
-    nearbyLocked = zone.locked ?? false;
+  return player;
+}
 
-    promptBox.opacity = 1;
-    promptText.text = nearbyLocked
-      ? `${nearbyLabel} is locked. Complete the previous station first.`
-      : `Press E to open ${nearbyLabel}`;
+function createCollectibles(
+  k: KaboomCtx,
+  collectedOrbIds: string[],
+  onCollectOrb: (orbId: string) => void,
+  reducedMotion: boolean
+) {
+  const alreadyCollected = new Set(collectedOrbIds);
+  const collectedInScene = new Set(collectedOrbIds);
+
+  collectibleConfigs.forEach((config, index) => {
+    if (alreadyCollected.has(config.id)) return;
+
+    const orb = k.add([
+      k.circle(12),
+      k.pos(config.position.x, config.position.y),
+      k.anchor("center"),
+      k.color(config.color[0], config.color[1], config.color[2]),
+      k.opacity(0.88),
+      k.scale(1),
+      k.area(),
+      k.z(32),
+      {
+        label: config.label,
+        orbId: config.id,
+      },
+      "collectible",
+    ]);
+
+    const glow = k.add([
+      k.circle(23),
+      k.pos(config.position.x, config.position.y),
+      k.anchor("center"),
+      k.color(config.color[0], config.color[1], config.color[2]),
+      k.opacity(0.1),
+      k.scale(1),
+      k.z(31),
+      "ambient",
+    ]);
+
+    const label = k.add([
+      k.text(config.label.toUpperCase(), { size: 8 }),
+      k.pos(config.position.x, config.position.y + 25),
+      k.anchor("center"),
+      k.color(219, 234, 254),
+      k.opacity(0.72),
+      k.z(33),
+      "ambient",
+    ]);
+
+    if (!reducedMotion) {
+      const phase = index * 0.65;
+
+      orb.onUpdate(() => {
+        const bob = Math.sin(k.time() * 2.2 + phase) * 4;
+        orb.pos.y = config.position.y + bob;
+        glow.pos.y = config.position.y + bob;
+        label.pos.y = config.position.y + 25 + bob;
+        glow.scale = k.vec2(1 + Math.sin(k.time() * 3 + phase) * 0.08);
+      });
+    }
+
+    orb.onCollide("player", () => {
+      if (collectedInScene.has(config.id)) return;
+
+      collectedInScene.add(config.id);
+      createSparkBurst(k, {
+        x: orb.pos.x,
+        y: orb.pos.y,
+        color: config.color,
+        count: 12,
+        reducedMotion,
+      });
+      onCollectOrb(config.id);
+      k.destroy(orb);
+      k.destroy(glow);
+      k.destroy(label);
+    });
+  });
+}
+
+function createFinaleEffect(k: KaboomCtx, reducedMotion: boolean) {
+  const center = { x: 480, y: 274 };
+  const pulse = k.add([
+    k.circle(126),
+    k.pos(center.x, center.y),
+    k.anchor("center"),
+    k.color(248, 197, 55),
+    k.opacity(0.08),
+    k.scale(1),
+    k.z(9),
+    "ambient",
+  ]);
+
+  k.add([
+    k.rect(360, 58, { radius: 12 }),
+    k.pos(center.x, center.y),
+    k.anchor("center"),
+    k.color(7, 12, 20),
+    k.outline(1, k.rgb(248, 197, 55)),
+    k.opacity(0.88),
+    k.z(52),
+  ]);
+
+  k.add([
+    k.text("PORTFOLIO RUN COMPLETE", { size: 18 }),
+    k.pos(center.x, center.y - 9),
+    k.anchor("center"),
+    k.color(255, 247, 214),
+    k.z(53),
+  ]);
+
+  k.add([
+    k.text("All portfolio zones are synced", { size: 11 }),
+    k.pos(center.x, center.y + 15),
+    k.anchor("center"),
+    k.color(209, 213, 219),
+    k.z(53),
+  ]);
+
+  if (!reducedMotion) {
+    pulse.onUpdate(() => {
+      pulse.scale = k.vec2(1 + Math.sin(k.time() * 2.2) * 0.08);
+      pulse.opacity = 0.08 + Math.max(0, Math.sin(k.time() * 3)) * 0.08;
+    });
+
+    for (let index = 0; index < 5; index += 1) {
+      k.wait(index * 0.34, () => {
+        const offset = k.vec2(k.rand(-118, 118), k.rand(-52, 52));
+        createSparkBurst(k, {
+          x: center.x + offset.x,
+          y: center.y + offset.y,
+          color: index % 2 === 0 ? [248, 197, 55] : [45, 212, 191],
+          count: 16,
+          reducedMotion,
+        });
+      });
+    }
+  } else {
+    k.wait(0.05, () => {
+      createSparkBurst(k, {
+        x: center.x,
+        y: center.y,
+        color: [248, 197, 55],
+        count: 6,
+        reducedMotion,
+      });
+    });
+  }
+}
+
+export function createMainScene(k: KaboomCtx, options: CreateMainSceneOptions) {
+  const {
+    onOpenSection,
+    onLockedSection,
+    onCollectOrb,
+    completedIds,
+    unlockedIds,
+    collectedOrbIds,
+    reducedMotion,
+  } = options;
+
+  let nearbySection: StationId | null = null;
+  let nearbyLocked = false;
+  let nearbyHint = "";
+
+  createBackground(k, reducedMotion);
+
+  const prompt = createPrompt(k);
+
+  stationWorldConfig.forEach((config) => {
+    createStation(
+      k,
+      config,
+      completedIds,
+      unlockedIds,
+      reducedMotion,
+      () => nearbySection
+    );
   });
 
-  player.onCollideEnd("zone", () => {
+  const player = createPlayer(k, reducedMotion);
+
+  createCollectibles(k, collectedOrbIds, onCollectOrb, reducedMotion);
+
+  if (completedIds.length === stationOrder.length) {
+    createFinaleEffect(k, reducedMotion);
+  }
+
+  function getConfig(sectionId: StationId) {
+    return stationWorldConfig.find((config) => config.sectionId === sectionId);
+  }
+
+  function attemptOpen(sectionId: StationId, locked: boolean) {
+    const config = getConfig(sectionId);
+
+    if (locked) {
+      createRingPulse(k, {
+        x: player.pos.x,
+        y: player.pos.y,
+        color: [255, 107, 107],
+        radius: 18,
+        reducedMotion,
+      });
+      prompt.show(config?.lockedHint ?? "This zone is locked.", [255, 107, 107]);
+      onLockedSection(sectionId);
+      return;
+    }
+
+    if (config) {
+      createRingPulse(k, {
+        x: player.pos.x,
+        y: player.pos.y,
+        color: config.accent,
+        radius: 22,
+        reducedMotion,
+      });
+      createSparkBurst(k, {
+        x: config.position.x,
+        y: config.position.y,
+        color: config.accent,
+        count: 18,
+        reducedMotion,
+      });
+    }
+
+    onOpenSection(sectionId);
+  }
+
+  player.onCollide("station", (station) => {
+    const sectionId = hasStationId(station.sectionId) ? station.sectionId : null;
+    if (!sectionId) return;
+
+    nearbySection = sectionId;
+    nearbyLocked = Boolean(station.locked);
+    nearbyHint = typeof station.hint === "string" ? station.hint : "";
+
+    const config = getConfig(sectionId);
+    const color: RgbColor = nearbyLocked
+      ? [255, 107, 107]
+      : config?.accent ?? [45, 212, 191];
+    prompt.show(nearbyHint, color);
+  });
+
+  player.onCollideEnd("station", (station) => {
+    const sectionId = hasStationId(station.sectionId) ? station.sectionId : null;
+
+    if (!sectionId || sectionId !== nearbySection) return;
+
     nearbySection = null;
-    nearbyLabel = "";
     nearbyLocked = false;
-    promptBox.opacity = 0;
-    promptText.text = "";
+    nearbyHint = "";
+    prompt.hide();
+  });
+
+  k.onClick("station", (station) => {
+    const sectionId = hasStationId(station.sectionId) ? station.sectionId : null;
+    if (!sectionId) return;
+
+    attemptOpen(sectionId, Boolean(station.locked));
   });
 
   k.onKeyPress("e", () => {
-    if (nearbySection && !nearbyLocked) {
-      onOpenSection(nearbySection);
-    }
+    if (!nearbySection) return;
+    attemptOpen(nearbySection, nearbyLocked);
   });
 
   k.onKeyPress("enter", () => {
-    if (nearbySection && !nearbyLocked) {
-      onOpenSection(nearbySection);
-    }
+    if (!nearbySection) return;
+    attemptOpen(nearbySection, nearbyLocked);
   });
 }

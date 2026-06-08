@@ -1,22 +1,24 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type CSSProperties,
-} from "react";
-import heroImage from "./assets/hero.png";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import GameCanvas from "./components/GameCanvas";
 import HUD from "./components/HUD";
+import MissionTracker from "./components/MissionTracker";
+import MobilePortfolioMap from "./components/MobilePortfolioMap";
 import PortfolioModal from "./components/PortfolioModal";
+import ProgressToast, {
+  type ProgressToastMessage,
+  type ProgressToastTone,
+} from "./components/ProgressToast";
 import ProjectPage from "./components/ProjectPage";
+import RecruiterMode from "./components/RecruiterMode";
 import {
   getPortfolioProject,
-  portfolioSections,
   portfolioProjects,
-  stationOrder,
+  portfolioSectionById,
   type StationId,
 } from "./data/portfolioData";
+import { collectibleConfigs } from "./game/config/worldConfig";
+import { usePortfolioProgress } from "./hooks/usePortfolioProgress";
+import { useReducedMotion } from "./hooks/useReducedMotion";
 
 type AppRoute =
   | {
@@ -26,59 +28,6 @@ type AppRoute =
       name: "project";
       projectId: string;
     };
-
-const legacyCompletedStationsStorageKey = "signal-run-completed-stations";
-const completedStationsStorageKey = "signal-run-completed-stations-v2";
-
-function isStationId(value: string): value is StationId {
-  return stationOrder.includes(value as StationId);
-}
-
-function parseCompletedStations(savedValue: string | null, isLegacyValue = false) {
-  if (!savedValue) return new Set<StationId>();
-
-  const savedIds = JSON.parse(savedValue);
-  if (!Array.isArray(savedIds)) return new Set<StationId>();
-
-  const completedStations = new Set<StationId>(
-    savedIds.filter((id): id is StationId => {
-      return typeof id === "string" && isStationId(id);
-    })
-  );
-
-  if (
-    isLegacyValue &&
-    stationOrder.every((sectionId) => completedStations.has(sectionId))
-  ) {
-    return new Set<StationId>();
-  }
-
-  return completedStations;
-}
-
-function loadCompletedStations() {
-  try {
-    const savedValue = window.localStorage.getItem(completedStationsStorageKey);
-    if (savedValue) return parseCompletedStations(savedValue);
-
-    return parseCompletedStations(
-      window.localStorage.getItem(legacyCompletedStationsStorageKey),
-      true
-    );
-  } catch {
-    return new Set<StationId>();
-  }
-}
-
-function isProgressionUnlocked(
-  sectionId: StationId,
-  completedStations: Set<StationId>
-) {
-  const sectionIndex = stationOrder.indexOf(sectionId);
-  return stationOrder
-    .slice(0, sectionIndex)
-    .every((previousSectionId) => completedStations.has(previousSectionId));
-}
 
 function getCurrentRoute(): AppRoute {
   const projectMatch = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/);
@@ -96,10 +45,27 @@ function getCurrentRoute(): AppRoute {
 export default function App() {
   const [route, setRoute] = useState<AppRoute>(() => getCurrentRoute());
   const [activeSectionId, setActiveSectionId] = useState<StationId | null>(null);
-  const [completedIds, setCompletedIds] = useState<Set<StationId>>(
-    () => loadCompletedStations()
-  );
-  const [fullPortfolioUnlocked, setFullPortfolioUnlocked] = useState(false);
+  const [toast, setToast] = useState<ProgressToastMessage | null>(null);
+  const [collectedOrbIds, setCollectedOrbIds] = useState<string[]>([]);
+  const collectedOrbIdsRef = useRef(new Set<string>());
+  const toastIdRef = useRef(0);
+  const reducedMotion = useReducedMotion();
+
+  const {
+    allStationsComplete,
+    completedCount,
+    completedIdList,
+    nextStation,
+    progressPercent,
+    recruiterMode,
+    requestSectionOpen,
+    stationProgress,
+    totalStations,
+    toggleRecruiterMode,
+    unlockFullPortfolio,
+    unlockedIdList,
+  } = usePortfolioProgress();
+  const completionToastShownRef = useRef(allStationsComplete);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -116,62 +82,77 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(
-        completedStationsStorageKey,
-        JSON.stringify([...completedIds])
+    if (!toast) return;
+
+    const timeout = window.setTimeout(() => {
+      setToast((currentToast) =>
+        currentToast?.id === toast.id ? null : currentToast
       );
-    } catch {
-      // Progress persistence is a nice-to-have; the game should still work.
-    }
-  }, [completedIds]);
+    }, reducedMotion ? 4800 : 3400);
 
-  const completedCount = completedIds.size;
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [reducedMotion, toast]);
 
-  const nextStationId = useMemo(() => {
-    return stationOrder.find((id) => !completedIds.has(id)) ?? null;
-  }, [completedIds]);
-
-  const nextStation =
-    portfolioSections.find((section) => section.id === nextStationId) ?? null;
-
-  const isUnlocked = useCallback(
-    (sectionId: StationId) => {
-      return (
-        fullPortfolioUnlocked ||
-        isProgressionUnlocked(sectionId, completedIds)
-      );
+  const showToast = useCallback(
+    (title: string, message: string, tone: ProgressToastTone) => {
+      toastIdRef.current += 1;
+      setToast({
+        id: toastIdRef.current,
+        title,
+        message,
+        tone,
+      });
     },
-    [completedIds, fullPortfolioUnlocked]
+    []
   );
 
   const openSection = useCallback(
     (sectionId: StationId) => {
-      const sectionIsProgressionUnlocked = isProgressionUnlocked(
-        sectionId,
-        completedIds
-      );
+      const result = requestSectionOpen(sectionId);
+      const section = portfolioSectionById[sectionId];
 
-      if (!fullPortfolioUnlocked && !sectionIsProgressionUnlocked) return;
+      if (!result.ok) {
+        showToast("Zone locked", result.reason, "warning");
+        return;
+      }
 
       setActiveSectionId(sectionId);
 
-      if (!sectionIsProgressionUnlocked) return;
+      if (result.allComplete && !completionToastShownRef.current) {
+        completionToastShownRef.current = true;
+        showToast(
+          "Portfolio Run Complete",
+          "Every zone is synced. Recruiter Mode and the contact route are highlighted for the next step.",
+          "complete"
+        );
+        return;
+      }
 
-      setCompletedIds((previous) => {
-        if (
-          previous.has(sectionId) ||
-          !isProgressionUnlocked(sectionId, previous)
-        ) {
-          return previous;
-        }
-
-        const next = new Set(previous);
-        next.add(sectionId);
-        return next;
-      });
+      if (result.newlyCompleted) {
+        showToast(
+          `${section.title} synced`,
+          `${section.zoneTitle} is complete. The next signal is now easier to find.`,
+          "success"
+        );
+      }
     },
-    [completedIds, fullPortfolioUnlocked]
+    [requestSectionOpen, showToast]
+  );
+
+  const handleLockedSection = useCallback(
+    (sectionId: StationId) => {
+      const result = requestSectionOpen(sectionId);
+
+      if (result.ok) {
+        setActiveSectionId(sectionId);
+        return;
+      }
+
+      showToast("Zone locked", result.reason, "warning");
+    },
+    [requestSectionOpen, showToast]
   );
 
   const navigateHome = useCallback(() => {
@@ -191,19 +172,56 @@ export default function App() {
   }, []);
 
   const viewFullPortfolio = useCallback(() => {
-    setFullPortfolioUnlocked(true);
+    unlockFullPortfolio();
     setActiveSectionId("projects");
-  }, []);
+    showToast(
+      "Fast path unlocked",
+      "All zones are available for traditional portfolio review.",
+      "success"
+    );
+  }, [showToast, unlockFullPortfolio]);
+
+  const handleToggleRecruiterMode = useCallback(() => {
+    toggleRecruiterMode();
+
+    if (!recruiterMode) {
+      showToast(
+        "Recruiter mode enabled",
+        "A clean scan of the same portfolio content is now available below the game.",
+        "success"
+      );
+    }
+  }, [recruiterMode, showToast, toggleRecruiterMode]);
+
+  const handleCollectOrb = useCallback(
+    (orbId: string) => {
+      if (collectedOrbIdsRef.current.has(orbId)) return;
+
+      collectedOrbIdsRef.current.add(orbId);
+      setCollectedOrbIds([...collectedOrbIdsRef.current]);
+      showToast(
+        "Signal fragment collected",
+        "Nice. The hub picked up another frontend skill marker.",
+        "success"
+      );
+    },
+    [showToast]
+  );
 
   const activeSection =
-    portfolioSections.find((section) => section.id === activeSectionId) ?? null;
+    activeSectionId === null ? null : portfolioSectionById[activeSectionId];
 
   const activeProjectPage =
     route.name === "project" ? getPortfolioProject(route.projectId) : null;
 
-  const projectsCount =
-    portfolioSections.find((section) => section.id === "projects")?.projects
-      ?.length ?? 0;
+  const projectsCount = portfolioSectionById.projects.projects?.length ?? 0;
+  const totalOrbs = collectibleConfigs.length;
+  const nextStationTitle = nextStation?.zoneTitle ?? "Mission Complete";
+
+  const collectedOrbIdList = useMemo(
+    () => [...collectedOrbIds],
+    [collectedOrbIds]
+  );
 
   if (route.name === "project") {
     if (!activeProjectPage) {
@@ -211,7 +229,7 @@ export default function App() {
         <main className="project-page">
           <header className="project-page-top">
             <button type="button" onClick={navigateHome}>
-              Back to Signal Run
+              Back to Quest Hub
             </button>
             <span>Project Page</span>
           </header>
@@ -236,71 +254,65 @@ export default function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main
+      className={`app-shell ${recruiterMode ? "is-recruiter-mode" : ""} ${
+        allStationsComplete ? "is-run-complete" : ""
+      }`}
+    >
       <HUD
+        allComplete={allStationsComplete}
         completed={completedCount}
-        total={stationOrder.length}
-        nextStationTitle={nextStation?.title ?? "Complete"}
+        collectedOrbs={collectedOrbIds.length}
+        progressPercent={progressPercent}
+        recruiterMode={recruiterMode}
+        total={totalStations}
+        totalOrbs={totalOrbs}
+        nextStationTitle={nextStationTitle}
+        onToggleRecruiterMode={handleToggleRecruiterMode}
       />
 
       <section className="playdeck" aria-label="Interactive portfolio game">
         <div className="game-wrapper">
           <GameCanvas
             onOpenSection={openSection}
-            completedIds={[...completedIds]}
-            unlockedIds={stationOrder.filter((id) => isUnlocked(id))}
+            onLockedSection={handleLockedSection}
+            onCollectOrb={handleCollectOrb}
+            completedIds={completedIdList}
+            unlockedIds={unlockedIdList}
+            collectedOrbIds={collectedOrbIdList}
+            reducedMotion={reducedMotion}
           />
         </div>
 
-        <aside className="mission-panel">
-          <img className="mission-art" src={heroImage} alt="" />
-          <p className="panel-label">Route Console</p>
-          <h1>Signal Run</h1>
-          <p>
-            Follow the route in order. Each station unlocks the next part of the
-            portfolio.
-          </p>
-
-          <div className="mission-metrics">
-            <div>
-              <span>Stations</span>
-              <strong>
-                {completedCount}/{stationOrder.length}
-              </strong>
-            </div>
-            <div>
-              <span>Projects</span>
-              <strong>{projectsCount}</strong>
-            </div>
-          </div>
-
-          <div className="mission-actions">
-            <button
-              type="button"
-              disabled={!isUnlocked("projects")}
-              onClick={() => openSection("projects")}
-            >
-              Open Projects
-            </button>
-
-            <button
-              type="button"
-              disabled={!isUnlocked("contact")}
-              onClick={() => openSection("contact")}
-            >
-              Contact
-            </button>
-
-            <button
-              className="fast-path-button"
-              type="button"
-              onClick={viewFullPortfolio}
-            >
-              View full portfolio
-            </button>
-          </div>
-        </aside>
+        <MissionTracker
+          allComplete={allStationsComplete}
+          completed={completedCount}
+          total={totalStations}
+          collectedOrbs={collectedOrbIds.length}
+          totalOrbs={totalOrbs}
+          nextStationTitle={nextStationTitle}
+          projectsCount={projectsCount}
+          recruiterMode={recruiterMode}
+          stations={stationProgress}
+          onOpenSection={openSection}
+          onLockedSection={handleLockedSection}
+          onViewFullPortfolio={viewFullPortfolio}
+          onToggleRecruiterMode={handleToggleRecruiterMode}
+        />
       </section>
+
+      <MobilePortfolioMap
+        stations={stationProgress}
+        onOpenSection={openSection}
+        onLockedSection={handleLockedSection}
+      />
+
+      <RecruiterMode
+        visible={recruiterMode}
+        onBackToGame={handleToggleRecruiterMode}
+        onOpenSection={openSection}
+        onOpenProjectPage={navigateToProject}
+      />
 
       <PortfolioModal
         section={activeSection}
@@ -308,75 +320,7 @@ export default function App() {
         onOpenProjectPage={navigateToProject}
       />
 
-      <nav className="fallback-nav" aria-labelledby="fallback-nav-title">
-        <div className="fallback-nav-header">
-          <p className="panel-label">Touch Route</p>
-          <h2 id="fallback-nav-title">Station access</h2>
-        </div>
-
-        <div className="fallback-nav-list">
-          {stationOrder.map((sectionId, index) => {
-            const section = portfolioSections.find((item) => item.id === sectionId);
-            if (!section) return null;
-
-            const unlocked = isUnlocked(section.id);
-            const completed = completedIds.has(section.id);
-
-            return (
-              <button
-                className={`fallback-nav-item ${
-                  completed ? "is-completed" : ""
-                }`}
-                key={section.id}
-                type="button"
-                disabled={!unlocked}
-                style={
-                  { "--section-accent": section.accent } as CSSProperties
-                }
-                onClick={() => openSection(section.id)}
-              >
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{section.title}</strong>
-                <small>{completed ? "Completed" : unlocked ? "Ready" : "Locked"}</small>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-
-      <section className="quick-panel" aria-labelledby="quick-title">
-        <div className="quick-header">
-          <p className="panel-label">Quick Scan</p>
-          <h2 id="quick-title">Portfolio map</h2>
-        </div>
-
-        <div className="quick-grid">
-          {portfolioSections.map((section) => {
-            const unlocked = isUnlocked(section.id);
-            const completed = completedIds.has(section.id);
-
-            return (
-              <button
-                className={`quick-card ${!unlocked ? "is-locked" : ""} ${
-                  completed ? "is-completed" : ""
-                }`}
-                key={section.id}
-                type="button"
-                disabled={!unlocked}
-                style={
-                  { "--section-accent": section.accent } as CSSProperties
-                }
-                onClick={() => openSection(section.id)}
-              >
-                <span>{section.subtitle}</span>
-                <strong>{section.title}</strong>
-                <small>{section.summary}</small>
-                <em>{completed ? "Completed" : unlocked ? "Unlocked" : "Locked"}</em>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+      <ProgressToast toast={toast} />
     </main>
   );
 }

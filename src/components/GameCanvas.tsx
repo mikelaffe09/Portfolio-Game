@@ -2,19 +2,33 @@ import { useEffect, useRef } from "react";
 import kaboom from "kaboom";
 import { createMainScene } from "../game/scenes/MainScene";
 import type { StationId } from "../data/portfolioData";
+import { worldSize } from "../game/config/worldConfig";
 
 type Props = {
   onOpenSection: (sectionId: StationId) => void;
+  onLockedSection: (sectionId: StationId) => void;
+  onCollectOrb: (orbId: string) => void;
   completedIds: StationId[];
   unlockedIds: StationId[];
+  collectedOrbIds: string[];
+  reducedMotion: boolean;
 };
 
 export default function GameCanvas({
   onOpenSection,
+  onLockedSection,
+  onCollectOrb,
   completedIds,
   unlockedIds,
+  collectedOrbIds,
+  reducedMotion,
 }: Props) {
   const gameRef = useRef<HTMLDivElement | null>(null);
+  const collectedOrbIdsRef = useRef(collectedOrbIds);
+
+  useEffect(() => {
+    collectedOrbIdsRef.current = collectedOrbIds;
+  }, [collectedOrbIds]);
 
   useEffect(() => {
     if (!gameRef.current) return;
@@ -22,9 +36,9 @@ export default function GameCanvas({
     gameRef.current.innerHTML = "";
 
     const k = kaboom({
-      width: 960,
-      height: 540,
-      background: [7, 7, 10],
+      width: worldSize.width,
+      height: worldSize.height,
+      background: [4, 7, 12],
       global: false,
       scale: 1,
       root: gameRef.current,
@@ -32,14 +46,25 @@ export default function GameCanvas({
 
     createMainScene(k, {
       onOpenSection,
+      onLockedSection,
+      onCollectOrb,
       completedIds,
       unlockedIds,
+      collectedOrbIds: collectedOrbIdsRef.current,
+      reducedMotion,
     });
 
     return () => {
       k.quit();
     };
-  }, [onOpenSection, completedIds, unlockedIds]);
+  }, [
+    onCollectOrb,
+    onLockedSection,
+    onOpenSection,
+    completedIds,
+    reducedMotion,
+    unlockedIds,
+  ]);
 
   return <div ref={gameRef} className="game-canvas" />;
 }

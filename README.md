@@ -1,13 +1,22 @@
-# Signal Run
+# Interactive Frontend Developer Portfolio
 
-Signal Run is an interactive portfolio game built with React, TypeScript, Vite, and Kaboom. Visitors move through a guided route of portfolio stations to unlock About, Skills, Projects, and Contact content.
+An interactive portfolio built with React, TypeScript, Vite, and Kaboom. The app presents portfolio content through a playable neon quest hub while also offering a recruiter-friendly traditional portfolio view for fast review.
+
+## Description
+
+This project is designed to be both a portfolio and a live frontend work sample. Visitors can move through a small game world, unlock About, Skills, Projects, and Contact sections, collect optional signal fragments, and review project case studies. Recruiter Mode presents the same content in a clean, scannable format for hiring managers, clients, and collaborators who prefer a traditional portfolio page.
 
 ## Features
 
-- Game-like portfolio navigation with sequential station unlocks
-- Recruiter-friendly quick scan cards for each portfolio section
-- Project detail modal with selected work, role, impact, and tech
-- Responsive layout for desktop and mobile screens
+- Animated Kaboom game hub with keyboard controls
+- Data-driven About, Skills, Projects, and Contact sections
+- Recruiter Mode with professional summary, grouped skills, featured work, and contact placeholders
+- Project case-study structure with problem, solution, role, impact, tech stack, lessons, and improvements
+- Mobile Mission Map for touch-friendly section access
+- Accessible modal behavior with focus management and Escape close
+- Reduced-motion support for CSS and game-world effects
+- Local progress persistence for completed stations
+- No backend, external API, or secret handling required
 
 ## Tech Stack
 
@@ -17,7 +26,15 @@ Signal Run is an interactive portfolio game built with React, TypeScript, Vite, 
 - Kaboom
 - CSS
 
-## Getting Started
+## Screenshots
+
+TODO: Add desktop and mobile screenshots before publishing.
+
+- TODO: Game hub screenshot
+- TODO: Recruiter Mode screenshot
+- TODO: Project showcase screenshot
+
+## Local Development
 
 Install dependencies:
 
@@ -31,7 +48,9 @@ Run the development server:
 npm run dev
 ```
 
-Build for production:
+## Build
+
+Create a production build:
 
 ```sh
 npm run build
@@ -43,22 +62,49 @@ Preview the production build:
 npm run preview
 ```
 
+Run linting:
+
+```sh
+npm run lint
+```
+
 ## Project Structure
 
-- `src/App.tsx` renders the portfolio shell and station flow.
-- `src/components/GameCanvas.tsx` mounts the Kaboom scene.
-- `src/game/scenes/MainScene.ts` defines the interactive route.
-- `src/data/portfolioData.ts` stores portfolio sections and project content.
-- `src/styles/global.css` contains the main responsive UI styles.
+- `src/App.tsx` handles route state, active modal state, toast state, and high-level layout.
+- `src/data/portfolioData.ts` stores the profile, grouped skills, contact placeholders, sections, and project case studies.
+- `src/hooks/usePortfolioProgress.ts` owns progression, unlock rules, localStorage persistence, and Recruiter Mode preference.
+- `src/components/GameCanvas.tsx` mounts and cleans up the Kaboom canvas.
+- `src/game/scenes/MainScene.ts` defines the animated game world and interactions.
+- `src/components/PortfolioModal.tsx` renders section details and project showcases.
+- `src/components/RecruiterMode.tsx` renders the traditional portfolio view.
+- `src/components/MobilePortfolioMap.tsx` renders touch-friendly section access.
+- `src/styles/global.css` contains layout, responsive, Recruiter Mode, modal, and reduced-motion styles.
+- `src/styles/project-showcase.css` contains project showcase styles.
 
-## Updating Project Previews
+## Roadmap
 
-Project preview images live in `src/assets/projects`.
+- TODO: Replace profile placeholders with real name, location, email, GitHub, LinkedIn, and resume links.
+- TODO: Add real live demo and repository URLs where projects are public.
+- TODO: Add final screenshots and social preview image.
+- Add more project filters once the project list grows.
+- Add additional accessibility testing with screen reader workflows.
 
-To add or replace a project preview:
+## Deployment Notes
 
-1. Add a 16:9 PNG or JPG to `src/assets/projects`.
-2. Import it in `src/data/portfolioData.ts`.
-3. Add `previewImage`, `previewAlt`, and `path` to the project entry.
-4. Use a route path in the format `/projects/project-id`.
-5. Run `npm run build` to confirm the image import and project page still compile.
+- The app is fully client-side and can deploy to static hosting.
+- Configure the host to serve `index.html` for `/projects/:projectId` routes.
+- Do not add frontend secrets; public portfolio links should be safe to expose.
+- Replace all TODO placeholders before sharing the portfolio publicly.
+
+## Accessibility Notes
+
+- Modals use `role="dialog"`, `aria-modal`, labelled headings, Escape close, and focus restoration.
+- Recruiter Mode uses semantic sections and headings so the portfolio remains useful without playing the game.
+- Keyboard users can navigate the DOM controls and use WASD/arrows plus `E`/`Enter` in the game.
+- Reduced-motion preferences are respected in CSS and passed into the Kaboom scene.
+
+## Performance Notes
+
+- Game effects use Kaboom primitives and short-lived particles with lifespans.
+- The app avoids external animation, UI, state, and sound dependencies.
+- Project screenshots are bundled assets; optimize image sizes before production deployment if needed.

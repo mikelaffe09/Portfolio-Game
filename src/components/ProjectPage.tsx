@@ -1,4 +1,8 @@
-import type { PortfolioProject } from "../data/portfolioData";
+import {
+  getProjectPreviewAlt,
+  getProjectPreviewImage,
+  type PortfolioProject,
+} from "../data/portfolioData";
 
 type Props = {
   project: PortfolioProject;
@@ -13,6 +17,15 @@ export default function ProjectPage({
   onNavigateHome,
   onNavigateProject,
 }: Props) {
+  const previewImage = getProjectPreviewImage(project);
+  const proofBlocks = [
+    ["Problem", project.problem],
+    ["Solution", project.solution],
+    ["My Role", project.role],
+    ["Best Feature", project.bestFeature],
+    ["Impact", project.impact],
+  ].filter((item): item is [string, string] => Boolean(item[1]));
+
   return (
     <main className="project-page">
       <header className="project-page-top">
@@ -26,7 +39,13 @@ export default function ProjectPage({
         <div className="project-page-copy">
           <p className="panel-label">Selected Work</p>
           <h1 id="project-title">{project.title}</h1>
+          <p className="project-page-short">{project.shortDescription}</p>
           <p>{project.description}</p>
+
+          <div className="project-badges">
+            {project.status && <span>{project.status.replace("-", " ")}</span>}
+            {project.category && <span>{project.category.replace("-", " ")}</span>}
+          </div>
 
           <div className="tech-list">
             {project.tech.map((tech) => (
@@ -35,42 +54,64 @@ export default function ProjectPage({
           </div>
 
           <div className="project-actions">
-            {project.demoUrl ? (
+            {project.demoUrl && (
               <a href={project.demoUrl} target="_blank" rel="noreferrer">
                 Live Demo
               </a>
-            ) : (
-              <button type="button" disabled>
-                Demo Coming Soon
-              </button>
             )}
 
-            {project.githubUrl ? (
+            {project.githubUrl && (
               <a href={project.githubUrl} target="_blank" rel="noreferrer">
                 GitHub
               </a>
-            ) : (
-              <button type="button" disabled>
-                GitHub Coming Soon
-              </button>
             )}
           </div>
         </div>
 
-        <img
-          className="project-page-preview"
-          src={project.previewImage}
-          alt={project.previewAlt}
-        />
+        {previewImage ? (
+          <img
+            className="project-page-preview"
+            src={previewImage}
+            alt={getProjectPreviewAlt(project)}
+          />
+        ) : (
+          <div className="project-page-preview project-preview-placeholder">
+            Preview coming soon
+          </div>
+        )}
       </section>
 
       <section className="project-page-proof" aria-label="Project details">
-        <ProjectProofBlock title="Problem" text={project.problem} />
-        <ProjectProofBlock title="Solution" text={project.solution} />
-        <ProjectProofBlock title="My Role" text={project.role} />
-        <ProjectProofBlock title="Best Feature" text={project.bestFeature} />
-        <ProjectProofBlock title="Impact" text={project.impact} />
+        {proofBlocks.map(([title, text]) => (
+          <ProjectProofBlock key={title} title={title} text={text} />
+        ))}
       </section>
+
+      {(project.lessons?.length || project.nextImprovements?.length) && (
+        <section className="project-page-learning" aria-label="Project learning">
+          {project.lessons?.length && (
+            <article>
+              <span>Lessons</span>
+              <ul>
+                {project.lessons.map((lesson) => (
+                  <li key={lesson}>{lesson}</li>
+                ))}
+              </ul>
+            </article>
+          )}
+
+          {project.nextImprovements?.length && (
+            <article>
+              <span>Next Improvements</span>
+              <ul>
+                {project.nextImprovements.map((improvement) => (
+                  <li key={improvement}>{improvement}</li>
+                ))}
+              </ul>
+            </article>
+          )}
+        </section>
+      )}
 
       <nav className="project-page-switcher" aria-label="More projects">
         {projects.map((item) => {
@@ -84,7 +125,11 @@ export default function ProjectPage({
               disabled={isCurrentProject}
               onClick={() => onNavigateProject(item.id)}
             >
-              <img src={item.previewImage} alt="" />
+              {getProjectPreviewImage(item) ? (
+                <img src={getProjectPreviewImage(item)} alt="" />
+              ) : (
+                <span className="switcher-preview-placeholder" aria-hidden="true" />
+              )}
               <span>{item.title}</span>
             </button>
           );

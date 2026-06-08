@@ -4,9 +4,18 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
 } from "react";
-import type { PortfolioProject, PortfolioSection } from "../data/portfolioData";
+import {
+  getProjectPreviewAlt,
+  getProjectPreviewImage,
+  portfolioProfile,
+  skillGroups,
+  type ContactMethod,
+  type PortfolioProject,
+  type PortfolioSection,
+} from "../data/portfolioData";
 import "../styles/project-showcase.css";
 
 type Props = {
@@ -144,6 +153,7 @@ export default function PortfolioModal({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
+        style={{ "--section-accent": section.accent } as CSSProperties}
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
         onKeyDown={handleDialogKeyDown}
@@ -166,9 +176,7 @@ export default function PortfolioModal({
         </div>
 
         {!isProjectsSection && (
-          <p className="modal-body" id={descriptionId}>
-            {section.body}
-          </p>
+          <SectionDetail section={section} descriptionId={descriptionId} />
         )}
 
         {isProjectsSection && activeProject && (
@@ -183,6 +191,113 @@ export default function PortfolioModal({
       </div>
     </div>
   );
+}
+
+type SectionDetailProps = {
+  section: PortfolioSection;
+  descriptionId: string;
+};
+
+function SectionDetail({ section, descriptionId }: SectionDetailProps) {
+  if (section.id === "about") {
+    return (
+      <section className="modal-section-content" id={descriptionId}>
+        <p className="modal-body">{section.body}</p>
+
+        <div className="professional-summary-card">
+          <span>Profile</span>
+          <strong>
+            {portfolioProfile.role} - {portfolioProfile.location}
+          </strong>
+          <p>{portfolioProfile.summary}</p>
+        </div>
+
+        <div className="modal-highlight-grid">
+          {portfolioProfile.strengths.map((strength) => (
+            <article key={strength}>
+              <span>Strength</span>
+              <p>{strength}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (section.id === "skills") {
+    return (
+      <section className="modal-section-content" id={descriptionId}>
+        <p className="modal-body">{section.body}</p>
+
+        <div className="skill-group-grid">
+          {skillGroups.map((group) => (
+            <article className="skill-group-card" key={group.title}>
+              <span>{group.title}</span>
+              <p>{group.description}</p>
+              <div className="tech-list">
+                {group.skills.map((skill) => (
+                  <span key={skill}>{skill}</span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (section.id === "contact") {
+    return (
+      <section className="modal-section-content" id={descriptionId}>
+        <p className="modal-body">{section.body}</p>
+
+        <div className="contact-method-grid">
+          {portfolioProfile.contactMethods.map((method) => (
+            <ContactMethodCard key={method.id} method={method} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="modal-section-content" id={descriptionId}>
+      <p className="modal-body">{section.body}</p>
+
+      <div className="modal-highlight-grid">
+        {section.highlights.map((highlight) => (
+          <article key={highlight}>
+            <span>Signal</span>
+            <p>{highlight}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+type ContactMethodCardProps = {
+  method: ContactMethod;
+};
+
+function ContactMethodCard({ method }: ContactMethodCardProps) {
+  const content = (
+    <>
+      <span>{method.label}</span>
+      <strong>{method.value}</strong>
+      {method.placeholder && <em>TODO: replace before publishing</em>}
+    </>
+  );
+
+  if (method.href) {
+    return (
+      <a className="contact-method-card" href={method.href}>
+        {content}
+      </a>
+    );
+  }
+
+  return <div className="contact-method-card is-placeholder">{content}</div>;
 }
 
 type ProjectsBossRoomProps = {
@@ -201,6 +316,14 @@ function ProjectsBossRoom({
   onSelectProject,
 }: ProjectsBossRoomProps) {
   if (!section.projects) return null;
+
+  const previewImage = getProjectPreviewImage(activeProject);
+  const proofBlocks = [
+    ["Problem", activeProject.problem],
+    ["Solution", activeProject.solution],
+    ["My Role", activeProject.role],
+    ["Best Feature", activeProject.bestFeature],
+  ].filter((item): item is [string, string] => Boolean(item[1]));
 
   return (
     <div className="projects-boss-room">
@@ -258,7 +381,17 @@ function ProjectsBossRoom({
                 <span />
               </div>
 
-              <img src={activeProject.previewImage} alt={activeProject.previewAlt} />
+              {previewImage ? (
+                <img
+                  src={previewImage}
+                  alt={getProjectPreviewAlt(activeProject)}
+                />
+              ) : (
+                <div className="preview-content">
+                  <p>Preview</p>
+                  <strong>{activeProject.title}</strong>
+                </div>
+              )}
             </div>
           </div>
 
@@ -267,13 +400,22 @@ function ProjectsBossRoom({
             <h3 id={`project-${activeProject.id}-title`}>
               {activeProject.title}
             </h3>
+
+            <div className="project-badges">
+              {activeProject.status && (
+                <span>{activeProject.status.replace("-", " ")}</span>
+              )}
+              {activeProject.category && (
+                <span>{activeProject.category.replace("-", " ")}</span>
+              )}
+            </div>
+
             <p className="project-description">{activeProject.description}</p>
 
             <div className="proof-grid">
-              <ProofBlock title="Problem" text={activeProject.problem} />
-              <ProofBlock title="Solution" text={activeProject.solution} />
-              <ProofBlock title="My Role" text={activeProject.role} />
-              <ProofBlock title="Best Feature" text={activeProject.bestFeature} />
+              {proofBlocks.map(([title, text]) => (
+                <ProofBlock key={title} title={title} text={text} />
+              ))}
             </div>
 
             <div className="tech-list boss-tech-list">
@@ -293,17 +435,13 @@ function ProjectsBossRoom({
                 Project Page
               </a>
 
-              {activeProject.demoUrl ? (
+              {activeProject.demoUrl && (
                 <a href={activeProject.demoUrl} target="_blank" rel="noreferrer">
                   Live Demo
                 </a>
-              ) : (
-                <button type="button" disabled>
-                  Demo Coming Soon
-                </button>
               )}
 
-              {activeProject.githubUrl ? (
+              {activeProject.githubUrl && (
                 <a
                   href={activeProject.githubUrl}
                   target="_blank"
@@ -311,10 +449,6 @@ function ProjectsBossRoom({
                 >
                   GitHub
                 </a>
-              ) : (
-                <button type="button" disabled>
-                  GitHub Coming Soon
-                </button>
               )}
             </div>
           </div>

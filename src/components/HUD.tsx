@@ -1,30 +1,57 @@
 type Props = {
+  allComplete: boolean;
   completed: number;
+  collectedOrbs: number;
+  progressPercent: number;
+  recruiterMode: boolean;
   total: number;
+  totalOrbs: number;
   nextStationTitle: string;
+  onToggleRecruiterMode: () => void;
 };
 
-export default function HUD({ completed, total, nextStationTitle }: Props) {
+export default function HUD({
+  allComplete,
+  completed,
+  collectedOrbs,
+  progressPercent,
+  recruiterMode,
+  total,
+  totalOrbs,
+  nextStationTitle,
+  onToggleRecruiterMode,
+}: Props) {
   return (
     <header className="hud">
       <div className="hud-title">
         <span className="hud-kicker">Interactive Portfolio</span>
-        <strong>Signal Run</strong>
+        <strong>Neon Portfolio Quest</strong>
+        <small>{allComplete ? "Mission complete" : "Hub online"}</small>
       </div>
 
       <div className="hud-progress" aria-label="Portfolio progress">
-        <span>{completed}</span>
+        <span>{progressPercent}%</span>
         <div className="hud-progress-track">
           <div
             className="hud-progress-fill"
-            style={{ width: `${(completed / total) * 100}%` }}
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
-        <span>{total}</span>
+        <span>
+          {completed}/{total}
+        </span>
       </div>
 
       <div className="hud-next">
-        Next: <strong>{nextStationTitle}</strong>
+        <span>{allComplete ? "Final Signal" : "Next Mission"}</span>
+        <strong>{allComplete ? "Portfolio synced" : nextStationTitle}</strong>
+      </div>
+
+      <div className="hud-orbs" aria-label="Collected signal fragments">
+        <span>Fragments</span>
+        <strong>
+          {collectedOrbs}/{totalOrbs}
+        </strong>
       </div>
 
       <div className="hud-controls">
@@ -33,6 +60,15 @@ export default function HUD({ completed, total, nextStationTitle }: Props) {
         <kbd>E</kbd>
         <kbd>Enter</kbd>
       </div>
+
+      <button
+        className="hud-recruiter-toggle"
+        type="button"
+        aria-pressed={recruiterMode}
+        onClick={onToggleRecruiterMode}
+      >
+        {recruiterMode ? "Game + Scan" : "Recruiter Mode"}
+      </button>
     </header>
   );
 }
