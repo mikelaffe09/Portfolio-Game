@@ -1,3 +1,7 @@
+import chapterkeepPreview from "../assets/projects/chapterkeep-preview.png";
+import portfolioGamePreview from "../assets/projects/portfolio-game-preview.png";
+import salonWebsitePreview from "../assets/projects/salon-website-preview.png";
+
 export const stationOrder = ["about", "skills", "projects", "contact"] as const;
 
 export type StationId = (typeof stationOrder)[number];
@@ -12,6 +16,9 @@ export type PortfolioProject = {
   bestFeature: string;
   impact: string;
   tech: string[];
+  previewImage: string;
+  previewAlt: string;
+  path: string;
   demoUrl?: string;
   githubUrl?: string;
 };
@@ -59,49 +66,61 @@ export const portfolioSections: PortfolioSection[] = [
         id: "chapterkeep",
         title: "ChapterKeep",
         description:
-          "A mobile reading tracker app with books, reading sessions, streaks, stats, and progress tracking.",
+          "A mobile reading tracker that turns books, reading sessions, streaks, and personal stats into a simple habit-building flow.",
         problem:
-          "Readers often lose track of what they are reading, how consistent they are, and whether they are actually building a habit.",
+          "Readers often start with motivation but lose the thread across multiple books, inconsistent sessions, and vague goals. The core product challenge was making progress feel visible without turning reading into admin work.",
         solution:
-          "ChapterKeep turns reading into a structured progress system with sessions, streaks, book tracking, and personal reading stats.",
-        role: "Frontend/mobile development, UI flow planning, feature structure, Supabase integration planning.",
+          "ChapterKeep organizes the habit around lightweight session logging, book-level progress, streak feedback, and dashboard stats. The interface prioritizes quick entry, scannable progress, and encouraging signals after every session.",
+        role: "Planned the mobile flow, structured the app screens, designed the reading-session interaction, and mapped the frontend data model for future Supabase persistence.",
         bestFeature:
-          "Reading session tracking with progress, streak motivation, and personal reading insights.",
+          "The reading session flow: a focused timer/progress interaction that gives readers an immediate sense of momentum after logging time.",
         impact:
-          "Turns reading into a measurable habit instead of a vague goal.",
+          "Turns a vague goal like 'read more' into a measurable loop of sessions, streaks, and completed books.",
         tech: ["React Native", "Expo", "TypeScript", "Supabase"],
+        previewImage: chapterkeepPreview,
+        previewAlt:
+          "ChapterKeep mobile reading tracker preview with progress, streak, and session dashboard screens.",
+        path: "/projects/chapterkeep",
       },
       {
         id: "salon-website",
         title: "Salon Website",
         description:
-          "A modern service-business website with an animated hero section, service cards, and polished visual structure.",
+          "A premium service-business website concept with a polished hero, service discovery, appointment-oriented calls to action, and a cleaner visual hierarchy.",
         problem:
-          "Many local business websites look generic, outdated, and fail to make the business feel premium.",
+          "Local service websites often bury the reason to book: the page looks generic, services blur together, and the first impression does not match the quality of the business.",
         solution:
-          "The website uses stronger layout, animation, and visual hierarchy to make the brand feel more professional and trustworthy.",
-        role: "Frontend development, visual redesign, animation improvement, layout cleanup.",
+          "The redesign uses a stronger hero composition, service cards with clearer hierarchy, smoother motion, and a more refined palette to make the business feel trustworthy before a visitor reads every detail.",
+        role: "Led the frontend implementation, tightened the visual system, improved animation timing, and reorganized page sections around booking intent.",
         bestFeature:
-          "Animated hero section designed to feel more custom and less template-generated.",
+          "A custom-feeling hero and service preview system that quickly communicates polish, specialty, and next action.",
         impact:
-          "Improves the first impression and makes the business easier to trust.",
+          "Improves perceived quality and gives visitors a clearer path from landing on the site to choosing a service.",
         tech: ["React", "Vite", "CSS", "Animation"],
+        previewImage: salonWebsitePreview,
+        previewAlt:
+          "Salon website preview shown in a laptop browser with a polished hero area and service cards.",
+        path: "/projects/salon-website",
       },
       {
         id: "portfolio-game",
         title: "Portfolio Game",
         description:
-          "An interactive portfolio where visitors explore sections through a small game-like interface.",
+          "An interactive portfolio experience where visitors explore sections through a guided mini-game while still having fast, recruiter-friendly access to the full content.",
         problem:
-          "Most portfolios are boring, static, and forgettable. They list skills instead of proving them.",
+          "Most junior portfolio sites rely on static cards and generic claims. The challenge was to make the portfolio itself demonstrate frontend execution, interaction design, and product judgment without frustrating visitors who just need the facts.",
         solution:
-          "This portfolio turns navigation into an interactive experience while still keeping recruiter-friendly content available.",
-        role: "Concept, frontend development, game interaction, UI systems, project structure.",
+          "Signal Run turns navigation into a station-based route with unlockable sections, modal case studies, mobile fallback navigation, and dedicated project pages for deeper review.",
+        role: "Owned the concept, React architecture, Kaboom scene integration, responsive UI, modal accessibility, preview asset workflow, and route handling.",
         bestFeature:
-          "Guided station progression that unlocks portfolio sections in order.",
+          "The dual-mode experience: visitors can play through the route or jump straight into the full portfolio when speed matters.",
         impact:
-          "The portfolio itself becomes a work sample, not just a container for work samples.",
+          "Makes the portfolio a live work sample while preserving the scanning speed that recruiters and collaborators need.",
         tech: ["React", "TypeScript", "Kaboom", "CSS"],
+        previewImage: portfolioGamePreview,
+        previewAlt:
+          "Signal Run portfolio game preview with a glowing route map, station nodes, and project panels.",
+        path: "/projects/portfolio-game",
       },
     ],
   },
@@ -115,3 +134,10 @@ export const portfolioSections: PortfolioSection[] = [
     body: "Add your real email, LinkedIn, GitHub, and resume link here before publishing. This should be simple, direct, and impossible to miss.",
   },
 ];
+
+export const portfolioProjects =
+  portfolioSections.find((section) => section.id === "projects")?.projects ?? [];
+
+export function getPortfolioProject(projectId: string) {
+  return portfolioProjects.find((project) => project.id === projectId) ?? null;
+}

@@ -1,73 +1,64 @@
-# React + TypeScript + Vite
+# Signal Run
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Signal Run is an interactive portfolio game built with React, TypeScript, Vite, and Kaboom. Visitors move through a guided route of portfolio stations to unlock About, Skills, Projects, and Contact content.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Game-like portfolio navigation with sequential station unlocks
+- Recruiter-friendly quick scan cards for each portfolio section
+- Project detail modal with selected work, role, impact, and tech
+- Responsive layout for desktop and mobile screens
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React
+- TypeScript
+- Vite
+- Kaboom
+- CSS
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Install dependencies:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Run the development server:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+npm run dev
 ```
+
+Build for production:
+
+```sh
+npm run build
+```
+
+Preview the production build:
+
+```sh
+npm run preview
+```
+
+## Project Structure
+
+- `src/App.tsx` renders the portfolio shell and station flow.
+- `src/components/GameCanvas.tsx` mounts the Kaboom scene.
+- `src/game/scenes/MainScene.ts` defines the interactive route.
+- `src/data/portfolioData.ts` stores portfolio sections and project content.
+- `src/styles/global.css` contains the main responsive UI styles.
+
+## Updating Project Previews
+
+Project preview images live in `src/assets/projects`.
+
+To add or replace a project preview:
+
+1. Add a 16:9 PNG or JPG to `src/assets/projects`.
+2. Import it in `src/data/portfolioData.ts`.
+3. Add `previewImage`, `previewAlt`, and `path` to the project entry.
+4. Use a route path in the format `/projects/project-id`.
+5. Run `npm run build` to confirm the image import and project page still compile.
