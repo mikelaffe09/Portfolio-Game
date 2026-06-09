@@ -18,13 +18,28 @@ export default function ProjectPage({
   onNavigateProject,
 }: Props) {
   const previewImage = getProjectPreviewImage(project);
+  const galleryImages =
+    project.galleryImages?.length
+      ? project.galleryImages
+      : previewImage
+        ? [
+            {
+              src: previewImage,
+              alt: getProjectPreviewAlt(project),
+              label: "Project Preview",
+              caption: project.shortDescription,
+            },
+          ]
+        : [];
   const proofBlocks = [
-    ["Problem", project.problem],
-    ["Solution", project.solution],
+    ["Challenge", project.problem],
+    ["Product Approach", project.solution],
     ["My Role", project.role],
-    ["Best Feature", project.bestFeature],
+    ["Standout Feature", project.bestFeature],
     ["Impact", project.impact],
   ].filter((item): item is [string, string] => Boolean(item[1]));
+  const primaryProofBlocks = proofBlocks.slice(0, 2);
+  const supportingProofBlocks = proofBlocks.slice(2);
 
   return (
     <main className="project-page">
@@ -56,7 +71,7 @@ export default function ProjectPage({
           <div className="project-actions">
             {project.demoUrl && (
               <a href={project.demoUrl} target="_blank" rel="noreferrer">
-                Live Demo
+                View Live Project
               </a>
             )}
 
@@ -68,23 +83,31 @@ export default function ProjectPage({
           </div>
         </div>
 
-        {previewImage ? (
-          <img
-            className="project-page-preview"
-            src={previewImage}
-            alt={getProjectPreviewAlt(project)}
-          />
-        ) : (
-          <div className="project-page-preview project-preview-placeholder">
-            Preview coming soon
-          </div>
-        )}
+        <ProjectMediaGallery
+          images={galleryImages}
+          fallbackTitle={project.title}
+        />
       </section>
 
-      <section className="project-page-proof" aria-label="Project details">
-        {proofBlocks.map(([title, text]) => (
-          <ProjectProofBlock key={title} title={title} text={text} />
-        ))}
+      <section className="project-page-case-study" aria-label="Project details">
+        <div className="project-page-section-title">
+          <p className="panel-label">Case Study</p>
+          <h2>How the project works</h2>
+        </div>
+
+        <div className="project-page-story-grid">
+          {primaryProofBlocks.map(([title, text]) => (
+            <ProjectProofBlock key={title} title={title} text={text} />
+          ))}
+        </div>
+
+        {supportingProofBlocks.length > 0 && (
+          <div className="project-page-proof">
+            {supportingProofBlocks.map(([title, text]) => (
+              <ProjectProofBlock key={title} title={title} text={text} />
+            ))}
+          </div>
+        )}
       </section>
 
       {(project.lessons?.length || project.nextImprovements?.length) && (
@@ -116,6 +139,10 @@ export default function ProjectPage({
       <nav className="project-page-switcher" aria-label="More projects">
         {projects.map((item) => {
           const isCurrentProject = item.id === project.id;
+          const meta = [item.status, item.category]
+            .filter(Boolean)
+            .map((value) => value?.replace("-", " "))
+            .join(" / ");
 
           return (
             <button
@@ -130,12 +157,57 @@ export default function ProjectPage({
               ) : (
                 <span className="switcher-preview-placeholder" aria-hidden="true" />
               )}
-              <span>{item.title}</span>
+              <span>
+                <strong>{item.title}</strong>
+                {meta && <small>{meta}</small>}
+              </span>
             </button>
           );
         })}
       </nav>
     </main>
+  );
+}
+
+type ProjectMediaGalleryProps = {
+  images: {
+    src: string;
+    alt: string;
+    label: string;
+    caption: string;
+  }[];
+  fallbackTitle: string;
+};
+
+function ProjectMediaGallery({
+  images,
+  fallbackTitle,
+}: ProjectMediaGalleryProps) {
+  if (images.length === 0) {
+    return (
+      <div className="project-page-media project-page-media-empty">
+        <div className="project-preview-placeholder">Preview coming soon</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="project-page-media" aria-label={`${fallbackTitle} visuals`}>
+      {images.map((image, index) => (
+        <figure
+          className={`project-media-frame ${
+            index === 0 ? "project-media-frame-primary" : ""
+          }`}
+          key={`${image.label}-${image.src}`}
+        >
+          <img src={image.src} alt={image.alt} />
+          <figcaption>
+            <span>{image.label}</span>
+            <strong>{image.caption}</strong>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
   );
 }
 

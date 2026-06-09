@@ -959,7 +959,7 @@ kbd {
 .recruiter-projects {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .recruiter-project-card {
@@ -967,6 +967,17 @@ kbd {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.035);
+}
+
+.recruiter-project-card.is-featured {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.92fr);
+  min-height: 360px;
+  border-color: rgba(248, 197, 55, 0.34);
+  background:
+    linear-gradient(135deg, rgba(248, 197, 55, 0.1), transparent 42%),
+    rgba(255, 255, 255, 0.04);
 }
 
 .recruiter-project-card > img,
@@ -981,6 +992,14 @@ kbd {
     linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
     #07111d;
   background-size: 22px 22px;
+}
+
+.recruiter-project-card.is-featured > img {
+  height: 100%;
+  min-height: 360px;
+  aspect-ratio: auto;
+  border-right: 1px solid var(--line);
+  border-bottom: 0;
 }
 
 .project-preview-placeholder {
@@ -998,9 +1017,19 @@ kbd {
   padding: 14px;
 }
 
+.recruiter-project-card.is-featured > div {
+  align-content: center;
+  padding: 20px;
+}
+
 .recruiter-project-card h4 {
   color: var(--text);
   font-size: 20px;
+}
+
+.recruiter-project-card.is-featured h4 {
+  font-size: 28px;
+  line-height: 1.08;
 }
 
 .recruiter-contact {
@@ -1194,10 +1223,10 @@ kbd {
 
 .project-page {
   --section-accent: var(--gold);
-  width: min(1180px, calc(100% - 32px));
+  width: min(1320px, calc(100% - 32px));
   min-height: 100vh;
   margin: 0 auto;
-  padding: 24px 0 52px;
+  padding: 20px 0 56px;
 }
 
 .project-page-top {
@@ -1217,80 +1246,204 @@ kbd {
 
 .project-page-hero {
   display: grid;
-  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-  gap: 28px;
-  align-items: center;
-  padding: 28px 0;
+  grid-template-columns: minmax(360px, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(24px, 4vw, 48px);
+  align-items: start;
+  padding: 32px 0;
   border-block: 1px solid rgba(148, 163, 184, 0.18);
 }
 
 .project-page-copy {
   display: grid;
-  gap: 18px;
+  gap: 16px;
   align-content: start;
+  min-width: 0;
+  position: sticky;
+  top: 18px;
+}
+
+.project-page-hero > * {
+  min-width: 0;
 }
 
 .project-page-copy h1,
 .project-page-empty h1 {
-  font-size: 58px;
+  font-size: clamp(42px, 5vw, 66px);
+  overflow-wrap: anywhere;
 }
 
 .project-page-copy .project-page-short {
   color: var(--text);
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 800;
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
-.project-page-preview {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
+.project-page-copy p,
+.project-proof-block p,
+.project-page-learning li {
+  overflow-wrap: anywhere;
+}
+
+.project-page-media {
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(210px, 0.72fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.project-page-media-empty {
+  grid-template-columns: 1fr;
+}
+
+.project-media-frame {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
   overflow: hidden;
   border: 1px solid rgba(45, 212, 191, 0.28);
   border-radius: 8px;
+  background: #020617;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+}
+
+.project-media-frame-primary {
+  min-height: 0;
+}
+
+.project-media-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
   object-fit: cover;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+}
+
+.project-media-frame-primary img {
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 16 / 10;
+  object-position: top center;
+}
+
+.project-media-frame:not(.project-media-frame-primary) img {
+  height: min(660px, 70vh);
+  min-height: 520px;
+  object-position: top center;
+}
+
+.project-media-frame figcaption {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid rgba(226, 232, 240, 0.22);
+  border-radius: 8px;
+  background: rgba(3, 7, 12, 0.82);
+  padding: 10px 11px;
+  backdrop-filter: blur(12px);
+}
+
+.project-media-frame figcaption span,
+.project-page-section-title .panel-label {
+  color: var(--section-accent, var(--gold));
+}
+
+.project-media-frame figcaption span {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.project-media-frame figcaption strong {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.project-page-case-study {
+  display: grid;
+  gap: 16px;
+  padding: 28px 0 0;
+}
+
+.project-page-section-title {
+  display: grid;
+  gap: 6px;
+}
+
+.project-page-section-title h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 34px;
+  line-height: 1.08;
+}
+
+.project-page-story-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .project-page-proof,
 .project-page-learning {
   display: grid;
-  gap: 12px;
-  margin-top: 20px;
+  gap: 14px;
 }
 
 .project-page-proof {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .project-page-learning {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 20px;
 }
 
 .project-proof-block,
 .project-page-learning article {
   display: grid;
-  gap: 8px;
+  gap: 9px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(9, 15, 25, 0.86);
-  padding: 15px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    rgba(9, 15, 25, 0.86);
+  padding: 16px;
+}
+
+.project-page-story-grid .project-proof-block {
+  min-height: 190px;
+  border-color: rgba(248, 197, 55, 0.28);
+  background:
+    linear-gradient(135deg, rgba(248, 197, 55, 0.1), transparent 48%),
+    rgba(9, 15, 25, 0.9);
+  padding: 20px;
+}
+
+.project-page-story-grid .project-proof-block p {
+  font-size: 16px;
 }
 
 .project-page-switcher {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 22px;
+  gap: 14px;
+  margin-top: 24px;
 }
 
 .project-page-switcher button {
   display: grid;
-  grid-template-columns: 96px 1fr;
-  gap: 12px;
-  align-items: center;
-  padding: 10px;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 11px;
   text-align: left;
 }
 
@@ -1302,17 +1455,30 @@ kbd {
 
 .project-page-switcher img,
 .switcher-preview-placeholder {
-  width: 96px;
+  width: 100%;
   aspect-ratio: 16 / 9;
-  border-radius: 4px;
+  border-radius: 6px;
   object-fit: cover;
   background: #101827;
 }
 
 .project-page-switcher span {
+  display: grid;
+  gap: 4px;
   color: var(--text);
-  font-size: 14px;
+}
+
+.project-page-switcher span strong {
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.project-page-switcher span small {
+  color: var(--muted);
+  font-size: 12px;
   font-weight: 900;
+  text-transform: uppercase;
 }
 
 .project-page-empty {
@@ -1451,19 +1617,42 @@ kbd {
   .recruiter-hero,
   .recruiter-contact,
   .recruiter-projects,
-  .project-page-hero {
+  .project-page-hero,
+  .project-page-media {
     grid-template-columns: 1fr;
   }
 
-  .project-page-proof {
+  .project-page-copy {
+    position: static;
+  }
+
+  .project-page-proof,
+  .project-page-story-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-media-frame-primary {
+    min-height: 0;
+  }
+
+  .recruiter-project-card.is-featured {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .recruiter-project-card.is-featured > img {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
   }
 }
 
 @media (max-width: 760px) {
   .app-shell,
   .project-page {
-    width: min(calc(100% - 20px), 1180px);
+    width: calc(100% - 20px);
+    max-width: 1180px;
     padding-top: 10px;
   }
 
@@ -1478,6 +1667,8 @@ kbd {
   .recruiter-projects,
   .modal-highlight-grid,
   .project-page-proof,
+  .project-page-story-grid,
+  .project-page-media,
   .project-page-learning,
   .project-page-switcher {
     grid-template-columns: 1fr;
@@ -1592,15 +1783,35 @@ kbd {
 
   .project-page-copy h1,
   .project-page-empty h1 {
-    font-size: 40px;
+    font-size: 34px;
   }
 
-  .project-page-preview {
-    order: -1;
+  .project-page-copy {
+    max-width: 34ch;
   }
 
-  .project-page-switcher button {
-    grid-template-columns: 108px 1fr;
+  .project-page-copy .project-page-short {
+    font-size: 17px;
+  }
+
+  .project-media-frame img {
+    min-height: 250px;
+  }
+
+  .project-media-frame figcaption {
+    position: static;
+    border-width: 1px 0 0;
+    border-radius: 0;
+    background: rgba(5, 10, 18, 0.96);
+  }
+
+  .project-page-section-title h2 {
+    font-size: 28px;
+  }
+
+  .project-page-story-grid .project-proof-block {
+    min-height: 0;
+    padding: 16px;
   }
 }
 

@@ -95,10 +95,11 @@ export default function RecruiterMode({
         </div>
 
         <div className="recruiter-projects">
-          {portfolioProjects.map((project) => (
+          {portfolioProjects.map((project, index) => (
             <RecruiterProjectCard
               key={project.id}
               project={project}
+              featured={index === 0}
               onOpenProjectPage={onOpenProjectPage}
             />
           ))}
@@ -127,11 +128,13 @@ export default function RecruiterMode({
 }
 
 type RecruiterProjectCardProps = {
+  featured: boolean;
   project: PortfolioProject;
   onOpenProjectPage: (projectId: string) => void;
 };
 
 function RecruiterProjectCard({
+  featured,
   project,
   onOpenProjectPage,
 }: RecruiterProjectCardProps) {
@@ -140,7 +143,9 @@ function RecruiterProjectCard({
   const category = formatProjectMeta(project.category);
 
   return (
-    <article className="recruiter-project-card">
+    <article
+      className={`recruiter-project-card ${featured ? "is-featured" : ""}`}
+    >
       {previewImage ? (
         <img src={previewImage} alt={getProjectPreviewAlt(project)} />
       ) : (

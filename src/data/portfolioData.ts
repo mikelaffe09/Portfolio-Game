@@ -1,4 +1,5 @@
-import chapterkeepPreview from "../assets/projects/chapterkeep-preview.png";
+import chapterkeepLandingPreview from "../assets/projects/chapterkeep-landing-preview.png";
+import chapterkeepLibraryPreview from "../assets/projects/chapterkeep-library-preview.jpg";
 import portfolioGamePreview from "../assets/projects/portfolio-game-preview.png";
 import salonWebsitePreview from "../assets/projects/salon-website-preview.png";
 
@@ -56,6 +57,12 @@ export type PortfolioProject = {
   screenshotUrl?: string;
   previewImage?: string;
   previewAlt?: string;
+  galleryImages?: {
+    src: string;
+    alt: string;
+    label: string;
+    caption: string;
+  }[];
   path: string;
   demoUrl?: string;
   githubUrl?: string;
@@ -208,33 +215,50 @@ export const portfolioSections: PortfolioSection[] = [
         id: "chapterkeep",
         title: "ChapterKeep",
         shortDescription:
-          "A mobile reading habit tracker focused on quick session logging and visible progress.",
+          "A live reading-life web app for tracking libraries, goals, streaks, series, and reader discovery.",
         description:
-          "A mobile reading tracker that turns books, reading sessions, streaks, and personal stats into a simple habit-building flow.",
+          "ChapterKeep is a cozy home for every book someone has read, is reading, or wants to read. The product combines a polished public landing page with an in-app library experience built around book status, reading progress, personal goals, analytics, challenges, collections, series, calendar views, and community discovery.",
         problem:
-          "Readers often start with motivation but lose the thread across multiple books, inconsistent sessions, and vague goals. The core product challenge was making progress feel visible without turning reading into admin work.",
+          "Readers often split their reading life across notes apps, wish lists, screenshots, spreadsheets, and social platforms. The challenge was to make tracking feel warm and motivating while still supporting enough structure for serious readers with active books, TBR lists, series, goals, and history.",
         solution:
-          "ChapterKeep organizes the habit around lightweight session logging, book-level progress, streak feedback, and dashboard stats. The interface prioritizes quick entry, scannable progress, and encouraging signals after every session.",
-        role: "Planned the mobile flow, structured the app screens, designed the reading-session interaction, and mapped the frontend data model for future Supabase persistence.",
+          "The experience anchors on a visual library with cover-driven cards, status filters, search, progress badges, and quick book entry. The broader product story expands into analytics, calendar tracking, challenges, collections, series organization, and community touchpoints so the app feels like a full reading companion instead of a simple log.",
+        role: "Designed and built the product-facing web experience, shaped the library UI, organized the reading-management flows, and connected the app concept to a Supabase-backed full-stack foundation.",
         bestFeature:
-          "The reading session flow: a focused timer/progress interaction that gives readers an immediate sense of momentum after logging time.",
+          "The library dashboard: it gives readers an immediate overview of what they own, what they are reading, what is next, and how far along each book is.",
         impact:
-          "Turns a vague goal like 'read more' into a measurable loop of sessions, streaks, and completed books.",
-        tech: ["React Native", "Expo", "TypeScript", "Supabase"],
-        status: "case-study",
-        category: "mobile",
-        screenshotUrl: chapterkeepPreview,
-        previewImage: chapterkeepPreview,
+          "Positions the product as a beta-ready Goodreads alternative with a free entry path, a strong reader-first brand, and visible product depth beyond a single landing page.",
+        tech: ["React", "TypeScript", "Supabase", "Tailwind CSS"],
+        status: "live",
+        category: "full-stack",
+        screenshotUrl: chapterkeepLandingPreview,
+        previewImage: chapterkeepLandingPreview,
         previewAlt:
-          "ChapterKeep mobile reading tracker preview with progress, streak, and session dashboard screens.",
+          "ChapterKeep public landing page with a dark blue hero and orange reading-focused call to action.",
+        galleryImages: [
+          {
+            src: chapterkeepLandingPreview,
+            alt: "ChapterKeep landing page hero promoting reading tracking and public beta signup.",
+            label: "Public Landing",
+            caption:
+              "A focused marketing surface that explains the value proposition, free entry point, and reader community signal.",
+          },
+          {
+            src: chapterkeepLibraryPreview,
+            alt: "ChapterKeep library dashboard showing search, book filters, cover cards, progress, and ratings.",
+            label: "Library Dashboard",
+            caption:
+              "The core app surface: searchable shelves, status filters, reading progress, ratings, and cover-led browsing.",
+          },
+        ],
         path: "/projects/chapterkeep",
+        demoUrl: "https://chapterkeepp.cresvia.co/landing",
         lessons: [
-          "Habit loops need quick feedback more than dense tracking controls.",
-          "Mobile flows benefit from short, focused data-entry moments.",
+          "Reader products need warmth and structure at the same time: the brand invites people in, while filters, statuses, and progress make the habit manageable.",
+          "A portfolio case study is stronger when the public story and the actual app surface appear together.",
         ],
         nextImprovements: [
-          "Add persistent sync and richer reading-goal analytics.",
-          "Prototype social or recommendation features after the core loop is proven.",
+          "Keep polishing the authenticated library flow and make the strongest beta metrics more visible in the product story.",
+          "Add deeper case-study evidence for analytics, calendar tracking, challenges, and community once those screens are ready to show.",
         ],
       },
       {
