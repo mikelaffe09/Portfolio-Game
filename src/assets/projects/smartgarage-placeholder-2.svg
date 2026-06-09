@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">SmartGarage placeholder 2</title>
+  <desc id="desc">Replace with a SmartGarage AI mechanic or admin screenshot.</desc>
+  <rect width="1280" height="720" fill="#07120d"/>
+  <rect x="72" y="72" width="1136" height="576" rx="28" fill="#0f2118" stroke="#2dd4bf" stroke-width="4"/>
+  <circle cx="194" cy="176" r="54" fill="#ff8a00"/>
+  <rect x="292" y="126" width="784" height="52" rx="12" fill="#163525"/>
+  <rect x="292" y="214" width="496" height="70" rx="18" fill="#173b2b"/>
+  <rect x="420" y="320" width="656" height="70" rx="18" fill="#123322"/>
+  <rect x="292" y="426" width="548" height="70" rx="18" fill="#173b2b"/>
+  <text x="96" y="610" fill="#80ffe5" font-family="Arial, sans-serif" font-size="34" font-weight="700">smartgarage-placeholder-2.svg</text>
+  <text x="292" y="166" fill="#ffffff" font-family="Arial, sans-serif" font-size="40" font-weight="700">AI Mechanic / Admin Screenshot</text>
+  <text x="292" y="564" fill="#b8d7c6" font-family="Arial, sans-serif" font-size="28">Replace with RAG chat, vector-search mechanic guidance, or admin dashboard workflow.</text>
+</svg>

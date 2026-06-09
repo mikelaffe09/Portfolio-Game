@@ -39,10 +39,10 @@ export default function MissionTracker({
         <img className="mission-art" src={heroImage} alt="" />
         <div>
           <p className="panel-label">Quest Console</p>
-          <h1 id="mission-title">Neon Portfolio Quest</h1>
+          <h1 id="mission-title">Mike Allaffi Portfolio</h1>
           <p>
-            Explore the hub, activate each zone, or switch to a traditional
-            portfolio scan when speed matters.
+            Explore Mike's profile, skills, experience, projects, and contact
+            details through the hub or switch to a traditional scan.
           </p>
         </div>
       </div>

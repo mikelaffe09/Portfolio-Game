@@ -25,7 +25,7 @@ export default function HUD({
     <header className="hud">
       <div className="hud-title">
         <span className="hud-kicker">Interactive Portfolio</span>
-        <strong>Neon Portfolio Quest</strong>
+        <strong>Mike Allaffi Portfolio</strong>
         <small>{allComplete ? "Mission complete" : "Hub online"}</small>
       </div>
 

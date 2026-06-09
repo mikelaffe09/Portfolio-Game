@@ -25,10 +25,11 @@ export default function SpiralGateway({
 
       <div className="spiral-gateway-content">
         <p className="panel-label">Launch Sequence</p>
-        <h2 id="spiral-gateway-title">Enter the Neon Portfolio Quest</h2>
+        <h2 id="spiral-gateway-title">Mike Allaffi Developer Portfolio</h2>
         <p>
-          A quick animated entry point before the hub: jump into the playable
-          portfolio, or open the recruiter scan for a faster traditional review.
+          Explore Mike's projects, skills, experience, and contact details
+          through the playable hub, or open the recruiter scan for a faster
+          traditional review.
         </p>
 
         <dl className="spiral-gateway-stats" aria-label="Portfolio run status">

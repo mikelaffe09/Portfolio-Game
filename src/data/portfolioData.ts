@@ -1,7 +1,15 @@
+import calcVaultPlaceholder1 from "../assets/projects/calcvault-placeholder-1.jpg";
+import calcVaultPlaceholder2 from "../assets/projects/calcvault-placeholder-2.jpg";
 import chapterkeepLandingPreview from "../assets/projects/chapterkeep-landing-preview.png";
 import chapterkeepLibraryPreview from "../assets/projects/chapterkeep-library-preview.jpg";
-import portfolioGamePreview from "../assets/projects/portfolio-game-preview.png";
-import salonWebsitePreview from "../assets/projects/salon-website-preview.png";
+import galaFlowersPlaceholder1 from "../assets/projects/gala-flowers-placeholder-1.jpg";
+import galaFlowersPlaceholder2 from "../assets/projects/gala-flowers-placeholder-2.jpg";
+import mrFixPlaceholder1 from "../assets/projects/mr-fix-placeholder-1.jpg";
+import mrFixPlaceholder2 from "../assets/projects/mr-fix-placeholder-2.jpg";
+import selectedWebWorkPlaceholder1 from "../assets/projects/selected-web-work-placeholder-1.jpg";
+import selectedWebWorkPlaceholder2 from "../assets/projects/selected-web-work-placeholder-2.jpg";
+import smartGaragePlaceholder1 from "../assets/projects/smartgarage-placeholder-1.jpg";
+import smartGaragePlaceholder2 from "../assets/projects/smartgarage-placeholder-2.svg";
 
 export const stationOrder = ["about", "skills", "projects", "contact"] as const;
 
@@ -29,6 +37,26 @@ export type ContactMethod = {
   placeholder?: boolean;
 };
 
+export type ExperienceItem = {
+  company: string;
+  role: string;
+  location: string;
+  dates: string;
+  highlights: string[];
+};
+
+export type EducationItem = {
+  institution: string;
+  credential: string;
+  dates: string;
+  details: string[];
+};
+
+export type LanguageItem = {
+  language: string;
+  level: string;
+};
+
 export type PortfolioProfile = {
   name: string;
   role: string;
@@ -39,6 +67,11 @@ export type PortfolioProfile = {
   strengths: string[];
   currentFocus: string[];
   contactMethods: ContactMethod[];
+};
+
+export type ProjectLink = {
+  label: string;
+  href: string;
 };
 
 export type PortfolioProject = {
@@ -66,6 +99,7 @@ export type PortfolioProject = {
   path: string;
   demoUrl?: string;
   githubUrl?: string;
+  links?: ProjectLink[];
   lessons?: string[];
   nextImprovements?: string[];
 };
@@ -85,112 +119,189 @@ export type PortfolioSection = {
 };
 
 export const portfolioProfile: PortfolioProfile = {
-  // TODO: Replace with your real name before publishing.
-  name: "Your Name",
-  role: "Frontend Developer",
-  // TODO: Replace with your city/region or remove location if preferred.
-  location: "Your City, State",
-  availability: "Open to frontend roles, freelance builds, and product-focused web projects.",
+  name: "Mike Allaffi",
+  role: "Junior Software Developer | React Native & Web Developer",
+  location: "Naqqache, Lebanon",
+  availability:
+    "Open to junior software developer, frontend, React Native, and backend/API roles.",
   summary:
-    "Frontend developer focused on building polished, responsive, and interactive web experiences with React, TypeScript, and modern CSS.",
+    "Computer Science student focused on frontend, mobile, practical full-stack development, and AI/RAG workflows.",
   professionalSummary:
-    "I care about the full path from idea to usable interface: clear information architecture, responsive implementation, accessible interactions, and enough product judgment to keep the experience useful for real visitors. This portfolio uses a game layer to demonstrate interaction craft while preserving a fast traditional review path for recruiters and clients.",
+    "I build deployed software that turns a product idea into a usable flow: responsive web interfaces, mobile screens, API-backed dashboards, and AI-assisted experiences. My work combines React, React Native, TypeScript, ASP.NET Core, Supabase, Python, and OpenAI tooling with the operational discipline I developed managing real maintenance workflows, client follow-up, scheduling, and handoffs.",
   strengths: [
-    "Translates product goals into clear, usable frontend flows.",
-    "Builds responsive React interfaces with TypeScript and maintainable CSS.",
-    "Adds motion and interactivity where it improves comprehension, feedback, or delight.",
+    "Builds polished React and React Native interfaces with responsive UI and clear user flows.",
+    "Connects frontend work to real backend, database, authentication, and deployment concerns.",
+    "Brings operations experience from project coordination into software delivery: task ownership, documentation, prioritization, and follow-through.",
   ],
   currentFocus: [
-    "Frontend roles using React, TypeScript, and modern UI systems.",
-    "Interactive portfolio, dashboard, and marketing-site experiences.",
-    "Accessible, recruiter-friendly product presentation.",
+    "Junior software developer roles spanning frontend, mobile, backend/API, and practical full-stack delivery.",
+    "React, React Native, TypeScript, Supabase, ASP.NET Core, FastAPI, and deployment-focused product builds.",
+    "AI/RAG workflows, vehicle and service-business tools, dashboards, and user-facing automation.",
   ],
   contactMethods: [
     {
-      id: "email",
-      label: "Email",
-      // TODO: Replace with your real email address before publishing.
-      value: "TODO: your.email@example.com",
-      placeholder: true,
+      id: "phone",
+      label: "Phone",
+      value: "+961 78 919 757",
+      href: "tel:+96178919757",
     },
     {
-      id: "linkedin",
-      label: "LinkedIn",
-      // TODO: Add your real LinkedIn profile URL before publishing.
-      value: "TODO: LinkedIn profile",
-      placeholder: true,
+      id: "email-primary",
+      label: "Email",
+      value: "mikelaffe@gmail.com",
+      href: "mailto:mikelaffe@gmail.com",
+    },
+    {
+      id: "email-secondary",
+      label: "Alternate Email",
+      value: "mikeallaffi@outlook.com",
+      href: "mailto:mikeallaffi@outlook.com",
     },
     {
       id: "github",
       label: "GitHub",
-      // TODO: Add your real GitHub profile URL before publishing.
-      value: "TODO: GitHub profile",
-      placeholder: true,
+      value: "github.com/mikelaffe09",
+      href: "https://github.com/mikelaffe09",
+    },
+    {
+      id: "portfolio",
+      label: "Live Project",
+      value: "smartgarage.website",
+      href: "https://www.smartgarage.website/",
     },
     {
       id: "resume",
       label: "Resume",
-      // TODO: Add a real resume PDF or hosted resume URL before publishing.
-      value: "TODO: Resume link",
-      placeholder: true,
+      value: "Mike_Allaffi_CV.pdf",
+      href: "/Mike_Allaffi_CV.pdf",
     },
   ],
 };
 
-export const skillGroups: SkillGroup[] = [
+export const experienceItems: ExperienceItem[] = [
   {
-    title: "Frontend Engineering",
-    description: "Core tools for building responsive, typed, maintainable UI.",
-    skills: ["React", "TypeScript", "JavaScript", "HTML", "CSS", "Vite"],
-  },
-  {
-    title: "Interface Craft",
-    description: "The details that make product screens feel clear and polished.",
-    skills: [
-      "Responsive design",
-      "Accessibility",
-      "Animation timing",
-      "Design systems",
-      "Stateful UI",
+    company: "Unity Management",
+    role: "Project Manager",
+    location: "Remote",
+    dates: "Dec 2023 - Present",
+    highlights: [
+      "Manage facility-maintenance workflows across client onboarding, retention, vendor hiring, technician dispatching, scheduling, and job follow-up.",
+      "Coordinate around 80 work orders per month while keeping client requests and technician updates visible through ClickUp.",
+      "Apply delivery habits that translate directly to software work: clean handoff, task ownership, documentation, prioritization, and follow-through.",
     ],
   },
   {
-    title: "Product Delivery",
-    description: "Workflow and implementation habits for shipping practical work.",
-    skills: ["Git", "API integration", "Frontend architecture", "Testing mindset"],
+    company: "Facilitate",
+    role: "Project Coordinator",
+    location: "On-site",
+    dates: "Sep 2022 - Aug 2023",
+    highlights: [
+      "Coordinated maintenance work orders through a custom CRM and ClickUp, including dispatch, data entry, scheduling, technician follow-up, and client communication.",
+      "Handled around 55 work orders per month while developing strong communication, problem-solving, and remote task-tracking skills.",
+    ],
   },
   {
-    title: "Interactive Experiences",
-    description: "Lightweight game and canvas work for memorable web experiences.",
-    skills: ["Kaboom", "Canvas UI", "Microinteractions", "Game feel"],
+    company: "Gilgamesh Restaurant",
+    role: "Waiter & Cashier",
+    location: "Lebanon",
+    dates: "Jun 2016 - Sep 2019",
+    highlights: [
+      "Handled customer service, cash transactions, and daily restaurant operations in a fast-paced environment.",
+    ],
+  },
+];
+
+export const educationItems: EducationItem[] = [
+  {
+    institution: "Notre Dame University (NDU)",
+    credential: "Bachelor in Computer Science",
+    dates: "2023 - Expected 2026",
+    details: [
+      "Relevant coursework: Data Structures, Database Systems, Software Engineering, Artificial Intelligence, Operating Systems, and OOD.",
+    ],
+  },
+  {
+    institution: "Saint Joseph University of Beirut (USJ)",
+    credential: "Electrical Engineering Coursework",
+    dates: "2019 - 2022",
+    details: [],
+  },
+  {
+    institution: "Saint Rita School",
+    credential: "General Science",
+    dates: "2019",
+    details: [],
+  },
+];
+
+export const courseItems = [
+  "Web Development Bootcamp - Angela Yu (Udemy)",
+  "Self-directed React, JavaScript, Python, ML, and deep learning study",
+];
+
+export const languageItems: LanguageItem[] = [
+  { language: "Arabic", level: "Native" },
+  { language: "English", level: "Fluent" },
+  { language: "French", level: "Professional" },
+  { language: "Spanish", level: "Basic" },
+];
+
+export const skillGroups: SkillGroup[] = [
+  {
+    title: "Programming",
+    description: "Core languages used across web, mobile, backend, and data work.",
+    skills: ["TypeScript", "JavaScript", "Python", "C#", "C++", "SQL", "HTML/CSS"],
+  },
+  {
+    title: "Frontend / Mobile",
+    description: "Tools for responsive web apps and mobile interfaces.",
+    skills: ["React", "React Native", "Expo", "Tailwind CSS", "Vite", "Responsive UI"],
+  },
+  {
+    title: "Backend / API",
+    description: "API and integration work for practical product features.",
+    skills: ["ASP.NET Core", "FastAPI", "REST APIs", "Swagger", "API Integration"],
+  },
+  {
+    title: "Database / Auth",
+    description: "Data foundations used in deployed app workflows.",
+    skills: ["Supabase", "MySQL", "Authentication Flows", "Data Modeling"],
+  },
+  {
+    title: "AI / Data",
+    description: "AI, RAG, and analysis tools used in project work.",
+    skills: ["RAG", "Embeddings", "Pinecone", "OpenAI API", "Pandas", "NumPy", "Scikit-learn"],
+  },
+  {
+    title: "Tools / Deployment",
+    description: "Daily delivery, deployment, and coordination tooling.",
+    skills: ["GitHub", "VS Code", "Visual Studio", "Netlify", "Railway", "ClickUp"],
   },
 ];
 
 export const portfolioSections: PortfolioSection[] = [
   {
     id: "about",
-    title: "About Me",
-    subtitle: "Frontend developer",
+    title: "About Mike",
+    subtitle: "Developer profile",
     zoneTitle: "Origin Terminal",
-    mission: "Start the route and learn how I think about product-minded UI.",
-    summary: "Human-centered interfaces with a playful technical edge.",
+    mission: "Start the route and learn how Mike thinks about product-minded software.",
+    summary: "Frontend, mobile, full-stack, and AI/RAG work grounded in real operations.",
     accent: "#ff6b6b",
     sceneColor: [255, 107, 107],
     body: portfolioProfile.professionalSummary,
-    highlights: [
-      ...portfolioProfile.strengths,
-    ],
+    highlights: [...portfolioProfile.strengths],
   },
   {
     id: "skills",
     title: "Skills",
     subtitle: "Technical toolkit",
     zoneTitle: "Skill Reactor",
-    mission: "Scan the core tools I use to ship polished frontend work.",
-    summary: "The tools behind the build.",
+    mission: "Scan the tools Mike uses to ship frontend, mobile, backend, and AI-assisted products.",
+    summary: "A practical stack for deployed web, mobile, API, and data work.",
     accent: "#2dd4bf",
     sceneColor: [45, 212, 191],
-    body: "A practical frontend toolkit organized around engineering fundamentals, interface quality, delivery habits, and interactive web experiences.",
+    body: "A practical developer toolkit organized around programming, frontend/mobile delivery, backend APIs, database/auth flows, AI/data work, and deployment habits.",
     highlights: [
       ...skillGroups.map((group) => `${group.title}: ${group.skills.join(", ")}.`),
     ],
@@ -200,131 +311,323 @@ export const portfolioSections: PortfolioSection[] = [
     title: "Projects",
     subtitle: "Selected work",
     zoneTitle: "Project Gate",
-    mission: "Enter the showcase and review selected work with context.",
-    summary: "A few builds with product shape and personality.",
+    mission: "Enter the showcase and review CV projects plus recent live web and mobile work.",
+    summary: "Senior project, deployed apps, client sites, and mobile security.",
     accent: "#f8c537",
     sceneColor: [248, 197, 55],
-    body: "Selected projects that show product thinking, frontend execution, interaction design, and the ability to turn an idea into a working product.",
+    body: "Selected projects from Mike's CV and recent work: SmartGarage, ChapterKeep, business websites, service-business sites, and a mobile encrypted storage app.",
     highlights: [
-      "Case-study style project details for fast review.",
-      "Screenshots, impact statements, tech tags, and role summaries.",
-      "A mix of mobile, service-business, and interactive portfolio work.",
+      "CV-backed project details with role, stack, impact, and live links where available.",
+      "Project galleries now use the added screenshots where available.",
+      "ChapterKeep keeps its current images while the text is tightened around the live product story.",
     ],
     projects: [
+      {
+        id: "smartgarage",
+        title: "SmartGarage",
+        shortDescription:
+          "AI vehicle management system for tracking cars, maintenance, expenses, reminders, and mechanic guidance.",
+        description:
+          "SmartGarage is Mike's senior project: a vehicle manager and AI mechanic experience with mobile/web interfaces, vehicle profiles, reminders, expenses, maintenance recommendations, authentication, and admin workflows.",
+        problem:
+          "Drivers often track vehicle records, maintenance history, expenses, and troubleshooting notes across disconnected apps or paper records. The project needed one place for personal vehicle management plus AI-assisted support.",
+        solution:
+          "The app organizes each vehicle into dashboards for profile details, maintenance reminders, service history, expenses, and AI mechanic chat. Backend APIs, deployed services, and RAG workflows support the user-facing experience.",
+        role: "Worked in a group of two with ownership across frontend mobile/web screens, backend API work, admin dashboard flows, and AI/RAG integration.",
+        bestFeature:
+          "The AI mechanic assistant combines document embeddings, vector search, and OpenAI responses to guide vehicle troubleshooting inside the same product where drivers manage their cars.",
+        impact:
+          "A complete senior-project product showing full-stack, mobile, dashboard, deployment, and AI workflow capability.",
+        tech: [
+          "React",
+          "React Native",
+          "TypeScript",
+          "ASP.NET Core",
+          "Supabase",
+          "OpenAI API",
+          "RAG",
+          "Pinecone",
+          "Railway",
+          "Netlify",
+        ],
+        status: "live",
+        category: "full-stack",
+        screenshotUrl: smartGaragePlaceholder1,
+        previewImage: smartGaragePlaceholder1,
+        previewAlt:
+          "SmartGarage vehicle management screenshot with dashboard-style interface.",
+        galleryImages: [
+          {
+            src: smartGaragePlaceholder1,
+            alt: "SmartGarage vehicle dashboard screenshot.",
+            label: "Vehicle Dashboard",
+            caption:
+              "Vehicle management interface for profiles, reminders, expenses, and service history.",
+          },
+          {
+            src: smartGaragePlaceholder2,
+            alt: "SmartGarage placeholder for AI mechanic assistant screenshot.",
+            label: "AI Mechanic Placeholder",
+            caption:
+              "Temporary second visual until the AI mechanic or admin dashboard screenshot is added.",
+          },
+        ],
+        path: "/projects/smartgarage",
+        demoUrl: "https://www.smartgarage.website/",
+        lessons: [
+          "Vehicle tools need fast access to routine records and enough structure for long-term service history.",
+          "AI features are stronger when they live inside the product workflow instead of as a detached chatbot.",
+        ],
+        nextImprovements: [
+          "Add the second SmartGarage screenshot for the AI chat or admin dashboard.",
+          "Surface stronger product metrics and architecture notes once the senior-project submission is finalized.",
+        ],
+      },
       {
         id: "chapterkeep",
         title: "ChapterKeep",
         shortDescription:
-          "A live reading-life web app for tracking libraries, goals, streaks, series, and reader discovery.",
+          "A deployed reading-life web app for book tracking, goals, streaks, collections, and reader discovery.",
         description:
-          "ChapterKeep is a cozy home for every book someone has read, is reading, or wants to read. The product combines a polished public landing page with an in-app library experience built around book status, reading progress, personal goals, analytics, challenges, collections, series, calendar views, and community discovery.",
+          "ChapterKeep gives readers one polished place to log every book they have read, are reading, or want to read. The live product story focuses on book tracking, goals, streaks, reading challenges, analytics, calendar views, collections, series tracking, and community discovery.",
         problem:
-          "Readers often split their reading life across notes apps, wish lists, screenshots, spreadsheets, and social platforms. The challenge was to make tracking feel warm and motivating while still supporting enough structure for serious readers with active books, TBR lists, series, goals, and history.",
+          "Readers often split their reading life across wish lists, screenshots, notes, spreadsheets, and social platforms. The challenge was to make tracking feel organized without making the product feel cold.",
         solution:
-          "The experience anchors on a visual library with cover-driven cards, status filters, search, progress badges, and quick book entry. The broader product story expands into analytics, calendar tracking, challenges, collections, series organization, and community touchpoints so the app feels like a full reading companion instead of a simple log.",
-        role: "Designed and built the product-facing web experience, shaped the library UI, organized the reading-management flows, and connected the app concept to a Supabase-backed full-stack foundation.",
+          "The product pairs a clear landing page with a cover-led library dashboard, searchable shelves, reading statuses, progress views, goals, analytics, challenges, and community-oriented discovery.",
+        role: "Built and shaped the responsive product presentation and reading-management UI around clean user flows, dashboard-style insights, and deployed web polish.",
         bestFeature:
-          "The library dashboard: it gives readers an immediate overview of what they own, what they are reading, what is next, and how far along each book is.",
+          "The library dashboard gives readers an immediate overview of their books, statuses, progress, ratings, and search/filter options.",
         impact:
-          "Positions the product as a beta-ready Goodreads alternative with a free entry path, a strong reader-first brand, and visible product depth beyond a single landing page.",
-        tech: ["React", "TypeScript", "Supabase", "Tailwind CSS"],
+          "Positions ChapterKeep as a polished Goodreads alternative with a free entry point and a reader-first product identity.",
+        tech: ["React", "TypeScript", "Supabase", "Tailwind CSS", "Responsive UI"],
         status: "live",
         category: "full-stack",
         screenshotUrl: chapterkeepLandingPreview,
         previewImage: chapterkeepLandingPreview,
         previewAlt:
-          "ChapterKeep public landing page with a dark blue hero and orange reading-focused call to action.",
+          "ChapterKeep public landing page with a reading-focused call to action.",
         galleryImages: [
           {
             src: chapterkeepLandingPreview,
-            alt: "ChapterKeep landing page hero promoting reading tracking and public beta signup.",
+            alt: "ChapterKeep landing page hero promoting reading tracking and beta signup.",
             label: "Public Landing",
             caption:
-              "A focused marketing surface that explains the value proposition, free entry point, and reader community signal.",
+              "A clear marketing surface for the book tracker, free plan, goals, challenges, and community value.",
           },
           {
             src: chapterkeepLibraryPreview,
             alt: "ChapterKeep library dashboard showing search, book filters, cover cards, progress, and ratings.",
             label: "Library Dashboard",
             caption:
-              "The core app surface: searchable shelves, status filters, reading progress, ratings, and cover-led browsing.",
+              "The core app surface for searchable shelves, reading statuses, progress, ratings, and cover-led browsing.",
           },
         ],
         path: "/projects/chapterkeep",
-        demoUrl: "https://chapterkeepp.cresvia.co/landing",
+        demoUrl: "https://chapterkeepp.cresvia.co/",
         lessons: [
-          "Reader products need warmth and structure at the same time: the brand invites people in, while filters, statuses, and progress make the habit manageable.",
-          "A portfolio case study is stronger when the public story and the actual app surface appear together.",
+          "Reader products need warmth and structure at the same time.",
+          "A stronger case study shows both the landing-page promise and the actual app surface.",
         ],
         nextImprovements: [
-          "Keep polishing the authenticated library flow and make the strongest beta metrics more visible in the product story.",
-          "Add deeper case-study evidence for analytics, calendar tracking, challenges, and community once those screens are ready to show.",
+          "Add more live app screenshots for analytics, calendar tracking, challenges, and community once those screens are ready to publish.",
         ],
       },
       {
-        id: "salon-website",
-        title: "Salon Website",
+        id: "gala-flowers",
+        title: "Gala Flowers",
         shortDescription:
-          "A premium service-business website concept designed around trust, polish, and booking intent.",
+          "Luxury floral website for custom bouquets, weddings, events, indoor plants, and seasonal arrangements.",
         description:
-          "A premium service-business website concept with a polished hero, service discovery, appointment-oriented calls to action, and a cleaner visual hierarchy.",
+          "Gala Flowers is a live luxury floral website for a Naqqache, Lebanon floral brand. The site presents custom bouquets, weddings and events, indoor plants, Christmas and seasonal work, a portfolio gallery, and a WhatsApp-first quote flow.",
         problem:
-          "Local service websites often bury the reason to book: the page looks generic, services blur together, and the first impression does not match the quality of the business.",
+          "A premium floral business needs visitors to understand the service range quickly while the visuals communicate trust, taste, and event readiness.",
         solution:
-          "The redesign uses a stronger hero composition, service cards with clearer hierarchy, smoother motion, and a more refined palette to make the business feel trustworthy before a visitor reads every detail.",
-        role: "Led the frontend implementation, tightened the visual system, improved animation timing, and reorganized page sections around booking intent.",
+          "The site uses an image-led hero, clear service categories, portfolio filtering, testimonial-style trust content, and direct WhatsApp actions for quote requests.",
+        role: "Built the responsive frontend presentation, structured the service and portfolio sections, and organized calls to action around quote intent.",
         bestFeature:
-          "A custom-feeling hero and service preview system that quickly communicates polish, specialty, and next action.",
+          "The portfolio and service sections let visitors scan bouquets, weddings, events, indoor plants, and seasonal offerings without losing the luxury brand feel.",
         impact:
-          "Improves perceived quality and gives visitors a clearer path from landing on the site to choosing a service.",
-        tech: ["React", "Vite", "CSS", "Animation"],
-        status: "case-study",
+          "Turns Gala Flowers into a polished online storefront with a clear path from inspiration to WhatsApp inquiry.",
+        tech: ["React", "Vite", "Tailwind CSS", "Responsive UI", "SEO"],
+        status: "live",
         category: "web",
-        screenshotUrl: salonWebsitePreview,
-        previewImage: salonWebsitePreview,
-        previewAlt:
-          "Salon website preview shown in a laptop browser with a polished hero area and service cards.",
-        path: "/projects/salon-website",
+        screenshotUrl: galaFlowersPlaceholder1,
+        previewImage: galaFlowersPlaceholder1,
+        previewAlt: "Gala Flowers luxury floral website screenshot.",
+        galleryImages: [
+          {
+            src: galaFlowersPlaceholder1,
+            alt: "Gala Flowers homepage screenshot.",
+            label: "Homepage",
+            caption:
+              "Luxury floral hero and WhatsApp quote call to action for a Naqqache floral brand.",
+          },
+          {
+            src: galaFlowersPlaceholder2,
+            alt: "Gala Flowers services or portfolio screenshot.",
+            label: "Services / Portfolio",
+            caption:
+              "Service and portfolio presentation for bouquets, weddings, events, indoor plants, and seasonal work.",
+          },
+        ],
+        path: "/projects/gala-flowers",
+        demoUrl: "https://galaflowers.cresvia.co/",
         lessons: [
-          "Service websites need trust, clarity, and booking intent above novelty.",
-          "Small motion details can make a simple marketing site feel more premium.",
+          "Visual service businesses need product-quality imagery, fast category scanning, and direct inquiry actions.",
+          "A focused WhatsApp flow can be more useful than a heavy booking system for a local floral brand.",
         ],
         nextImprovements: [
-          "Add a booking flow prototype and testimonials section.",
-          "Refine service comparison content for faster decision-making.",
+          "Add performance notes around image optimization once final assets are selected.",
         ],
       },
       {
-        id: "portfolio-game",
-        title: "Portfolio Game",
+        id: "mr-fix",
+        title: "Mr Fix",
         shortDescription:
-          "An interactive portfolio hub with a playable game route and a fast recruiter review mode.",
+          "Handyman service website for Portland and Vancouver with quote flow, service pages, and admin tracking.",
         description:
-          "An interactive portfolio experience where visitors explore sections through a guided mini-game while still having fast, recruiter-friendly access to the full content.",
+          "Mr Fix is a professional handyman website serving Portland, OR and Vancouver, WA. The site presents home repair, plumbing, electrical, carpentry, painting, gutter cleaning, pressure washing, assembly, installation, and general improvement services.",
         problem:
-          "Most junior portfolio sites rely on static cards and generic claims. The challenge was to make the portfolio itself demonstrate frontend execution, interaction design, and product judgment without frustrating visitors who just need the facts.",
+          "Local service visitors need fast proof that the business covers their job type, their area, and a reliable way to request help or call immediately.",
         solution:
-          "Signal Run turns navigation into a station-based route with unlockable sections, modal case studies, mobile fallback navigation, and dedicated project pages for deeper review.",
-        role: "Owned the concept, React architecture, Kaboom scene integration, responsive UI, modal accessibility, preview asset workflow, and route handling.",
+          "The site combines SEO-ready service messaging, phone and WhatsApp calls to action, a quote form, Supabase-backed contact submissions, and an admin dashboard for tracking leads.",
+        role: "Built the responsive service-business experience, contact flow, Supabase submission storage, and admin dashboard interface.",
         bestFeature:
-          "The dual-mode experience: visitors can play through the route or jump straight into the full portfolio when speed matters.",
+          "The quote workflow connects a polished public site to an internal submissions dashboard so inquiries are not just collected, they are manageable.",
         impact:
-          "Makes the portfolio a live work sample while preserving the scanning speed that recruiters and collaborators need.",
-        tech: ["React", "TypeScript", "Kaboom", "CSS"],
-        status: "in-progress",
-        category: "frontend",
-        screenshotUrl: portfolioGamePreview,
-        previewImage: portfolioGamePreview,
-        previewAlt:
-          "Signal Run portfolio game preview with a glowing route map, station nodes, and project panels.",
-        path: "/projects/portfolio-game",
+          "Gives the business a professional acquisition channel with clear service coverage, local SEO metadata, direct calls, and lead follow-up support.",
+        tech: ["React", "Vite", "Tailwind CSS", "Supabase", "SEO", "Responsive UI"],
+        status: "live",
+        category: "full-stack",
+        screenshotUrl: mrFixPlaceholder1,
+        previewImage: mrFixPlaceholder1,
+        previewAlt: "Mr Fix handyman service website screenshot.",
+        galleryImages: [
+          {
+            src: mrFixPlaceholder1,
+            alt: "Mr Fix homepage or services screenshot.",
+            label: "Services",
+            caption:
+              "Public service page for Portland and Vancouver handyman offerings.",
+          },
+          {
+            src: mrFixPlaceholder2,
+            alt: "Mr Fix quote form or admin dashboard screenshot.",
+            label: "Quote Flow",
+            caption:
+              "Quote, contact, or lead-management view connected to the service-business workflow.",
+          },
+        ],
+        path: "/projects/mr-fix",
+        demoUrl: "https://mrfix.cresvia.co/",
         lessons: [
-          "Interactive portfolios still need a fast traditional path.",
-          "Game state and React UI state should have a clear ownership boundary.",
+          "Service websites need clear location coverage, direct contact options, and trust signals before visual polish matters.",
+          "Lead storage and admin review make a landing page more operationally useful.",
         ],
         nextImprovements: [
-          "Add more world polish without adding unnecessary dependencies.",
-          "Expand project filtering once more work is added.",
+          "Add conversion notes after the quote form is used with real leads.",
+        ],
+      },
+      {
+        id: "calcvault",
+        title: "CalcVault",
+        shortDescription:
+          "Mobile app that looks like a calculator while protecting local encrypted storage behind it.",
+        description:
+          "CalcVault is a mobile app concept and build where the visible calculator interface acts as the front door to private local encrypted storage.",
+        problem:
+          "Some private notes or files need a local-first storage pattern where the interface feels simple, familiar, and discreet.",
+        solution:
+          "The app uses a calculator front for everyday interaction and stores protected content locally with encryption, keeping sensitive material on the device rather than relying on a cloud account.",
+        role: "Designed and built the mobile app flow, calculator front, private vault interaction, and local encrypted-storage model.",
+        bestFeature:
+          "The calculator-first entry point makes the app feel familiar while still separating ordinary calculator behavior from the protected vault flow.",
+        impact:
+          "Shows mobile UI thinking, local data protection, and security-minded product design in a compact React Native-style app.",
+        tech: ["React Native", "Expo", "TypeScript", "Local Storage", "Encryption"],
+        status: "private",
+        category: "mobile",
+        screenshotUrl: calcVaultPlaceholder1,
+        previewImage: calcVaultPlaceholder1,
+        previewAlt: "CalcVault calculator and encrypted vault mobile app screenshot.",
+        galleryImages: [
+          {
+            src: calcVaultPlaceholder1,
+            alt: "CalcVault calculator front screenshot.",
+            label: "Calculator Front",
+            caption:
+              "Calculator interface that acts as the app's public front.",
+          },
+          {
+            src: calcVaultPlaceholder2,
+            alt: "CalcVault encrypted vault screenshot.",
+            label: "Encrypted Vault",
+            caption:
+              "Private local encrypted storage screen behind the calculator flow.",
+          },
+        ],
+        path: "/projects/calcvault",
+        lessons: [
+          "Privacy products need simple interaction patterns and clear separation between public and protected flows.",
+          "Local-first mobile storage changes the UX tradeoffs around backup, recovery, and device trust.",
+        ],
+        nextImprovements: [
+          "Clarify the encryption library or native secure-storage approach used in the final build.",
+        ],
+      },
+      {
+        id: "selected-web-work",
+        title: "Selected Web Work",
+        shortDescription:
+          "Responsive business websites and landing pages for service-oriented brands through Cresvia work.",
+        description:
+          "A collection of business websites and landing pages for service-oriented brands, emphasizing messaging, layout, responsiveness, and conversion-focused presentation.",
+        problem:
+          "Small businesses need fast, credible websites that explain services clearly and turn attention into inquiries without unnecessary complexity.",
+        solution:
+          "The work focuses on responsive structure, clear service messaging, polished visuals, and direct calls to action across Cresvia and Cresvia Lebanon web properties.",
+        role: "Designed and deployed responsive websites and landing pages, shaping content hierarchy, sections, and conversion paths for service-business audiences.",
+        bestFeature:
+          "The reusable service-business pattern: strong first impression, concise service explanation, trust cues, and a direct next action.",
+        impact:
+          "Shows repeated delivery across business websites, not just one-off interface experiments.",
+        tech: ["React", "Vite", "Tailwind CSS", "Responsive UI", "Deployment"],
+        status: "live",
+        category: "web",
+        screenshotUrl: selectedWebWorkPlaceholder1,
+        previewImage: selectedWebWorkPlaceholder1,
+        previewAlt:
+          "Selected business website and landing page screenshot.",
+        galleryImages: [
+          {
+            src: selectedWebWorkPlaceholder1,
+            alt: "Selected Web Work screenshot for Cresvia website.",
+            label: "Cresvia",
+            caption:
+              "Representative business website screenshot from the Cresvia web work collection.",
+          },
+          {
+            src: selectedWebWorkPlaceholder2,
+            alt: "Selected Web Work screenshot for Cresvia Lebanon website.",
+            label: "Cresvia Lebanon",
+            caption:
+              "Representative landing page screenshot for Cresvia Lebanon or related service-business work.",
+          },
+        ],
+        path: "/projects/selected-web-work",
+        demoUrl: "https://www.cresvia.co/",
+        links: [
+          {
+            label: "Cresvia Lebanon",
+            href: "https://www.cresvialb.com/",
+          },
+        ],
+        lessons: [
+          "Business sites need clear messaging and conversion paths more than decorative complexity.",
+          "Reusable layout patterns help ship faster while still tailoring each site to its service category.",
+        ],
+        nextImprovements: [
+          "Split this collection into individual case studies when each site has dedicated metrics or before/after evidence.",
         ],
       },
     ],
@@ -332,17 +635,17 @@ export const portfolioSections: PortfolioSection[] = [
   {
     id: "contact",
     title: "Contact",
-    subtitle: "Work with me",
+    subtitle: "Work with Mike",
     zoneTitle: "Signal Tower",
-    mission: "Finish the run and find the next-step contact launch pad.",
-    summary: "A clear launch pad for the next conversation.",
+    mission: "Finish the run and find Mike's direct contact launch pad.",
+    summary: "Phone, email, GitHub, live project, and downloadable CV.",
     accent: "#a78bfa",
     sceneColor: [167, 139, 250],
-    body: "Use this section as the direct next step for hiring managers, collaborators, and clients. Replace the placeholder contact details before publishing.",
+    body: "Use these links for hiring, collaboration, project review, or direct follow-up. Mike is based in Naqqache, Lebanon and is open to junior software developer, frontend, mobile, and backend/API roles.",
     highlights: [
-      "Replace placeholder contact details before publishing.",
-      "Keep the next action direct for recruiters and collaborators.",
-      "Use this section as the final conversion point after the game route.",
+      "Primary email: mikelaffe@gmail.com.",
+      "Phone: +961 78 919 757.",
+      "GitHub: github.com/mikelaffe09.",
     ],
   },
 ];
@@ -356,6 +659,10 @@ export const portfolioProjects =
 
 export function getPortfolioProject(projectId: string) {
   return portfolioProjects.find((project) => project.id === projectId) ?? null;
+}
+
+export function getPortfolioProjectLinks(project: PortfolioProject) {
+  return project.links ?? [];
 }
 
 export function getProjectPreviewImage(project: PortfolioProject) {

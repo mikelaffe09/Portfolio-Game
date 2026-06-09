@@ -1,6 +1,11 @@
 import {
+  courseItems,
+  educationItems,
+  experienceItems,
+  getPortfolioProjectLinks,
   getProjectPreviewAlt,
   getProjectPreviewImage,
+  languageItems,
   portfolioProfile,
   portfolioProjects,
   skillGroups,
@@ -88,6 +93,75 @@ export default function RecruiterMode({
         </div>
       </section>
 
+      <section className="recruiter-section" aria-labelledby="experience-title">
+        <div className="section-heading">
+          <p className="panel-label">Experience</p>
+          <h3 id="experience-title">Operations and delivery background</h3>
+        </div>
+
+        <div className="recruiter-experience-grid">
+          {experienceItems.map((item) => (
+            <article className="experience-card" key={`${item.company}-${item.role}`}>
+              <span>{item.dates}</span>
+              <h4>{item.company}</h4>
+              <strong>
+                {item.role} - {item.location}
+              </strong>
+              <ul>
+                {item.highlights.map((highlight) => (
+                  <li key={highlight}>{highlight}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="recruiter-section" aria-labelledby="education-title">
+        <div className="section-heading">
+          <p className="panel-label">Education</p>
+          <h3 id="education-title">Education, courses, and languages</h3>
+        </div>
+
+        <div className="recruiter-education-grid">
+          <article className="education-card">
+            <span>Education</span>
+            {educationItems.map((item) => (
+              <div key={`${item.institution}-${item.dates}`}>
+                <strong>{item.institution}</strong>
+                <p>
+                  {item.credential} - {item.dates}
+                </p>
+                {item.details.map((detail) => (
+                  <small key={detail}>{detail}</small>
+                ))}
+              </div>
+            ))}
+          </article>
+
+          <article className="education-card">
+            <span>Courses</span>
+            <ul>
+              {courseItems.map((course) => (
+                <li key={course}>{course}</li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="education-card">
+            <span>Languages</span>
+            <div className="language-list">
+              {languageItems.map((item) => (
+                <p key={item.language}>
+                  <strong>{item.language}</strong>
+                  <small>{item.level}</small>
+                </p>
+              ))}
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section className="recruiter-section" aria-labelledby="projects-title">
         <div className="section-heading">
           <p className="panel-label">Featured Work</p>
@@ -111,9 +185,8 @@ export default function RecruiterMode({
           <p className="panel-label">Next Step</p>
           <h3 id="contact-title">Contact and professional links</h3>
           <p>
-            Replace these placeholders with real links before publishing. Missing
-            URLs are shown as non-clickable placeholders so visitors never hit a
-            broken link.
+            Direct contact details from Mike's CV, plus GitHub, the live
+            SmartGarage project, and a downloadable resume.
           </p>
         </div>
 
@@ -139,6 +212,7 @@ function RecruiterProjectCard({
   onOpenProjectPage,
 }: RecruiterProjectCardProps) {
   const previewImage = getProjectPreviewImage(project);
+  const projectLinks = getPortfolioProjectLinks(project);
   const status = formatProjectMeta(project.status);
   const category = formatProjectMeta(project.category);
 
@@ -182,6 +256,11 @@ function RecruiterProjectCard({
               Live Demo
             </a>
           )}
+          {projectLinks.map((link) => (
+            <a href={link.href} key={link.href} target="_blank" rel="noreferrer">
+              {link.label}
+            </a>
+          ))}
           {project.githubUrl && (
             <a href={project.githubUrl} target="_blank" rel="noreferrer">
               GitHub
@@ -202,7 +281,7 @@ function ContactMethodCard({ method }: ContactMethodCardProps) {
     <>
       <span>{method.label}</span>
       <strong>{method.value}</strong>
-      {method.placeholder && <em>TODO: replace before publishing</em>}
+      {method.placeholder && <em>Link pending</em>}
     </>
   );
 

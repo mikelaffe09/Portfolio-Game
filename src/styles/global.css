@@ -883,7 +883,12 @@ kbd {
 
 .recruiter-skill-card,
 .skill-group-card,
-.professional-summary-card {
+.professional-summary-card,
+.experience-card,
+.education-card,
+.modal-subsection,
+.experience-timeline article,
+.modal-info-grid article {
   display: grid;
   gap: 11px;
   border: 1px solid var(--line);
@@ -924,22 +929,113 @@ kbd {
 
 .recruiter-skill-card p,
 .skill-group-card p,
-.professional-summary-card p {
+.professional-summary-card p,
+.experience-card p,
+.education-card p,
+.experience-timeline p,
+.modal-info-grid p {
   margin: 0;
   color: var(--muted-strong);
   line-height: 1.6;
 }
 
 .professional-summary-card span,
-.skill-group-card span {
+.skill-group-card span,
+.experience-card span,
+.education-card span,
+.modal-subsection > span,
+.experience-timeline small,
+.modal-info-grid small {
   color: var(--section-accent, var(--cyan));
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
 }
 
-.professional-summary-card strong {
+.professional-summary-card strong,
+.experience-card strong,
+.education-card strong,
+.experience-timeline strong,
+.modal-info-grid strong {
   color: var(--text);
+}
+
+.recruiter-experience-grid,
+.recruiter-education-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.recruiter-experience-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.recruiter-education-grid {
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr) minmax(0, 0.8fr);
+}
+
+.experience-card h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1.15;
+}
+
+.experience-card ul,
+.education-card ul,
+.experience-timeline ul,
+.modal-info-grid ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted-strong);
+  line-height: 1.52;
+}
+
+.education-card div,
+.language-list {
+  display: grid;
+  gap: 8px;
+}
+
+.education-card div + div {
+  padding-top: 11px;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.education-card small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.language-list p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+}
+
+.language-list small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.modal-subsection {
+  background: rgba(255, 255, 255, 0.026);
+}
+
+.experience-timeline,
+.modal-info-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.modal-info-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .project-page-learning ul {
@@ -985,7 +1081,8 @@ kbd {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   border-bottom: 1px solid var(--line);
   background:
     linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
@@ -1306,7 +1403,11 @@ kbd {
   overflow: hidden;
   border: 1px solid rgba(45, 212, 191, 0.28);
   border-radius: 8px;
-  background: #020617;
+  background:
+    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    #020617;
+  background-size: 24px 24px;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
 }
 
@@ -1319,34 +1420,30 @@ kbd {
   width: 100%;
   height: 100%;
   min-height: 320px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .project-media-frame-primary img {
   height: auto;
   min-height: 0;
   aspect-ratio: 16 / 10;
-  object-position: top center;
+  object-position: center;
 }
 
 .project-media-frame:not(.project-media-frame-primary) img {
   height: min(660px, 70vh);
   min-height: 520px;
-  object-position: top center;
+  object-position: center;
 }
 
 .project-media-frame figcaption {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  left: 12px;
+  position: static;
   display: grid;
   gap: 4px;
-  border: 1px solid rgba(226, 232, 240, 0.22);
-  border-radius: 8px;
-  background: rgba(3, 7, 12, 0.82);
+  border-top: 1px solid rgba(226, 232, 240, 0.18);
+  background: rgba(3, 7, 12, 0.72);
   padding: 10px 11px;
-  backdrop-filter: blur(12px);
 }
 
 .project-media-frame figcaption span,
@@ -1458,7 +1555,8 @@ kbd {
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 6px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   background: #101827;
 }
 
@@ -1610,6 +1708,9 @@ kbd {
   .mission-map-grid,
   .recruiter-skill-grid,
   .skill-group-grid,
+  .recruiter-experience-grid,
+  .recruiter-education-grid,
+  .modal-info-grid,
   .contact-method-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1662,10 +1763,13 @@ kbd {
   .recruiter-hero,
   .recruiter-skill-grid,
   .skill-group-grid,
+  .recruiter-experience-grid,
+  .recruiter-education-grid,
   .recruiter-contact,
   .contact-method-grid,
   .recruiter-projects,
   .modal-highlight-grid,
+  .modal-info-grid,
   .project-page-proof,
   .project-page-story-grid,
   .project-page-media,
@@ -1796,13 +1900,6 @@ kbd {
 
   .project-media-frame img {
     min-height: 250px;
-  }
-
-  .project-media-frame figcaption {
-    position: static;
-    border-width: 1px 0 0;
-    border-radius: 0;
-    background: rgba(5, 10, 18, 0.96);
   }
 
   .project-page-section-title h2 {

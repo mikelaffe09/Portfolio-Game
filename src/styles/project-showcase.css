@@ -163,7 +163,11 @@
   overflow: hidden;
   border: 1px solid rgba(148, 163, 184, 0.32);
   border-radius: 8px;
-  background: #020617;
+  background:
+    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    #020617;
+  background-size: 24px 24px;
   box-shadow: 0 22px 62px rgba(0, 0, 0, 0.4);
 }
 
@@ -171,7 +175,8 @@
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .preview-topbar {

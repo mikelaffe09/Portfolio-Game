@@ -1,4 +1,5 @@
 import {
+  getPortfolioProjectLinks,
   getProjectPreviewAlt,
   getProjectPreviewImage,
   type PortfolioProject,
@@ -18,6 +19,7 @@ export default function ProjectPage({
   onNavigateProject,
 }: Props) {
   const previewImage = getProjectPreviewImage(project);
+  const projectLinks = getPortfolioProjectLinks(project);
   const galleryImages =
     project.galleryImages?.length
       ? project.galleryImages
@@ -74,6 +76,12 @@ export default function ProjectPage({
                 View Live Project
               </a>
             )}
+
+            {projectLinks.map((link) => (
+              <a href={link.href} key={link.href} target="_blank" rel="noreferrer">
+                {link.label}
+              </a>
+            ))}
 
             {project.githubUrl && (
               <a href={project.githubUrl} target="_blank" rel="noreferrer">

@@ -8,8 +8,13 @@ import {
   type KeyboardEvent,
 } from "react";
 import {
+  courseItems,
+  educationItems,
+  experienceItems,
+  getPortfolioProjectLinks,
   getProjectPreviewAlt,
   getProjectPreviewImage,
+  languageItems,
   portfolioProfile,
   skillGroups,
   type ContactMethod,
@@ -220,6 +225,61 @@ function SectionDetail({ section, descriptionId }: SectionDetailProps) {
             </article>
           ))}
         </div>
+
+        <div className="modal-subsection">
+          <span>Experience</span>
+          <div className="experience-timeline">
+            {experienceItems.map((item) => (
+              <article key={`${item.company}-${item.role}`}>
+                <small>{item.dates}</small>
+                <strong>{item.company}</strong>
+                <p>
+                  {item.role} - {item.location}
+                </p>
+                <ul>
+                  {item.highlights.slice(0, 2).map((highlight) => (
+                    <li key={highlight}>{highlight}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="modal-subsection">
+          <span>Education, Courses, Languages</span>
+          <div className="modal-info-grid">
+            <article>
+              <strong>{educationItems[0].institution}</strong>
+              <p>
+                {educationItems[0].credential} - {educationItems[0].dates}
+              </p>
+              {educationItems[0].details.map((detail) => (
+                <small key={detail}>{detail}</small>
+              ))}
+            </article>
+
+            <article>
+              <strong>Courses</strong>
+              <ul>
+                {courseItems.map((course) => (
+                  <li key={course}>{course}</li>
+                ))}
+              </ul>
+            </article>
+
+            <article>
+              <strong>Languages</strong>
+              <ul>
+                {languageItems.map((item) => (
+                  <li key={item.language}>
+                    {item.language} - {item.level}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </div>
+        </div>
       </section>
     );
   }
@@ -285,7 +345,7 @@ function ContactMethodCard({ method }: ContactMethodCardProps) {
     <>
       <span>{method.label}</span>
       <strong>{method.value}</strong>
-      {method.placeholder && <em>TODO: replace before publishing</em>}
+      {method.placeholder && <em>Link pending</em>}
     </>
   );
 
@@ -318,6 +378,7 @@ function ProjectsBossRoom({
   if (!section.projects) return null;
 
   const previewImage = getProjectPreviewImage(activeProject);
+  const projectLinks = getPortfolioProjectLinks(activeProject);
   const proofBlocks = [
     ["Problem", activeProject.problem],
     ["Solution", activeProject.solution],
@@ -341,7 +402,7 @@ function ProjectsBossRoom({
           </div>
           <div>
             <span>Focus</span>
-            <strong>Frontend</strong>
+            <strong>Full-stack</strong>
           </div>
         </div>
       </section>
@@ -440,6 +501,12 @@ function ProjectsBossRoom({
                   Live Demo
                 </a>
               )}
+
+              {projectLinks.map((link) => (
+                <a href={link.href} key={link.href} target="_blank" rel="noreferrer">
+                  {link.label}
+                </a>
+              ))}
 
               {activeProject.githubUrl && (
                 <a
