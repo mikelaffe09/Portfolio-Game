@@ -131,16 +131,7 @@ export default function ProjectPage({
             </article>
           )}
 
-          {project.nextImprovements?.length && (
-            <article>
-              <span>Next Improvements</span>
-              <ul>
-                {project.nextImprovements.map((improvement) => (
-                  <li key={improvement}>{improvement}</li>
-                ))}
-              </ul>
-            </article>
-          )}
+
         </section>
       )}
 
