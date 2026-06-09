@@ -194,23 +194,19 @@ function createBackground(k: KaboomCtx, reducedMotion: boolean) {
   ]);
 
   k.add([
-    k.circle(220),
-    k.pos(150, 90),
-    k.anchor("center"),
-    k.color(45, 212, 191),
-    k.opacity(0.07),
+    k.rect(worldSize.width, 78),
+    k.pos(0, 0),
+    k.color(8, 14, 24),
+    k.opacity(0.82),
     k.z(1),
-    "ambient",
   ]);
 
   k.add([
-    k.circle(260),
-    k.pos(820, 430),
-    k.anchor("center"),
-    k.color(167, 139, 250),
-    k.opacity(0.08),
-    k.z(1),
-    "ambient",
+    k.rect(worldSize.width, 1),
+    k.pos(0, 78),
+    k.color(45, 212, 191),
+    k.opacity(0.26),
+    k.z(2),
   ]);
 
   for (let x = 0; x <= worldSize.width; x += 48) {
@@ -262,19 +258,17 @@ function createBackground(k: KaboomCtx, reducedMotion: boolean) {
   });
 
   k.add([
-    k.text("NEON PORTFOLIO QUEST", { size: 25 }),
-    k.pos(480, 36),
-    k.anchor("center"),
+    k.text("NEON PORTFOLIO QUEST", { size: 19 }),
+    k.pos(28, 22),
     k.color(245, 250, 255),
     k.z(8),
   ]);
 
   k.add([
-    k.text("Collect signal fragments and activate each portfolio zone", {
-      size: 12,
+    k.text("Collect fragments. Activate each zone.", {
+      size: 10,
     }),
-    k.pos(480, 63),
-    k.anchor("center"),
+    k.pos(29, 50),
     k.color(154, 168, 186),
     k.z(8),
   ]);
@@ -496,8 +490,11 @@ function createStation(
 
   createStationCore(k, config, unlocked, completed, reducedMotion);
 
+  const coreWidth = completed ? 62 : 44;
+  const coreLabel = completed ? "SYNCED" : config.icon;
+
   k.add([
-    k.rect(44, 30, { radius: 8 }),
+    k.rect(coreWidth, 30, { radius: 8 }),
     k.pos(x, y - 2),
     k.anchor("center"),
     k.color(4, 8, 14),
@@ -507,7 +504,7 @@ function createStation(
   ]);
 
   k.add([
-    k.text(config.icon, { size: 14 }),
+    k.text(coreLabel, { size: completed ? 9 : 14 }),
     k.pos(x, y - 2),
     k.anchor("center"),
     k.color(
@@ -565,13 +562,6 @@ function createStation(
       k.z(27),
     ]);
 
-    k.add([
-      k.text("SYNCED", { size: 11 }),
-      k.pos(x, y - 2),
-      k.anchor("center"),
-      k.color(234, 255, 241),
-      k.z(25),
-    ]);
   }
 
   if (!unlocked) {
@@ -623,9 +613,16 @@ function createStation(
     ]);
   }
 
+  const hintBelowY = y + config.radius + 45;
+  const hintAtSide = hintBelowY > worldSize.height - 32;
+  const hintX = hintAtSide
+    ? Math.min(worldSize.width - 74, x + config.radius + 76)
+    : x;
+  const hintY = hintAtSide ? y + 8 : hintBelowY;
+
   const enterHint = k.add([
     k.rect(118, 26, { radius: 999 }),
-    k.pos(x, y + config.radius + 45),
+    k.pos(hintX, hintY),
     k.anchor("center"),
     k.color(5, 12, 20),
     k.outline(1, getRgb(k, config.accent)),
@@ -637,7 +634,7 @@ function createStation(
 
   const enterHintText = k.add([
     k.text(unlocked ? "PRESS E / ENTER" : "LOCKED", { size: 9 }),
-    k.pos(x, y + config.radius + 46),
+    k.pos(hintX, hintY + 1),
     k.anchor("center"),
     k.color(unlocked ? config.accent[0] : 255, unlocked ? config.accent[1] : 107, unlocked ? config.accent[2] : 107),
     k.opacity(0),
@@ -711,8 +708,9 @@ function createStation(
 
 function createPrompt(k: KaboomCtx) {
   const promptBox = k.add([
-    k.rect(560, 44, { radius: 999 }),
-    k.pos(200, 480),
+    k.rect(500, 40, { radius: 999 }),
+    k.pos(480, 500),
+    k.anchor("center"),
     k.color(8, 12, 20),
     k.outline(1, k.rgb(55, 68, 92)),
     k.opacity(0),
@@ -720,8 +718,8 @@ function createPrompt(k: KaboomCtx) {
   ]);
 
   const promptText = k.add([
-    k.text("", { size: 14, width: 500 }),
-    k.pos(480, 503),
+    k.text("", { size: 12, width: 440 }),
+    k.pos(480, 501),
     k.anchor("center"),
     k.color(244, 248, 255),
     k.opacity(0),
@@ -947,20 +945,20 @@ function createCollectibles(
 }
 
 function createFinaleEffect(k: KaboomCtx, reducedMotion: boolean) {
-  const center = { x: 480, y: 274 };
+  const center = { x: 760, y: 72 };
   const pulse = k.add([
-    k.circle(126),
+    k.circle(96),
     k.pos(center.x, center.y),
     k.anchor("center"),
     k.color(248, 197, 55),
-    k.opacity(0.08),
+    k.opacity(0.06),
     k.scale(1),
     k.z(9),
     "ambient",
   ]);
 
   k.add([
-    k.rect(360, 58, { radius: 12 }),
+    k.rect(318, 48, { radius: 10 }),
     k.pos(center.x, center.y),
     k.anchor("center"),
     k.color(7, 12, 20),
@@ -970,16 +968,16 @@ function createFinaleEffect(k: KaboomCtx, reducedMotion: boolean) {
   ]);
 
   k.add([
-    k.text("PORTFOLIO RUN COMPLETE", { size: 18 }),
-    k.pos(center.x, center.y - 9),
+    k.text("PORTFOLIO RUN COMPLETE", { size: 15 }),
+    k.pos(center.x, center.y - 8),
     k.anchor("center"),
     k.color(255, 247, 214),
     k.z(53),
   ]);
 
   k.add([
-    k.text("All portfolio zones are synced", { size: 11 }),
-    k.pos(center.x, center.y + 15),
+    k.text("All portfolio zones are synced", { size: 10 }),
+    k.pos(center.x, center.y + 12),
     k.anchor("center"),
     k.color(209, 213, 219),
     k.z(53),
@@ -993,7 +991,7 @@ function createFinaleEffect(k: KaboomCtx, reducedMotion: boolean) {
 
     for (let index = 0; index < 5; index += 1) {
       k.wait(index * 0.34, () => {
-        const offset = k.vec2(k.rand(-118, 118), k.rand(-52, 52));
+        const offset = k.vec2(k.rand(-96, 96), k.rand(-28, 28));
         createSparkBurst(k, {
           x: center.x + offset.x,
           y: center.y + offset.y,

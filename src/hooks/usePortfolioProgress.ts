@@ -6,9 +6,11 @@ import {
   type StationId,
 } from "../data/portfolioData";
 
-const legacyCompletedStationsStorageKey = "signal-run-completed-stations";
-const completedStationsStorageKey = "signal-run-completed-stations-v2";
 const recruiterModeStorageKey = "signal-run-recruiter-mode";
+const completedStationStorageKeys = [
+  "signal-run-completed-stations",
+  "signal-run-completed-stations-v2",
+];
 
 export type StationProgressItem = {
   section: PortfolioSection;
@@ -28,46 +30,6 @@ export type SectionOpenResult =
       reason: string;
       blockingSectionTitle: string | null;
     };
-
-function isStationId(value: string): value is StationId {
-  return stationOrder.includes(value as StationId);
-}
-
-function parseCompletedStations(savedValue: string | null, isLegacyValue = false) {
-  if (!savedValue) return new Set<StationId>();
-
-  const savedIds = JSON.parse(savedValue);
-  if (!Array.isArray(savedIds)) return new Set<StationId>();
-
-  const completedStations = new Set<StationId>(
-    savedIds.filter((id): id is StationId => {
-      return typeof id === "string" && isStationId(id);
-    })
-  );
-
-  if (
-    isLegacyValue &&
-    stationOrder.every((sectionId) => completedStations.has(sectionId))
-  ) {
-    return new Set<StationId>();
-  }
-
-  return completedStations;
-}
-
-function loadCompletedStations() {
-  try {
-    const savedValue = window.localStorage.getItem(completedStationsStorageKey);
-    if (savedValue) return parseCompletedStations(savedValue);
-
-    return parseCompletedStations(
-      window.localStorage.getItem(legacyCompletedStationsStorageKey),
-      true
-    );
-  } catch {
-    return new Set<StationId>();
-  }
-}
 
 function loadRecruiterModePreference() {
   try {
@@ -104,7 +66,7 @@ function getBlockingSection(
 
 export function usePortfolioProgress() {
   const [completedIds, setCompletedIds] = useState<Set<StationId>>(
-    () => loadCompletedStations()
+    () => new Set<StationId>()
   );
   const [recruiterMode, setRecruiterMode] = useState(
     () => loadRecruiterModePreference()
@@ -115,14 +77,13 @@ export function usePortfolioProgress() {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(
-        completedStationsStorageKey,
-        JSON.stringify([...completedIds])
-      );
+      completedStationStorageKeys.forEach((storageKey) => {
+        window.localStorage.removeItem(storageKey);
+      });
     } catch {
-      // Progress persistence is a nice-to-have; the game should still work.
+      // Clearing stale browser progress is best-effort only.
     }
-  }, [completedIds]);
+  }, []);
 
   useEffect(() => {
     try {

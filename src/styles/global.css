@@ -1,10 +1,10 @@
 :root {
   --bg: #04070c;
   --bg-soft: #07101a;
-  --panel: rgba(9, 15, 25, 0.88);
-  --panel-strong: rgba(12, 20, 32, 0.96);
-  --line: rgba(148, 163, 184, 0.28);
-  --line-strong: rgba(226, 232, 240, 0.36);
+  --panel: rgba(8, 13, 22, 0.9);
+  --panel-strong: rgba(10, 17, 28, 0.96);
+  --line: rgba(148, 163, 184, 0.24);
+  --line-strong: rgba(226, 232, 240, 0.32);
   --text: #eef6ff;
   --muted: #9fb0c5;
   --muted-strong: #cbd8e8;
@@ -39,10 +39,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  overflow-x: hidden;
   background:
-    linear-gradient(rgba(45, 212, 191, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(167, 139, 250, 0.045) 1px, transparent 1px),
-    linear-gradient(180deg, #060a12 0%, #08111b 48%, #03050a 100%);
+    linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.028) 1px, transparent 1px),
+    linear-gradient(180deg, #050912 0%, #07111b 48%, #03050a 100%);
   background-size:
     72px 72px,
     72px 72px,
@@ -91,10 +92,10 @@ a:focus-visible,
 }
 
 .app-shell {
-  width: min(1260px, calc(100% - 32px));
+  width: min(1500px, calc(100% - 32px));
   min-height: 100vh;
   margin: 0 auto;
-  padding: 18px 0 56px;
+  padding: 14px 0 48px;
 }
 
 .panel-label,
@@ -276,7 +277,7 @@ kbd {
 }
 
 .hud-recruiter-toggle[aria-pressed="true"],
-.mission-actions .fast-path-button {
+.mission-actions .fast-path-button[aria-pressed="true"] {
   border-color: var(--gold);
   background: var(--gold);
   color: #071016;
@@ -285,6 +286,8 @@ kbd {
 .is-run-complete .hud-recruiter-toggle,
 .is-run-complete .mission-actions .fast-path-button {
   border-color: var(--gold);
+  background: rgba(248, 197, 55, 0.12);
+  color: #fff3c4;
   box-shadow:
     0 0 0 1px rgba(248, 197, 55, 0.32),
     0 0 24px rgba(248, 197, 55, 0.26);
@@ -427,13 +430,14 @@ kbd {
 
 .playdeck {
   display: grid;
-  grid-template-columns: minmax(0, 960px) minmax(300px, 1fr);
-  gap: 16px;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 360px);
+  gap: 18px;
+  align-items: start;
   scroll-margin-top: 18px;
 }
 
 .game-wrapper {
+  align-self: start;
   min-width: 0;
   overflow: hidden;
   border: 1px solid rgba(45, 212, 191, 0.28);
@@ -468,26 +472,30 @@ kbd {
 
 .mission-panel {
   display: grid;
-  gap: 16px;
+  gap: 12px;
   align-content: start;
-  padding: 16px;
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(10, 17, 28, 0.96), rgba(5, 9, 16, 0.94)),
+    var(--panel);
 }
 
 .mission-identity {
   display: grid;
-  grid-template-columns: 82px 1fr;
-  gap: 13px;
+  grid-template-columns: 70px 1fr;
+  gap: 14px;
   align-items: center;
 }
 
 .mission-art {
-  width: 82px;
+  width: 70px;
   filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.38));
 }
 
 .mission-panel h1 {
   margin-top: 4px;
-  font-size: 32px;
+  font-size: 30px;
+  line-height: 1.02;
 }
 
 .mission-panel p,
@@ -501,16 +509,20 @@ kbd {
 }
 
 .mission-panel p {
-  margin: 7px 0 0;
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.55;
 }
 
 .mission-current {
   display: grid;
   gap: 4px;
-  border: 1px solid rgba(45, 212, 191, 0.22);
+  border: 1px solid rgba(45, 212, 191, 0.24);
   border-radius: 8px;
-  background: rgba(45, 212, 191, 0.07);
-  padding: 12px;
+  background:
+    linear-gradient(90deg, rgba(45, 212, 191, 0.12), rgba(45, 212, 191, 0.04)),
+    rgba(255, 255, 255, 0.02);
+  padding: 11px 12px;
 }
 
 .mission-current span,
@@ -524,7 +536,8 @@ kbd {
 
 .mission-current strong {
   color: var(--text);
-  font-size: 18px;
+  font-size: 17px;
+  line-height: 1.25;
 }
 
 .mission-metrics {
@@ -538,7 +551,7 @@ kbd {
 .mission-metrics div {
   display: grid;
   gap: 4px;
-  padding: 12px;
+  padding: 11px 12px;
   background: rgba(255, 255, 255, 0.025);
 }
 
@@ -548,7 +561,8 @@ kbd {
 
 .mission-metrics strong {
   color: var(--text);
-  font-size: 22px;
+  font-size: 23px;
+  line-height: 1;
 }
 
 .mission-route {
@@ -558,14 +572,15 @@ kbd {
 
 .mission-route-node {
   display: grid;
-  grid-template-columns: 12px 1fr auto;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
   width: 100%;
+  min-height: 50px;
   border: 1px solid rgba(148, 163, 184, 0.18);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.035);
-  padding: 10px;
+  padding: 9px 10px;
   text-align: left;
 }
 
@@ -579,6 +594,13 @@ kbd {
 .mission-route-node strong {
   color: var(--text);
   font-size: 14px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.mission-route-node small {
+  justify-self: end;
+  white-space: nowrap;
 }
 
 .mission-route-node[aria-disabled="true"] {
@@ -597,6 +619,16 @@ kbd {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.mission-panel .mission-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.mission-panel .mission-actions button {
+  width: 100%;
 }
 
 .spiral-gateway-actions button:first-child,
@@ -1431,7 +1463,7 @@ kbd {
 @media (max-width: 760px) {
   .app-shell,
   .project-page {
-    width: min(100% - 20px, 1180px);
+    width: min(calc(100% - 20px), 1180px);
     padding-top: 10px;
   }
 
@@ -1473,7 +1505,20 @@ kbd {
 
   .spiral-gateway-content {
     align-content: end;
+    width: 100%;
+    max-width: 100%;
     padding: 22px;
+  }
+
+  .spiral-gateway-content h2 {
+    font-size: 31px;
+    line-height: 1.04;
+    max-width: 13ch;
+  }
+
+  .spiral-gateway-content p:not(.panel-label) {
+    max-width: 32ch;
+    overflow-wrap: anywhere;
   }
 
   .spiral-gateway-stats {

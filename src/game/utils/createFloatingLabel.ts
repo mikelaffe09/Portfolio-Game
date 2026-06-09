@@ -11,9 +11,11 @@ type FloatingLabelOptions = {
 };
 
 export function createFloatingLabel(k: KaboomCtx, options: FloatingLabelOptions) {
+  const baseY = Math.max(104, options.y);
+
   const panel = k.add([
-    k.rect(168, 42, { radius: 8 }),
-    k.pos(options.x, options.y),
+    k.rect(154, 38, { radius: 8 }),
+    k.pos(options.x, baseY),
     k.anchor("center"),
     k.color(9, 14, 22),
     k.outline(1, k.rgb(options.color[0], options.color[1], options.color[2])),
@@ -23,8 +25,8 @@ export function createFloatingLabel(k: KaboomCtx, options: FloatingLabelOptions)
   ]);
 
   const title = k.add([
-    k.text(options.title.toUpperCase(), { size: 11, width: 150 }),
-    k.pos(options.x, options.y - 8),
+    k.text(options.title.toUpperCase(), { size: 10, width: 138 }),
+    k.pos(options.x, baseY - 7),
     k.anchor("center"),
     k.color(245, 250, 255),
     k.z(29),
@@ -32,8 +34,8 @@ export function createFloatingLabel(k: KaboomCtx, options: FloatingLabelOptions)
   ]);
 
   const subtitle = k.add([
-    k.text(options.subtitle.toUpperCase(), { size: 8, width: 150 }),
-    k.pos(options.x, options.y + 10),
+    k.text(options.subtitle.toUpperCase(), { size: 7, width: 138 }),
+    k.pos(options.x, baseY + 9),
     k.anchor("center"),
     k.color(options.color[0], options.color[1], options.color[2]),
     k.z(29),
@@ -45,9 +47,9 @@ export function createFloatingLabel(k: KaboomCtx, options: FloatingLabelOptions)
 
     k.onUpdate(() => {
       const bob = Math.sin(k.time() * 2 + phase) * 3;
-      panel.pos.y = options.y + bob;
-      title.pos.y = options.y - 8 + bob;
-      subtitle.pos.y = options.y + 10 + bob;
+      panel.pos.y = baseY + bob;
+      title.pos.y = baseY - 7 + bob;
+      subtitle.pos.y = baseY + 9 + bob;
     });
   }
 
