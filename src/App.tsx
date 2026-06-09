@@ -10,6 +10,7 @@ import ProgressToast, {
 } from "./components/ProgressToast";
 import ProjectPage from "./components/ProjectPage";
 import RecruiterMode from "./components/RecruiterMode";
+import SpiralGateway from "./components/SpiralGateway";
 import {
   getPortfolioProject,
   portfolioProjects,
@@ -66,6 +67,7 @@ export default function App() {
     unlockedIdList,
   } = usePortfolioProgress();
   const completionToastShownRef = useRef(allStationsComplete);
+  const playdeckRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -193,6 +195,31 @@ export default function App() {
     }
   }, [recruiterMode, showToast, toggleRecruiterMode]);
 
+  const handleEnterHub = useCallback(() => {
+    playdeckRef.current?.scrollIntoView({
+      behavior: reducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  }, [reducedMotion]);
+
+  const handleOpenRecruiterScan = useCallback(() => {
+    if (!recruiterMode) {
+      toggleRecruiterMode();
+      showToast(
+        "Recruiter mode enabled",
+        "A clean scan of the same portfolio content is now available below the game.",
+        "success"
+      );
+    }
+
+    window.setTimeout(() => {
+      document.querySelector<HTMLElement>(".recruiter-mode")?.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    }, 0);
+  }, [recruiterMode, reducedMotion, showToast, toggleRecruiterMode]);
+
   const handleCollectOrb = useCallback(
     (orbId: string) => {
       if (collectedOrbIdsRef.current.has(orbId)) return;
@@ -271,7 +298,20 @@ export default function App() {
         onToggleRecruiterMode={handleToggleRecruiterMode}
       />
 
-      <section className="playdeck" aria-label="Interactive portfolio game">
+      <SpiralGateway
+        allComplete={allStationsComplete}
+        nextStationTitle={nextStationTitle}
+        progressPercent={progressPercent}
+        reducedMotion={reducedMotion}
+        onEnterHub={handleEnterHub}
+        onOpenRecruiterScan={handleOpenRecruiterScan}
+      />
+
+      <section
+        ref={playdeckRef}
+        className="playdeck"
+        aria-label="Interactive portfolio game"
+      >
         <div className="game-wrapper">
           <GameCanvas
             onOpenSection={openSection}
