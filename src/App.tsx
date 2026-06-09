@@ -20,6 +20,7 @@ import {
 import { collectibleConfigs } from "./game/config/worldConfig";
 import { usePortfolioProgress } from "./hooks/usePortfolioProgress";
 import { useReducedMotion } from "./hooks/useReducedMotion";
+import MobileGameControls from "./components/MobileGameControls";
 
 type AppRoute =
   | {
@@ -313,16 +314,18 @@ export default function App() {
         aria-label="Interactive portfolio game"
       >
         <div className="game-wrapper">
-          <GameCanvas
-            onOpenSection={openSection}
-            onLockedSection={handleLockedSection}
-            onCollectOrb={handleCollectOrb}
-            completedIds={completedIdList}
-            unlockedIds={unlockedIdList}
-            collectedOrbIds={collectedOrbIdList}
-            reducedMotion={reducedMotion}
-          />
-        </div>
+  <GameCanvas
+    onOpenSection={openSection}
+    onLockedSection={handleLockedSection}
+    onCollectOrb={handleCollectOrb}
+    completedIds={completedIdList}
+    unlockedIds={unlockedIdList}
+    collectedOrbIds={collectedOrbIdList}
+    reducedMotion={reducedMotion}
+  />
+
+  <MobileGameControls />
+</div>
 
         <MissionTracker
           allComplete={allStationsComplete}
