@@ -44,7 +44,7 @@ export default function GameCanvas({
       root: gameRef.current,
     });
 
-    createMainScene(k, {
+    const cleanupScene = createMainScene(k, {
       onOpenSection,
       onLockedSection,
       onCollectOrb,
@@ -55,6 +55,7 @@ export default function GameCanvas({
     });
 
     return () => {
+      cleanupScene();
       k.quit();
     };
   }, [

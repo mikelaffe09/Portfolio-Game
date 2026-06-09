@@ -453,12 +453,14 @@ kbd {
   width: 100%;
   aspect-ratio: 16 / 9;
   background: #04070c;
+  touch-action: none;
 }
 
 .game-canvas canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
+  touch-action: none;
 }
 
 .mobile-game-controls {
@@ -1922,10 +1924,11 @@ kbd {
   }
 
   .mission-identity {
-  grid-template-columns: 78px minmax(0, 1fr);
-  gap: 12px;
-  
-    .game-wrapper {
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .game-wrapper {
     padding-bottom: 116px;
   }
 
@@ -1944,13 +1947,12 @@ kbd {
     justify-content: space-between;
     pointer-events: auto;
   }
-}
 
-.mission-art {
-  width: 78px;
-  height: 78px;
-  border-radius: 14px;
-}
+  .mission-art {
+    width: 78px;
+    height: 78px;
+    border-radius: 14px;
+  }
 
   .mission-panel h1 {
     font-size: 27px;
@@ -2025,6 +2027,28 @@ kbd {
   .project-page-story-grid .project-proof-block {
     min-height: 0;
     padding: 16px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .game-wrapper {
+    padding-bottom: 116px;
+  }
+
+  .game-canvas {
+    aspect-ratio: 4 / 3;
+  }
+
+  .mobile-game-controls {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 20;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    pointer-events: auto;
   }
 }
 

@@ -1,89 +1,72 @@
-type ControlKey = "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight" | "Enter";
+import { useEffect } from "react";
+import {
+  pressVirtualControl,
+  releaseAllVirtualControls,
+  releaseVirtualControl,
+  type VirtualControl,
+} from "../game/input/virtualInput";
 
 type ControlButton = {
   label: string;
-  keyName: ControlKey;
+  control: VirtualControl;
   className: string;
   ariaLabel: string;
 };
 
 const controls: ControlButton[] = [
   {
-    label: "▲",
-    keyName: "ArrowUp",
+    label: "^",
+    control: "up",
     className: "mobile-game-control-up",
     ariaLabel: "Move up",
   },
   {
-    label: "◀",
-    keyName: "ArrowLeft",
+    label: "<",
+    control: "left",
     className: "mobile-game-control-left",
     ariaLabel: "Move left",
   },
   {
-    label: "▶",
-    keyName: "ArrowRight",
+    label: ">",
+    control: "right",
     className: "mobile-game-control-right",
     ariaLabel: "Move right",
   },
   {
-    label: "▼",
-    keyName: "ArrowDown",
+    label: "v",
+    control: "down",
     className: "mobile-game-control-down",
     ariaLabel: "Move down",
   },
 ];
 
-function emitKeyboardEvent(type: "keydown" | "keyup", key: ControlKey) {
-  const event = new KeyboardEvent(type, {
-    key,
-    code: key,
-    bubbles: true,
-    cancelable: true,
-  });
-
-  window.dispatchEvent(event);
-  document.dispatchEvent(event);
-}
-
-function pressKey(key: ControlKey) {
-  emitKeyboardEvent("keydown", key);
-}
-
-function releaseKey(key: ControlKey) {
-  emitKeyboardEvent("keyup", key);
-}
-
-function releaseMovementKeys() {
-  controls.forEach((control) => {
-    releaseKey(control.keyName);
-  });
-}
-
 export default function MobileGameControls() {
+  useEffect(() => releaseAllVirtualControls, []);
+
   return (
     <div className="mobile-game-controls" aria-label="Mobile game controls">
       <div className="mobile-game-dpad" aria-label="Movement controls">
         {controls.map((control) => (
           <button
-            key={control.keyName}
+            key={control.control}
             type="button"
             className={`mobile-game-control ${control.className}`}
             aria-label={control.ariaLabel}
             onPointerDown={(event) => {
               event.preventDefault();
-              pressKey(control.keyName);
+              event.currentTarget.setPointerCapture(event.pointerId);
+              pressVirtualControl(control.control);
             }}
             onPointerUp={(event) => {
               event.preventDefault();
-              releaseKey(control.keyName);
+              releaseVirtualControl(control.control);
             }}
             onPointerCancel={(event) => {
               event.preventDefault();
-              releaseKey(control.keyName);
+              releaseVirtualControl(control.control);
             }}
             onPointerLeave={() => {
-              releaseKey(control.keyName);
+              releaseVirtualControl(control.control);
             }}
             onContextMenu={(event) => {
               event.preventDefault();
@@ -100,18 +83,19 @@ export default function MobileGameControls() {
         aria-label="Open nearby portfolio station"
         onPointerDown={(event) => {
           event.preventDefault();
-          pressKey("Enter");
+          event.currentTarget.setPointerCapture(event.pointerId);
+          pressVirtualControl("interact");
         }}
         onPointerUp={(event) => {
           event.preventDefault();
-          releaseKey("Enter");
+          releaseVirtualControl("interact");
         }}
         onPointerCancel={(event) => {
           event.preventDefault();
-          releaseKey("Enter");
+          releaseVirtualControl("interact");
         }}
         onPointerLeave={() => {
-          releaseKey("Enter");
+          releaseVirtualControl("interact");
         }}
         onContextMenu={(event) => {
           event.preventDefault();
@@ -123,7 +107,7 @@ export default function MobileGameControls() {
       <button
         type="button"
         className="mobile-game-release"
-        onClick={releaseMovementKeys}
+        onClick={releaseAllVirtualControls}
       >
         Stop
       </button>

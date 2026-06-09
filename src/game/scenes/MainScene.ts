@@ -12,6 +12,10 @@ import {
   worldSize,
 } from "../config/worldConfig";
 import {
+  isVirtualControlDown,
+  onVirtualControlPress,
+} from "../input/virtualInput";
+import {
   createSparkBurst,
   createAmbientSparks,
   createPortalShimmer,
@@ -800,10 +804,22 @@ function createPlayer(k: KaboomCtx, reducedMotion: boolean) {
   player.onUpdate(() => {
     const dir = k.vec2(0, 0);
 
-    if (k.isKeyDown("left") || k.isKeyDown("a")) dir.x -= 1;
-    if (k.isKeyDown("right") || k.isKeyDown("d")) dir.x += 1;
-    if (k.isKeyDown("up") || k.isKeyDown("w")) dir.y -= 1;
-    if (k.isKeyDown("down") || k.isKeyDown("s")) dir.y += 1;
+    if (k.isKeyDown("left") || k.isKeyDown("a") || isVirtualControlDown("left")) {
+      dir.x -= 1;
+    }
+    if (
+      k.isKeyDown("right") ||
+      k.isKeyDown("d") ||
+      isVirtualControlDown("right")
+    ) {
+      dir.x += 1;
+    }
+    if (k.isKeyDown("up") || k.isKeyDown("w") || isVirtualControlDown("up")) {
+      dir.y -= 1;
+    }
+    if (k.isKeyDown("down") || k.isKeyDown("s") || isVirtualControlDown("down")) {
+      dir.y += 1;
+    }
 
     const moving = dir.x !== 0 || dir.y !== 0;
 
@@ -1134,4 +1150,14 @@ export function createMainScene(k: KaboomCtx, options: CreateMainSceneOptions) {
     if (!nearbySection) return;
     attemptOpen(nearbySection, nearbyLocked);
   });
+
+  const unsubscribeVirtualPress = onVirtualControlPress((control) => {
+    if (control !== "interact" || !nearbySection) return;
+
+    attemptOpen(nearbySection, nearbyLocked);
+  });
+
+  return () => {
+    unsubscribeVirtualPress();
+  };
 }
