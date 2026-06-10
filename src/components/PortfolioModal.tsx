@@ -345,7 +345,7 @@ function ContactMethodCard({ method }: ContactMethodCardProps) {
     <>
       <span>{method.label}</span>
       <strong>{method.value}</strong>
-      {method.placeholder && <em>Link pending</em>}
+      {method.pending && <em>Link pending</em>}
     </>
   );
 
@@ -357,7 +357,7 @@ function ContactMethodCard({ method }: ContactMethodCardProps) {
     );
   }
 
-  return <div className="contact-method-card is-placeholder">{content}</div>;
+  return <div className="contact-method-card is-pending">{content}</div>;
 }
 
 type ProjectsBossRoomProps = {
@@ -449,7 +449,7 @@ function ProjectsBossRoom({
                 />
               ) : (
                 <div className="preview-content">
-                  <p>Preview</p>
+                  <p>Screenshot</p>
                   <strong>{activeProject.title}</strong>
                 </div>
               )}
@@ -518,6 +518,8 @@ function ProjectsBossRoom({
                 </a>
               )}
             </div>
+
+            <ProjectAvailabilityNotes project={activeProject} />
           </div>
         </article>
       </div>
@@ -535,6 +537,28 @@ function ProofBlock({ title, text }: ProofBlockProps) {
     <div className="proof-block">
       <span>{title}</span>
       <p>{text}</p>
+    </div>
+  );
+}
+
+function ProjectAvailabilityNotes({ project }: { project: PortfolioProject }) {
+  if (!project.demoNote && (project.githubUrl || !project.repositoryNote)) {
+    return null;
+  }
+
+  return (
+    <div className="project-availability-notes">
+      {project.demoNote && (
+        <p className="project-availability-note">
+          <strong>Demo:</strong> {project.demoNote}
+        </p>
+      )}
+
+      {!project.githubUrl && project.repositoryNote && (
+        <p className="project-availability-note">
+          <strong>Repository:</strong> {project.repositoryNote}
+        </p>
+      )}
     </div>
   );
 }

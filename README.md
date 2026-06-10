@@ -10,7 +10,7 @@ This project is designed to be both a portfolio and a live frontend work sample.
 
 - Animated Kaboom game hub with keyboard controls
 - Data-driven About, Skills, Projects, and Contact sections
-- Recruiter Mode with professional summary, grouped skills, featured work, and contact placeholders
+- Recruiter Mode with professional summary, grouped skills, featured work, and contact links
 - Project case-study structure with problem, solution, role, impact, tech stack, lessons, and improvements
 - Mobile Mission Map for touch-friendly section access
 - Accessible modal behavior with focus management and Escape close
@@ -36,10 +36,12 @@ TODO: Add desktop and mobile screenshots before publishing.
 
 ## Local Development
 
+Use Node.js 22 or newer. Do not commit or ship `node_modules`, `dist`, or other generated dependency/build folders in project archives; install from `package-lock.json` instead.
+
 Install dependencies:
 
 ```sh
-npm install
+npm ci
 ```
 
 Run the development server:
@@ -68,10 +70,30 @@ Run linting:
 npm run lint
 ```
 
+Run type checking:
+
+```sh
+npm run typecheck
+```
+
+Before sharing or deploying, validate from a clean install:
+
+```sh
+npm ci
+npm run build
+npm run lint
+```
+
+Local cleanup for generated folders only:
+
+```sh
+npm run clean
+```
+
 ## Project Structure
 
 - `src/App.tsx` handles route state, active modal state, toast state, and high-level layout.
-- `src/data/portfolioData.ts` stores the profile, grouped skills, contact placeholders, sections, and project case studies.
+- `src/data/portfolioData.ts` stores the profile, grouped skills, contact links, sections, and project case studies.
 - `src/hooks/usePortfolioProgress.ts` owns progression, unlock rules, localStorage persistence, and Recruiter Mode preference.
 - `src/components/GameCanvas.tsx` mounts and cleans up the Kaboom canvas.
 - `src/game/scenes/MainScene.ts` defines the animated game world and interactions.
@@ -83,8 +105,6 @@ npm run lint
 
 ## Roadmap
 
-- TODO: Replace profile placeholders with real name, location, email, GitHub, LinkedIn, and resume links.
-- TODO: Add real live demo and repository URLs where projects are public.
 - TODO: Add final screenshots and social preview image.
 - Add more project filters once the project list grows.
 - Add additional accessibility testing with screen reader workflows.
@@ -94,7 +114,7 @@ npm run lint
 - The app is fully client-side and can deploy to static hosting.
 - Configure the host to serve `index.html` for `/projects/:projectId` routes.
 - Do not add frontend secrets; public portfolio links should be safe to expose.
-- Replace all TODO placeholders before sharing the portfolio publicly.
+- Keep project screenshots, live links, and repository availability notes current before sharing the portfolio publicly.
 
 ## Accessibility Notes
 
@@ -107,4 +127,4 @@ npm run lint
 
 - Game effects use Kaboom primitives and short-lived particles with lifespans.
 - The app avoids external animation, UI, state, and sound dependencies.
-- Project screenshots are bundled assets; optimize image sizes before production deployment if needed.
+- Project screenshots are bundled as compressed assets; keep large source captures out of the production bundle.

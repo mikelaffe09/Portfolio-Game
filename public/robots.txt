@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mikelaffe09.github.io/portfolio-game/sitemap.xml

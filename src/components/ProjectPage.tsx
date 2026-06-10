@@ -28,7 +28,7 @@ export default function ProjectPage({
             {
               src: previewImage,
               alt: getProjectPreviewAlt(project),
-              label: "Project Preview",
+              label: "Project screenshot",
               caption: project.shortDescription,
             },
           ]
@@ -89,6 +89,8 @@ export default function ProjectPage({
               </a>
             )}
           </div>
+
+          <ProjectAvailabilityNotes project={project} />
         </div>
 
         <ProjectMediaGallery
@@ -131,7 +133,16 @@ export default function ProjectPage({
             </article>
           )}
 
-
+          {project.nextImprovements?.length && (
+            <article>
+              <span>Next Improvements</span>
+              <ul>
+                {project.nextImprovements.map((improvement) => (
+                  <li key={improvement}>{improvement}</li>
+                ))}
+              </ul>
+            </article>
+          )}
         </section>
       )}
 
@@ -154,7 +165,7 @@ export default function ProjectPage({
               {getProjectPreviewImage(item) ? (
                 <img src={getProjectPreviewImage(item)} alt="" />
               ) : (
-                <span className="switcher-preview-placeholder" aria-hidden="true" />
+                <span className="switcher-preview-empty" aria-hidden="true" />
               )}
               <span>
                 <strong>{item.title}</strong>
@@ -185,7 +196,7 @@ function ProjectMediaGallery({
   if (images.length === 0) {
     return (
       <div className="project-page-media project-page-media-empty">
-        <div className="project-preview-placeholder">Preview coming soon</div>
+        <div className="project-preview-empty">Screenshot unavailable</div>
       </div>
     );
   }
@@ -221,5 +232,27 @@ function ProjectProofBlock({ title, text }: ProjectProofBlockProps) {
       <span>{title}</span>
       <p>{text}</p>
     </article>
+  );
+}
+
+function ProjectAvailabilityNotes({ project }: { project: PortfolioProject }) {
+  if (!project.demoNote && (project.githubUrl || !project.repositoryNote)) {
+    return null;
+  }
+
+  return (
+    <div className="project-availability-notes">
+      {project.demoNote && (
+        <p className="project-availability-note">
+          <strong>Demo:</strong> {project.demoNote}
+        </p>
+      )}
+
+      {!project.githubUrl && project.repositoryNote && (
+        <p className="project-availability-note">
+          <strong>Repository:</strong> {project.repositoryNote}
+        </p>
+      )}
+    </div>
   );
 }

@@ -1,15 +1,14 @@
-import calcVaultPlaceholder1 from "../assets/projects/calcvault-placeholder-1.jpg";
-import calcVaultPlaceholder2 from "../assets/projects/calcvault-placeholder-2.jpg";
-import chapterkeepLandingPreview from "../assets/projects/chapterkeep-landing-preview.png";
-import chapterkeepLibraryPreview from "../assets/projects/chapterkeep-library-preview.jpg";
-import galaFlowersPlaceholder1 from "../assets/projects/gala-flowers-placeholder-1.jpg";
-import galaFlowersPlaceholder2 from "../assets/projects/gala-flowers-placeholder-2.jpg";
-import mrFixPlaceholder1 from "../assets/projects/mr-fix-placeholder-1.jpg";
-import mrFixPlaceholder2 from "../assets/projects/mr-fix-placeholder-2.jpg";
-import selectedWebWorkPlaceholder1 from "../assets/projects/selected-web-work-placeholder-1.jpg";
-import selectedWebWorkPlaceholder2 from "../assets/projects/selected-web-work-placeholder-2.jpg";
-import smartGaragePlaceholder1 from "../assets/projects/smartgarage-placeholder-1.jpg";
-import smartGaragePlaceholder2 from "../assets/projects/smartgarage-placeholder-2.svg";
+import calcVaultVaultOverviewScreenshot from "../assets/projects/calcvault-vault-overview.jpg";
+import calcVaultVaultSectionsScreenshot from "../assets/projects/calcvault-vault-sections.jpg";
+import chapterkeepLandingScreenshot from "../assets/projects/chapterkeep-landing-page.jpg";
+import chapterkeepLibraryScreenshot from "../assets/projects/chapterkeep-library-dashboard.jpg";
+import cresviaPortfolioFeaturedScreenshot from "../assets/projects/cresvia-portfolio-featured.jpg";
+import cresviaPortfolioRealEstateScreenshot from "../assets/projects/cresvia-portfolio-real-estate.jpg";
+import galaFlowersHomepageScreenshot from "../assets/projects/gala-flowers-homepage.jpg";
+import galaFlowersServicesScreenshot from "../assets/projects/gala-flowers-services.jpg";
+import mrFixHomepageScreenshot from "../assets/projects/mr-fix-homepage.jpg";
+import mrFixServicesScreenshot from "../assets/projects/mr-fix-services.jpg";
+import smartGarageHomeDashboardScreenshot from "../assets/projects/smartgarage-home-dashboard.jpg";
 
 export const stationOrder = ["about", "skills", "projects", "contact"] as const;
 
@@ -34,7 +33,7 @@ export type ContactMethod = {
   label: string;
   value: string;
   href?: string;
-  placeholder?: boolean;
+  pending?: boolean;
 };
 
 export type ExperienceItem = {
@@ -98,7 +97,9 @@ export type PortfolioProject = {
   }[];
   path: string;
   demoUrl?: string;
+  demoNote?: string;
   githubUrl?: string;
+  repositoryNote?: string;
   links?: ProjectLink[];
   lessons?: string[];
   nextImprovements?: string[];
@@ -318,7 +319,7 @@ export const portfolioSections: PortfolioSection[] = [
     body: "Selected projects from Mike's CV and recent work: SmartGarage, ChapterKeep, business websites, service-business sites, and a mobile encrypted storage app.",
     highlights: [
       "CV-backed project details with role, stack, impact, and live links where available.",
-      "Project galleries now use the added screenshots where available.",
+      "Project galleries use compressed screenshots from the live or private project surfaces.",
       "ChapterKeep keeps its current images while the text is tightened around the live product story.",
     ],
     projects: [
@@ -352,35 +353,30 @@ export const portfolioSections: PortfolioSection[] = [
         ],
         status: "live",
         category: "full-stack",
-        screenshotUrl: smartGaragePlaceholder1,
-        previewImage: smartGaragePlaceholder1,
+        screenshotUrl: smartGarageHomeDashboardScreenshot,
+        previewImage: smartGarageHomeDashboardScreenshot,
         previewAlt:
-          "SmartGarage vehicle management screenshot with dashboard-style interface.",
+          "SmartGarage landing page showing vehicle dashboard and AI mechanic assistant.",
         galleryImages: [
           {
-            src: smartGaragePlaceholder1,
-            alt: "SmartGarage vehicle dashboard screenshot.",
-            label: "Vehicle Dashboard",
+            src: smartGarageHomeDashboardScreenshot,
+            alt: "SmartGarage landing page with vehicle management dashboard, maintenance reminders, and AI mechanic assistant.",
+            label: "Live Landing and Dashboard",
             caption:
-              "Vehicle management interface for profiles, reminders, expenses, and service history.",
-          },
-          {
-            src: smartGaragePlaceholder2,
-            alt: "SmartGarage placeholder for AI mechanic assistant screenshot.",
-            label: "AI Mechanic Placeholder",
-            caption:
-              "Temporary second visual until the AI mechanic or admin dashboard screenshot is added.",
+              "Public project page showing the main value proposition, dashboard cards, and AI mechanic support.",
           },
         ],
         path: "/projects/smartgarage",
         demoUrl: "https://www.smartgarage.website/",
+        repositoryNote:
+          "Repository is private because this is a senior-project codebase with team coursework and deployment configuration history.",
         lessons: [
           "Vehicle tools need fast access to routine records and enough structure for long-term service history.",
           "AI features are stronger when they live inside the product workflow instead of as a detached chatbot.",
         ],
         nextImprovements: [
-          "Add the second SmartGarage screenshot for the AI chat or admin dashboard.",
-          "Surface stronger product metrics and architecture notes once the senior-project submission is finalized.",
+          "Capture a dedicated signed-in mobile screen once the production demo account is ready to share.",
+          "Surface stronger product metrics and architecture notes after the senior-project submission is finalized.",
         ],
       },
       {
@@ -402,20 +398,20 @@ export const portfolioSections: PortfolioSection[] = [
         tech: ["React", "TypeScript", "Supabase", "Tailwind CSS", "Responsive UI"],
         status: "live",
         category: "full-stack",
-        screenshotUrl: chapterkeepLandingPreview,
-        previewImage: chapterkeepLandingPreview,
+        screenshotUrl: chapterkeepLandingScreenshot,
+        previewImage: chapterkeepLandingScreenshot,
         previewAlt:
           "ChapterKeep public landing page with a reading-focused call to action.",
         galleryImages: [
           {
-            src: chapterkeepLandingPreview,
+            src: chapterkeepLandingScreenshot,
             alt: "ChapterKeep landing page hero promoting reading tracking and beta signup.",
             label: "Public Landing",
             caption:
               "A clear marketing surface for the book tracker, free plan, goals, challenges, and community value.",
           },
           {
-            src: chapterkeepLibraryPreview,
+            src: chapterkeepLibraryScreenshot,
             alt: "ChapterKeep library dashboard showing search, book filters, cover cards, progress, and ratings.",
             label: "Library Dashboard",
             caption:
@@ -424,6 +420,8 @@ export const portfolioSections: PortfolioSection[] = [
         ],
         path: "/projects/chapterkeep",
         demoUrl: "https://chapterkeepp.cresvia.co/",
+        repositoryNote:
+          "Repository is private while product and Supabase implementation details are still being iterated.",
         lessons: [
           "Reader products need warmth and structure at the same time.",
           "A stronger case study shows both the landing-page promise and the actual app surface.",
@@ -451,33 +449,35 @@ export const portfolioSections: PortfolioSection[] = [
         tech: ["React", "Vite", "Tailwind CSS", "Responsive UI", "SEO"],
         status: "live",
         category: "web",
-        screenshotUrl: galaFlowersPlaceholder1,
-        previewImage: galaFlowersPlaceholder1,
+        screenshotUrl: galaFlowersHomepageScreenshot,
+        previewImage: galaFlowersHomepageScreenshot,
         previewAlt: "Gala Flowers luxury floral website screenshot.",
         galleryImages: [
           {
-            src: galaFlowersPlaceholder1,
+            src: galaFlowersHomepageScreenshot,
             alt: "Gala Flowers homepage screenshot.",
             label: "Homepage",
             caption:
               "Luxury floral hero and WhatsApp quote call to action for a Naqqache floral brand.",
           },
           {
-            src: galaFlowersPlaceholder2,
+            src: galaFlowersServicesScreenshot,
             alt: "Gala Flowers services or portfolio screenshot.",
-            label: "Services / Portfolio",
+            label: "Services",
             caption:
               "Service and portfolio presentation for bouquets, weddings, events, indoor plants, and seasonal work.",
           },
         ],
         path: "/projects/gala-flowers",
         demoUrl: "https://galaflowers.cresvia.co/",
+        repositoryNote:
+          "Repository is private for client-site work; production screenshots and live deployment are public.",
         lessons: [
           "Visual service businesses need product-quality imagery, fast category scanning, and direct inquiry actions.",
           "A focused WhatsApp flow can be more useful than a heavy booking system for a local floral brand.",
         ],
         nextImprovements: [
-          "Add performance notes around image optimization once final assets are selected.",
+          "Add performance notes around image optimization as final business photography is selected.",
         ],
       },
       {
@@ -499,27 +499,29 @@ export const portfolioSections: PortfolioSection[] = [
         tech: ["React", "Vite", "Tailwind CSS", "Supabase", "SEO", "Responsive UI"],
         status: "live",
         category: "full-stack",
-        screenshotUrl: mrFixPlaceholder1,
-        previewImage: mrFixPlaceholder1,
+        screenshotUrl: mrFixHomepageScreenshot,
+        previewImage: mrFixHomepageScreenshot,
         previewAlt: "Mr Fix handyman service website screenshot.",
         galleryImages: [
           {
-            src: mrFixPlaceholder1,
+            src: mrFixHomepageScreenshot,
             alt: "Mr Fix homepage or services screenshot.",
-            label: "Services",
+            label: "Homepage",
             caption:
-              "Public service page for Portland and Vancouver handyman offerings.",
+              "Public service site for Portland and Vancouver handyman offerings with direct contact actions.",
           },
           {
-            src: mrFixPlaceholder2,
-            alt: "Mr Fix quote form or admin dashboard screenshot.",
-            label: "Quote Flow",
+            src: mrFixServicesScreenshot,
+            alt: "Mr Fix services page screenshot.",
+            label: "Services",
             caption:
-              "Quote, contact, or lead-management view connected to the service-business workflow.",
+              "Service-category cards for repairs, painting, installation, and general home improvement work.",
           },
         ],
         path: "/projects/mr-fix",
         demoUrl: "https://mrfix.cresvia.co/",
+        repositoryNote:
+          "Repository is private for client-site and lead-management implementation details.",
         lessons: [
           "Service websites need clear location coverage, direct contact options, and trust signals before visual polish matters.",
           "Lead storage and admin review make a landing page more operationally useful.",
@@ -547,31 +549,36 @@ export const portfolioSections: PortfolioSection[] = [
         tech: ["React Native", "Expo", "TypeScript", "Local Storage", "Encryption"],
         status: "private",
         category: "mobile",
-        screenshotUrl: calcVaultPlaceholder1,
-        previewImage: calcVaultPlaceholder1,
+        screenshotUrl: calcVaultVaultOverviewScreenshot,
+        previewImage: calcVaultVaultOverviewScreenshot,
         previewAlt: "CalcVault calculator and encrypted vault mobile app screenshot.",
         galleryImages: [
           {
-            src: calcVaultPlaceholder1,
-            alt: "CalcVault calculator front screenshot.",
-            label: "Calculator Front",
+            src: calcVaultVaultOverviewScreenshot,
+            alt: "CalcVault private vault overview screenshot.",
+            label: "Vault Overview",
             caption:
-              "Calculator interface that acts as the app's public front.",
+              "Local-first encrypted storage overview for files, images, notes, contacts, text snippets, folders, and trash.",
           },
           {
-            src: calcVaultPlaceholder2,
-            alt: "CalcVault encrypted vault screenshot.",
-            label: "Encrypted Vault",
+            src: calcVaultVaultSectionsScreenshot,
+            alt: "CalcVault vault sections screenshot.",
+            label: "Vault Sections",
             caption:
-              "Private local encrypted storage screen behind the calculator flow.",
+              "Private vault sections for files, images, notes, and contacts behind the calculator entry flow.",
           },
         ],
         path: "/projects/calcvault",
+        demoNote:
+          "Private mobile build; walkthrough available during an interview or code review.",
+        repositoryNote:
+          "Repository is private because the project focuses on local encrypted storage and mobile privacy patterns.",
         lessons: [
           "Privacy products need simple interaction patterns and clear separation between public and protected flows.",
           "Local-first mobile storage changes the UX tradeoffs around backup, recovery, and device trust.",
         ],
         nextImprovements: [
+          "Add a public demo video or sanitized Expo build when the vault data model is ready to share safely.",
           "Clarify the encryption library or native secure-storage approach used in the final build.",
         ],
       },
@@ -594,28 +601,30 @@ export const portfolioSections: PortfolioSection[] = [
         tech: ["React", "Vite", "Tailwind CSS", "Responsive UI", "Deployment"],
         status: "live",
         category: "web",
-        screenshotUrl: selectedWebWorkPlaceholder1,
-        previewImage: selectedWebWorkPlaceholder1,
+        screenshotUrl: cresviaPortfolioFeaturedScreenshot,
+        previewImage: cresviaPortfolioFeaturedScreenshot,
         previewAlt:
           "Selected business website and landing page screenshot.",
         galleryImages: [
           {
-            src: selectedWebWorkPlaceholder1,
+            src: cresviaPortfolioFeaturedScreenshot,
             alt: "Selected Web Work screenshot for Cresvia website.",
-            label: "Cresvia",
+            label: "Featured Portfolio",
             caption:
               "Representative business website screenshot from the Cresvia web work collection.",
           },
           {
-            src: selectedWebWorkPlaceholder2,
+            src: cresviaPortfolioRealEstateScreenshot,
             alt: "Selected Web Work screenshot for Cresvia Lebanon website.",
-            label: "Cresvia Lebanon",
+            label: "Real Estate Collection",
             caption:
-              "Representative landing page screenshot for Cresvia Lebanon or related service-business work.",
+              "Portfolio filtering screen showing real estate website work delivered for service-business audiences.",
           },
         ],
         path: "/projects/selected-web-work",
         demoUrl: "https://www.cresvia.co/",
+        repositoryNote:
+          "Repositories are private for client and agency work; live deployments and screenshots are public where available.",
         links: [
           {
             label: "Cresvia Lebanon",

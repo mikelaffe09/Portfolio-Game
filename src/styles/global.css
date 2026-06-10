@@ -716,6 +716,23 @@ kbd {
   gap: 10px;
 }
 
+.project-availability-notes {
+  display: grid;
+  gap: 7px;
+  max-width: 780px;
+}
+
+.project-availability-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.project-availability-note strong {
+  color: var(--text);
+}
+
 .mission-panel .mission-actions {
   display: grid;
   grid-template-columns: 1fr;
@@ -1172,7 +1189,7 @@ kbd {
 }
 
 .recruiter-project-card > img,
-.project-preview-placeholder {
+.project-preview-empty {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -1194,7 +1211,7 @@ kbd {
   border-bottom: 0;
 }
 
-.project-preview-placeholder {
+.project-preview-empty {
   display: grid;
   place-items: center;
   color: var(--muted);
@@ -1271,7 +1288,7 @@ kbd {
   font-weight: 800;
 }
 
-.contact-method-card.is-placeholder {
+.contact-method-card.is-pending {
   cursor: default;
   opacity: 0.86;
 }
@@ -1646,7 +1663,7 @@ kbd {
 }
 
 .project-page-switcher img,
-.switcher-preview-placeholder {
+.switcher-preview-empty {
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 6px;

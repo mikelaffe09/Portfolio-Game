@@ -223,7 +223,7 @@ function RecruiterProjectCard({
       {previewImage ? (
         <img src={previewImage} alt={getProjectPreviewAlt(project)} />
       ) : (
-        <div className="project-preview-placeholder">Preview</div>
+        <div className="project-preview-empty">Screenshot unavailable</div>
       )}
 
       <div>
@@ -267,6 +267,8 @@ function RecruiterProjectCard({
             </a>
           )}
         </div>
+
+        <ProjectAvailabilityNotes project={project} />
       </div>
     </article>
   );
@@ -281,7 +283,7 @@ function ContactMethodCard({ method }: ContactMethodCardProps) {
     <>
       <span>{method.label}</span>
       <strong>{method.value}</strong>
-      {method.placeholder && <em>Link pending</em>}
+      {method.pending && <em>Link pending</em>}
     </>
   );
 
@@ -293,5 +295,27 @@ function ContactMethodCard({ method }: ContactMethodCardProps) {
     );
   }
 
-  return <div className="contact-method-card is-placeholder">{content}</div>;
+  return <div className="contact-method-card is-pending">{content}</div>;
+}
+
+function ProjectAvailabilityNotes({ project }: { project: PortfolioProject }) {
+  if (!project.demoNote && (project.githubUrl || !project.repositoryNote)) {
+    return null;
+  }
+
+  return (
+    <div className="project-availability-notes">
+      {project.demoNote && (
+        <p className="project-availability-note">
+          <strong>Demo:</strong> {project.demoNote}
+        </p>
+      )}
+
+      {!project.githubUrl && project.repositoryNote && (
+        <p className="project-availability-note">
+          <strong>Repository:</strong> {project.repositoryNote}
+        </p>
+      )}
+    </div>
+  );
 }

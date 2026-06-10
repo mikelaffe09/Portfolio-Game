@@ -1,0 +1,4 @@
+node_modules/ export-ignore
+dist/ export-ignore
+dist-ssr/ export-ignore
+*.log export-ignore

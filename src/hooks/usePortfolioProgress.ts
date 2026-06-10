@@ -7,10 +7,7 @@ import {
 } from "../data/portfolioData";
 
 const recruiterModeStorageKey = "signal-run-recruiter-mode";
-const completedStationStorageKeys = [
-  "signal-run-completed-stations",
-  "signal-run-completed-stations-v2",
-];
+const completedStationsStorageKey = "signal-run-completed-stations-v3";
 
 export type StationProgressItem = {
   section: PortfolioSection;
@@ -36,6 +33,25 @@ function loadRecruiterModePreference() {
     return window.localStorage.getItem(recruiterModeStorageKey) === "true";
   } catch {
     return false;
+  }
+}
+
+function hasStationId(value: unknown): value is StationId {
+  return typeof value === "string" && stationOrder.includes(value as StationId);
+}
+
+function loadCompletedStationIds() {
+  try {
+    const storedValue = window.localStorage.getItem(completedStationsStorageKey);
+    if (!storedValue) return new Set<StationId>();
+
+    const parsedValue: unknown = JSON.parse(storedValue);
+    if (!Array.isArray(parsedValue)) return new Set<StationId>();
+
+    const validIds = parsedValue.filter(hasStationId);
+    return new Set(validIds);
+  } catch {
+    return new Set<StationId>();
   }
 }
 
@@ -66,7 +82,7 @@ function getBlockingSection(
 
 export function usePortfolioProgress() {
   const [completedIds, setCompletedIds] = useState<Set<StationId>>(
-    () => new Set<StationId>()
+    () => loadCompletedStationIds()
   );
   const [recruiterMode, setRecruiterMode] = useState(
     () => loadRecruiterModePreference()
@@ -77,21 +93,26 @@ export function usePortfolioProgress() {
 
   useEffect(() => {
     try {
-      completedStationStorageKeys.forEach((storageKey) => {
-        window.localStorage.removeItem(storageKey);
-      });
-    } catch {
-      // Clearing stale browser progress is best-effort only.
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
       window.localStorage.setItem(recruiterModeStorageKey, String(recruiterMode));
     } catch {
       // Recruiter mode is optional UI preference state.
     }
   }, [recruiterMode]);
+
+  useEffect(() => {
+    try {
+      const orderedCompletedIds = stationOrder.filter((id) =>
+        completedIds.has(id)
+      );
+
+      window.localStorage.setItem(
+        completedStationsStorageKey,
+        JSON.stringify(orderedCompletedIds)
+      );
+    } catch {
+      // Completed station progress is best-effort browser state.
+    }
+  }, [completedIds]);
 
   const completedCount = completedIds.size;
   const totalStations = stationOrder.length;

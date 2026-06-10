@@ -22,6 +22,8 @@ import { usePortfolioProgress } from "./hooks/usePortfolioProgress";
 import { useReducedMotion } from "./hooks/useReducedMotion";
 import MobileGameControls from "./components/MobileGameControls";
 
+const collectedOrbIdsStorageKey = "signal-run-collected-orbs-v1";
+
 type AppRoute =
   | {
       name: "home";
@@ -30,6 +32,30 @@ type AppRoute =
       name: "project";
       projectId: string;
     };
+
+function hasCollectibleId(value: unknown) {
+  return (
+    typeof value === "string" &&
+    collectibleConfigs.some((config) => config.id === value)
+  );
+}
+
+function loadCollectedOrbIds() {
+  try {
+    const storedValue = window.localStorage.getItem(collectedOrbIdsStorageKey);
+    if (!storedValue) return [];
+
+    const parsedValue: unknown = JSON.parse(storedValue);
+    if (!Array.isArray(parsedValue)) return [];
+
+    const validIds = new Set(parsedValue.filter(hasCollectibleId));
+    return collectibleConfigs
+      .map((config) => config.id)
+      .filter((id) => validIds.has(id));
+  } catch {
+    return [];
+  }
+}
 
 function getCurrentRoute(): AppRoute {
   const projectMatch = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/);
@@ -48,8 +74,10 @@ export default function App() {
   const [route, setRoute] = useState<AppRoute>(() => getCurrentRoute());
   const [activeSectionId, setActiveSectionId] = useState<StationId | null>(null);
   const [toast, setToast] = useState<ProgressToastMessage | null>(null);
-  const [collectedOrbIds, setCollectedOrbIds] = useState<string[]>([]);
-  const collectedOrbIdsRef = useRef(new Set<string>());
+  const [collectedOrbIds, setCollectedOrbIds] = useState<string[]>(
+    () => loadCollectedOrbIds()
+  );
+  const collectedOrbIdsRef = useRef(new Set(collectedOrbIds));
   const toastIdRef = useRef(0);
   const reducedMotion = useReducedMotion();
 
@@ -97,6 +125,19 @@ export default function App() {
       window.clearTimeout(timeout);
     };
   }, [reducedMotion, toast]);
+
+  useEffect(() => {
+    collectedOrbIdsRef.current = new Set(collectedOrbIds);
+
+    try {
+      window.localStorage.setItem(
+        collectedOrbIdsStorageKey,
+        JSON.stringify(collectedOrbIds)
+      );
+    } catch {
+      // Collected orb progress is best-effort browser state.
+    }
+  }, [collectedOrbIds]);
 
   const showToast = useCallback(
     (title: string, message: string, tone: ProgressToastTone) => {
