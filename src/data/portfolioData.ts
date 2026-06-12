@@ -1,7 +1,7 @@
 import calcVaultVaultOverviewScreenshot from "../assets/projects/calcvault-vault-overview.jpg";
 import calcVaultVaultSectionsScreenshot from "../assets/projects/calcvault-vault-sections.jpg";
-import chapterkeepLandingScreenshot from "../assets/projects/chapterkeep-landing-page.jpg";
-import chapterkeepLibraryScreenshot from "../assets/projects/chapterkeep-library-dashboard.jpg";
+// import chapterkeepLandingScreenshot from "../assets/projects/chapterkeep-landing-page.jpg";
+// import chapterkeepLibraryScreenshot from "../assets/projects/chapterkeep-library-dashboard.jpg";
 import cresviaPortfolioFeaturedScreenshot from "../assets/projects/cresvia-portfolio-featured.jpg";
 import cresviaPortfolioRealEstateScreenshot from "../assets/projects/cresvia-portfolio-real-estate.jpg";
 import galaFlowersHomepageScreenshot from "../assets/projects/gala-flowers-homepage.jpg";
@@ -316,11 +316,11 @@ export const portfolioSections: PortfolioSection[] = [
     summary: "Senior project, deployed apps, client sites, and mobile security.",
     accent: "#f8c537",
     sceneColor: [248, 197, 55],
-    body: "Selected projects from Mike's CV and recent work: SmartGarage, ChapterKeep, business websites, service-business sites, and a mobile encrypted storage app.",
+    body: "Selected projects from Mike's CV and recent work: SmartGarage, business websites, service-business sites, and a mobile encrypted storage app.",
     highlights: [
       "CV-backed project details with role, stack, impact, and live links where available.",
       "Project galleries use compressed screenshots from the live or private project surfaces.",
-      "ChapterKeep keeps its current images while the text is tightened around the live product story.",
+      // "ChapterKeep keeps its current images while the text is tightened around the live product story.",
     ],
     projects: [
       {
@@ -379,7 +379,7 @@ export const portfolioSections: PortfolioSection[] = [
           "Surface stronger product metrics and architecture notes after the senior-project submission is finalized.",
         ],
       },
-      {
+  /*     {
         id: "chapterkeep",
         title: "ChapterKeep",
         shortDescription:
@@ -429,7 +429,7 @@ export const portfolioSections: PortfolioSection[] = [
         nextImprovements: [
           "Add more live app screenshots for analytics, calendar tracking, challenges, and community once those screens are ready to publish.",
         ],
-      },
+      }, */
       {
         id: "gala-flowers",
         title: "Gala Flowers",

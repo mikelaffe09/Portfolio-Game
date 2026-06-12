@@ -10,11 +10,11 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+  <!-- <url>
     <loc>https://mikelaffe09.github.io/portfolio-game/projects/chapterkeep</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
+  </url> -->
   <url>
     <loc>https://mikelaffe09.github.io/portfolio-game/projects/gala-flowers</loc>
     <changefreq>monthly</changefreq>
