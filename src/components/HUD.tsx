@@ -1,5 +1,7 @@
 type Props = {
   allComplete: boolean;
+  audioEnabled: boolean;
+  audioSupported: boolean;
   completed: number;
   collectedOrbs: number;
   progressPercent: number;
@@ -7,11 +9,14 @@ type Props = {
   total: number;
   totalOrbs: number;
   nextStationTitle: string;
+  onToggleAudio: () => void;
   onToggleRecruiterMode: () => void;
 };
 
 export default function HUD({
   allComplete,
+  audioEnabled,
+  audioSupported,
   completed,
   collectedOrbs,
   progressPercent,
@@ -19,6 +24,7 @@ export default function HUD({
   total,
   totalOrbs,
   nextStationTitle,
+  onToggleAudio,
   onToggleRecruiterMode,
 }: Props) {
   return (
@@ -60,6 +66,17 @@ export default function HUD({
         <kbd>E</kbd>
         <kbd>Enter</kbd>
       </div>
+
+      <button
+        className="hud-audio-toggle"
+        type="button"
+        aria-label={audioEnabled ? "Turn game sound off" : "Turn game sound on"}
+        aria-pressed={audioEnabled}
+        disabled={!audioSupported}
+        onClick={onToggleAudio}
+      >
+        {!audioSupported ? "No Audio" : audioEnabled ? "Sound On" : "Sound Off"}
+      </button>
 
       <button
         className="hud-recruiter-toggle"

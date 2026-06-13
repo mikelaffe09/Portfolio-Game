@@ -25,6 +25,7 @@ import {
   type StationId,
 } from "./data/portfolioData";
 import { collectibleConfigs } from "./game/config/worldConfig";
+import { useGameAudio } from "./hooks/useGameAudio";
 import { usePortfolioProgress } from "./hooks/usePortfolioProgress";
 import { useReducedMotion } from "./hooks/useReducedMotion";
 import MobileGameControls from "./components/MobileGameControls";
@@ -105,6 +106,15 @@ export default function App() {
   const collectedOrbIdsRef = useRef(new Set(collectedOrbIds));
   const toastIdRef = useRef(0);
   const reducedMotion = useReducedMotion();
+  const {
+    audioEnabled,
+    audioSupported,
+    enableAudio,
+    playFragmentCollect,
+    playRunComplete,
+    playStationComplete,
+    toggleAudio,
+  } = useGameAudio();
 
   const {
     allStationsComplete,
@@ -215,6 +225,9 @@ export default function App() {
 
       if (result.allComplete && !completionToastShownRef.current) {
         completionToastShownRef.current = true;
+        if (result.newlyCompleted) {
+          playRunComplete();
+        }
         showToast(
           "Portfolio Run Complete",
           "Every zone is synced. Recruiter Mode and the contact route are highlighted for the next step.",
@@ -224,6 +237,7 @@ export default function App() {
       }
 
       if (result.newlyCompleted) {
+        playStationComplete();
         showToast(
           `${section.title} synced`,
           `${section.zoneTitle} is complete. The next signal is now easier to find.`,
@@ -231,7 +245,7 @@ export default function App() {
         );
       }
     },
-    [requestSectionOpen, showToast]
+    [playRunComplete, playStationComplete, requestSectionOpen, showToast]
   );
 
   const handleLockedSection = useCallback(
@@ -287,12 +301,13 @@ export default function App() {
   }, [recruiterMode, showToast, toggleRecruiterMode]);
 
   const handleEnterHub = useCallback(() => {
+    enableAudio();
     setShouldLoadGame(true);
     playdeckRef.current?.scrollIntoView({
       behavior: reducedMotion ? "auto" : "smooth",
       block: "start",
     });
-  }, [reducedMotion]);
+  }, [enableAudio, reducedMotion]);
 
   const handleOpenRecruiterScan = useCallback(() => {
     if (!recruiterMode) {
@@ -318,13 +333,14 @@ export default function App() {
 
       collectedOrbIdsRef.current.add(orbId);
       setCollectedOrbIds([...collectedOrbIdsRef.current]);
+      playFragmentCollect();
       showToast(
         "Signal fragment collected",
         "Nice. The hub picked up another frontend skill marker.",
         "success"
       );
     },
-    [showToast]
+    [playFragmentCollect, showToast]
   );
 
   const activeSection =
@@ -399,6 +415,9 @@ export default function App() {
         total={totalStations}
         totalOrbs={totalOrbs}
         nextStationTitle={nextStationTitle}
+        audioEnabled={audioEnabled}
+        audioSupported={audioSupported}
+        onToggleAudio={toggleAudio}
         onToggleRecruiterMode={handleToggleRecruiterMode}
       />
 
@@ -423,6 +442,7 @@ export default function App() {
                 onOpenSection={openSection}
                 onLockedSection={handleLockedSection}
                 onCollectOrb={handleCollectOrb}
+                onEnableAudio={enableAudio}
                 completedIds={completedIdList}
                 unlockedIds={unlockedIdList}
                 collectedOrbIds={collectedOrbIdList}

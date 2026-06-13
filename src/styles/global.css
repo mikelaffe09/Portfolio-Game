@@ -137,7 +137,7 @@ a:focus-visible,
 
 .hud {
   display: grid;
-  grid-template-columns: minmax(190px, 1.05fr) minmax(240px, 1fr) minmax(170px, 0.7fr) auto auto auto;
+  grid-template-columns: minmax(190px, 1.05fr) minmax(240px, 1fr) minmax(170px, 0.7fr) auto auto auto auto;
   gap: 12px;
   align-items: stretch;
   margin-bottom: 16px;
@@ -247,6 +247,7 @@ kbd {
 }
 
 .hud-recruiter-toggle,
+.hud-audio-toggle,
 .spiral-gateway-actions button,
 .mission-actions button,
 .recruiter-hero-actions button,
@@ -267,6 +268,27 @@ kbd {
     transform 140ms ease,
     border-color 140ms ease,
     background 140ms ease;
+}
+
+.hud-audio-toggle {
+  align-self: center;
+  border-color: rgba(45, 212, 191, 0.48);
+  background: rgba(45, 212, 191, 0.1);
+  color: #d9fffb;
+}
+
+.hud-audio-toggle[aria-pressed="true"] {
+  border-color: var(--cyan);
+  background: rgba(45, 212, 191, 0.18);
+  color: #f0fffd;
+  box-shadow:
+    0 0 0 1px rgba(45, 212, 191, 0.22),
+    0 0 18px rgba(45, 212, 191, 0.16);
+}
+
+.hud-audio-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .hud-recruiter-toggle {
@@ -773,6 +795,7 @@ kbd {
 }
 
 .hud-recruiter-toggle:hover,
+.hud-audio-toggle:hover:not(:disabled),
 .spiral-gateway-actions button:hover,
 .mission-actions button:hover,
 .recruiter-hero-actions button:hover,
@@ -786,6 +809,7 @@ kbd {
 }
 
 .hud-recruiter-toggle:active,
+.hud-audio-toggle:active:not(:disabled),
 .spiral-gateway-actions button:active,
 .mission-actions button:active,
 .recruiter-hero-actions button:active,
@@ -1826,6 +1850,7 @@ kbd {
   }
 
   .hud-controls,
+  .hud-audio-toggle,
   .hud-recruiter-toggle {
     justify-self: start;
   }

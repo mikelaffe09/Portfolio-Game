@@ -13,6 +13,7 @@ type Props = {
   onOpenSection: (sectionId: StationId) => void;
   onLockedSection: (sectionId: StationId) => void;
   onCollectOrb: (orbId: string) => void;
+  onEnableAudio: () => void;
   completedIds: StationId[];
   unlockedIds: StationId[];
   collectedOrbIds: string[];
@@ -23,6 +24,7 @@ export default function GameCanvas({
   onOpenSection,
   onLockedSection,
   onCollectOrb,
+  onEnableAudio,
   completedIds,
   unlockedIds,
   collectedOrbIds,
@@ -77,5 +79,11 @@ export default function GameCanvas({
     unlockedIds,
   ]);
 
-  return <div ref={gameRef} className="game-canvas" />;
+  return (
+    <div
+      ref={gameRef}
+      className="game-canvas"
+      onPointerDownCapture={onEnableAudio}
+    />
+  );
 }
