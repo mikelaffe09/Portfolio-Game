@@ -32,6 +32,8 @@ type CreateMainSceneOptions = {
   unlockedIds: StationId[];
   collectedOrbIds: string[];
   reducedMotion: boolean;
+  initialPlayerPosition: PlayerPosition | null;
+  onPlayerPositionChange: (position: PlayerPosition) => void;
 };
 
 type Direction = {
@@ -39,8 +41,37 @@ type Direction = {
   y: number;
 };
 
+type PlayerPosition = {
+  x: number;
+  y: number;
+};
+
 function hasStationId(value: unknown): value is StationId {
   return typeof value === "string" && stationOrder.includes(value as StationId);
+}
+
+function getNextObjectiveConfig(
+  completedIds: StationId[],
+  unlockedIds: StationId[]
+) {
+  const completed = new Set(completedIds);
+  const unlocked = new Set(unlockedIds);
+  const nextUnlockedId =
+    stationOrder.find((sectionId) => {
+      return !completed.has(sectionId) && unlocked.has(sectionId);
+    }) ?? null;
+  const nextIncompleteId =
+    nextUnlockedId ??
+    stationOrder.find((sectionId) => !completed.has(sectionId)) ??
+    null;
+
+  if (!nextIncompleteId) return null;
+
+  return (
+    stationWorldConfig.find((config) => {
+      return config.sectionId === nextIncompleteId;
+    }) ?? null
+  );
 }
 
 function getRgb(k: KaboomCtx, color: RgbColor) {
@@ -746,8 +777,16 @@ function createPrompt(k: KaboomCtx) {
   };
 }
 
-function createPlayer(k: KaboomCtx, reducedMotion: boolean) {
-  const spawn = { x: 112, y: 420 };
+function createPlayer(
+  k: KaboomCtx,
+  reducedMotion: boolean,
+  initialPosition: PlayerPosition | null,
+  onPlayerPositionChange: (position: PlayerPosition) => void
+) {
+  const spawn = {
+    x: k.clamp(initialPosition?.x ?? 112, 32, worldSize.width - 32),
+    y: k.clamp(initialPosition?.y ?? 420, 96, worldSize.height - 42),
+  };
   const speed = 250;
   let trailTimer = 0;
   const lastDirection: Direction = { x: 1, y: 0 };
@@ -832,6 +871,7 @@ function createPlayer(k: KaboomCtx, reducedMotion: boolean) {
 
     player.pos.x = k.clamp(player.pos.x, 32, worldSize.width - 32);
     player.pos.y = k.clamp(player.pos.y, 96, worldSize.height - 42);
+    onPlayerPositionChange({ x: player.pos.x, y: player.pos.y });
 
     shadow.pos.x = player.pos.x;
     shadow.pos.y = player.pos.y + 20;
@@ -1039,6 +1079,8 @@ export function createMainScene(k: KaboomCtx, options: CreateMainSceneOptions) {
     unlockedIds,
     collectedOrbIds,
     reducedMotion,
+    initialPlayerPosition,
+    onPlayerPositionChange,
   } = options;
 
   let nearbySection: StationId | null = null;
@@ -1060,7 +1102,12 @@ export function createMainScene(k: KaboomCtx, options: CreateMainSceneOptions) {
     );
   });
 
-  const player = createPlayer(k, reducedMotion);
+  const player = createPlayer(
+    k,
+    reducedMotion,
+    initialPlayerPosition,
+    onPlayerPositionChange
+  );
 
   createCollectibles(k, collectedOrbIds, onCollectOrb, reducedMotion);
 
@@ -1074,6 +1121,7 @@ export function createMainScene(k: KaboomCtx, options: CreateMainSceneOptions) {
 
   function attemptOpen(sectionId: StationId, locked: boolean) {
     const config = getConfig(sectionId);
+    onPlayerPositionChange({ x: player.pos.x, y: player.pos.y });
 
     if (locked) {
       createRingPulse(k, {
@@ -1158,6 +1206,7 @@ export function createMainScene(k: KaboomCtx, options: CreateMainSceneOptions) {
   });
 
   return () => {
+    onPlayerPositionChange({ x: player.pos.x, y: player.pos.y });
     unsubscribeVirtualPress();
   };
 }
