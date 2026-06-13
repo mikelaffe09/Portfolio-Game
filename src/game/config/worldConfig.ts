@@ -102,6 +102,12 @@ export const collectibleConfigs: CollectibleConfig[] = [
     sectionId: "skills",
     position: { x: 322, y: 340 },
     color: [45, 212, 191],
+    reward: {
+      kind: "Skill Proof",
+      title: "Data-driven React surfaces",
+      description:
+        "Portfolio sections, recruiter mode, modals, and project pages reuse one structured content model instead of duplicated screens.",
+    },
   },
   {
     id: "orb-typescript",
@@ -109,6 +115,12 @@ export const collectibleConfigs: CollectibleConfig[] = [
     sectionId: "skills",
     position: { x: 592, y: 146 },
     color: [96, 165, 250],
+    reward: {
+      kind: "Skill Proof",
+      title: "Typed portfolio contracts",
+      description:
+        "Station IDs, project records, game config, and progress state are typed so UI routes and scene behavior stay aligned.",
+    },
   },
   {
     id: "orb-css",
@@ -116,6 +128,12 @@ export const collectibleConfigs: CollectibleConfig[] = [
     sectionId: "skills",
     position: { x: 296, y: 150 },
     color: [248, 197, 55],
+    reward: {
+      kind: "Bonus Evidence",
+      title: "Responsive interface craft",
+      description:
+        "The hub, recruiter scan, project pages, mobile controls, and reduced-motion states are tuned as one responsive experience.",
+    },
   },
   {
     id: "orb-accessibility",
@@ -123,6 +141,12 @@ export const collectibleConfigs: CollectibleConfig[] = [
     sectionId: "about",
     position: { x: 830, y: 402 },
     color: [255, 107, 107],
+    reward: {
+      kind: "Bonus Evidence",
+      title: "Accessible review path",
+      description:
+        "Keyboard controls, focusable mission routes, polite progress toasts, and recruiter mode keep the playful concept practical.",
+    },
   },
   {
     id: "orb-product",
@@ -130,6 +154,12 @@ export const collectibleConfigs: CollectibleConfig[] = [
     sectionId: "projects",
     position: { x: 86, y: 350 },
     color: [167, 139, 250],
+    reward: {
+      kind: "Hidden Project Note",
+      title: "SmartGarage workflow focus",
+      description:
+        "The strongest project story is not just AI chat; it is vehicle records, reminders, expenses, and mechanic help in one flow.",
+    },
   },
   {
     id: "orb-vite",
@@ -137,6 +167,12 @@ export const collectibleConfigs: CollectibleConfig[] = [
     sectionId: "projects",
     position: { x: 866, y: 158 },
     color: [248, 197, 55],
+    reward: {
+      kind: "Hidden Project Note",
+      title: "Portfolio game production path",
+      description:
+        "The playable hub ships through a conventional React/Vite build while preserving SEO metadata and direct project routes.",
+    },
   },
 ];
 

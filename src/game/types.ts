@@ -47,4 +47,9 @@ export type CollectibleConfig = {
     y: number;
   };
   color: RgbColor;
+  reward: {
+    kind: "Hidden Project Note" | "Skill Proof" | "Bonus Evidence";
+    title: string;
+    description: string;
+  };
 };

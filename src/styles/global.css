@@ -471,6 +471,12 @@ kbd {
     0 0 0 1px rgba(255, 255, 255, 0.035) inset;
 }
 
+.game-column {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+}
+
 .game-canvas {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -810,6 +816,190 @@ kbd {
   color: var(--text);
   font-size: 23px;
   line-height: 1;
+}
+
+.fragment-log {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(45, 212, 191, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(167, 139, 250, 0.12), transparent 36%, rgba(45, 212, 191, 0.08)),
+    linear-gradient(135deg, rgba(45, 212, 191, 0.1), rgba(248, 197, 55, 0.055) 46%, rgba(255, 107, 107, 0.07)),
+    rgba(5, 9, 16, 0.94);
+  padding: 14px;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.36),
+    0 0 0 1px rgba(255, 255, 255, 0.035) inset;
+}
+
+.fragment-log::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, transparent, rgba(45, 212, 191, 0.14), transparent),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035) 0,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 7px
+    );
+  opacity: 0.34;
+  transform: translateX(-44%);
+  animation: fragment-log-scan 5.6s ease-in-out infinite;
+}
+
+.fragment-log.is-complete {
+  border-color: rgba(248, 197, 55, 0.54);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.36),
+    0 0 30px rgba(248, 197, 55, 0.14),
+    0 0 0 1px rgba(248, 197, 55, 0.14) inset;
+}
+
+.fragment-log-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.fragment-log-header .panel-label {
+  margin: 0;
+}
+
+.fragment-log-header strong {
+  display: block;
+  max-width: 34ch;
+  margin-top: 4px;
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.22;
+}
+
+.fragment-log-count,
+.fragment-log-kind,
+.fragment-log-item small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.fragment-log-count {
+  border: 1px solid rgba(248, 197, 55, 0.42);
+  border-radius: 999px;
+  background: rgba(3, 7, 12, 0.58);
+  color: #fff3c4;
+  padding: 5px 8px;
+  box-shadow: 0 0 18px rgba(248, 197, 55, 0.08);
+}
+
+.fragment-log-list {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: clamp(218px, 27vw, 286px);
+  gap: 12px;
+  overflow-x: auto;
+  margin: 0;
+  padding: 2px 2px 8px;
+  list-style: none;
+  scrollbar-color: rgba(248, 197, 55, 0.48) rgba(255, 255, 255, 0.05);
+  scroll-snap-type: x proximity;
+}
+
+.fragment-log-item {
+  --fragment-accent: var(--cyan);
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 7px;
+  min-height: 172px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--fragment-accent) 34%, rgba(148, 163, 184, 0.18));
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--fragment-accent) 12%, transparent), transparent 46%),
+    rgba(8, 13, 22, 0.8);
+  padding: 12px;
+  scroll-snap-align: start;
+}
+
+.fragment-log-item::before {
+  width: 42px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--fragment-accent);
+  box-shadow: 0 0 18px var(--fragment-accent);
+  content: "";
+}
+
+.fragment-log-item::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0,
+    transparent 12px,
+    rgba(255, 255, 255, 0.04) 12px,
+    rgba(255, 255, 255, 0.04) 13px
+  );
+  opacity: 0.22;
+}
+
+.fragment-log-item.is-unlocked {
+  border-color: color-mix(in srgb, var(--fragment-accent) 62%, rgba(132, 255, 178, 0.24));
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.26),
+    0 0 24px color-mix(in srgb, var(--fragment-accent) 22%, transparent);
+  animation: fragment-reveal 460ms ease both;
+  animation-delay: calc(var(--fragment-index) * 45ms);
+}
+
+.fragment-log-item.is-locked {
+  border-style: dashed;
+  filter: saturate(0.68);
+  opacity: 0.72;
+}
+
+.fragment-log-item.is-locked strong,
+.fragment-log-item.is-locked p {
+  color: rgba(203, 216, 232, 0.7);
+}
+
+.fragment-log-kind {
+  color: var(--fragment-accent);
+  white-space: normal;
+}
+
+.fragment-log-item strong {
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.fragment-log-item p {
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: 13px;
+  line-height: 1.48;
+}
+
+.fragment-log-item small {
+  align-self: end;
 }
 
 .mission-route {
@@ -1950,6 +2140,35 @@ kbd {
 
   50% {
     transform: translateY(-18px);
+  }
+}
+
+@keyframes fragment-log-scan {
+  0%,
+  100% {
+    transform: translateX(-44%);
+    opacity: 0.18;
+  }
+
+  45%,
+  58% {
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: translateX(44%);
+  }
+}
+
+@keyframes fragment-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

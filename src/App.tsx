@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import FragmentLog from "./components/FragmentLog";
 import HUD from "./components/HUD";
 import MissionTracker from "./components/MissionTracker";
 import MobilePortfolioMap from "./components/MobilePortfolioMap";
@@ -37,6 +38,9 @@ import {
 
 const GameCanvas = lazy(() => import("./components/GameCanvas"));
 const collectedOrbIdsStorageKey = "signal-run-collected-orbs-v1";
+const collectibleConfigById = new Map(
+  collectibleConfigs.map((config) => [config.id, config])
+);
 
 type AppRoute =
   | {
@@ -48,10 +52,7 @@ type AppRoute =
     };
 
 function hasCollectibleId(value: unknown) {
-  return (
-    typeof value === "string" &&
-    collectibleConfigs.some((config) => config.id === value)
-  );
+  return typeof value === "string" && collectibleConfigById.has(value);
 }
 
 function loadCollectedOrbIds() {
@@ -331,13 +332,25 @@ export default function App() {
     (orbId: string) => {
       if (collectedOrbIdsRef.current.has(orbId)) return;
 
+      const collectible = collectibleConfigById.get(orbId);
       collectedOrbIdsRef.current.add(orbId);
       setCollectedOrbIds([...collectedOrbIdsRef.current]);
       playFragmentCollect();
+
+      const fragmentLogComplete =
+        collectedOrbIdsRef.current.size === collectibleConfigs.length;
+      const reward = collectible?.reward;
+
       showToast(
-        "Signal fragment collected",
-        "Nice. The hub picked up another frontend skill marker.",
-        "success"
+        fragmentLogComplete
+          ? "Fragment log complete"
+          : `${reward?.kind ?? "Evidence"} unlocked`,
+        reward
+          ? fragmentLogComplete
+            ? `Final entry: ${reward.title}. The fragment archive is complete.`
+            : `${reward.title} was restored in the fragment archive.`
+          : "The fragment archive restored another evidence entry.",
+        fragmentLogComplete ? "complete" : "success"
       );
     },
     [playFragmentCollect, showToast]
@@ -369,6 +382,17 @@ export default function App() {
     () => [...collectedOrbIds],
     [collectedOrbIds]
   );
+  const fragmentLogItems = useMemo(() => {
+    const collectedIds = new Set(collectedOrbIds);
+
+    return collectibleConfigs.map((config) => ({
+      id: config.id,
+      label: config.label,
+      color: config.color,
+      reward: config.reward,
+      collected: collectedIds.has(config.id),
+    }));
+  }, [collectedOrbIds]);
 
   if (route.name === "project") {
     if (!activeProjectPage) {
@@ -435,25 +459,33 @@ export default function App() {
         className="playdeck"
         aria-label="Interactive portfolio game"
       >
-        <div className="game-wrapper">
-          {shouldLoadGame ? (
-            <Suspense fallback={<GameCanvasPlaceholder />}>
-              <GameCanvas
-                onOpenSection={openSection}
-                onLockedSection={handleLockedSection}
-                onCollectOrb={handleCollectOrb}
-                onEnableAudio={enableAudio}
-                completedIds={completedIdList}
-                unlockedIds={unlockedIdList}
-                collectedOrbIds={collectedOrbIdList}
-                reducedMotion={reducedMotion}
-              />
-            </Suspense>
-          ) : (
-            <GameCanvasPlaceholder />
-          )}
+        <div className="game-column">
+          <div className="game-wrapper">
+            {shouldLoadGame ? (
+              <Suspense fallback={<GameCanvasPlaceholder />}>
+                <GameCanvas
+                  onOpenSection={openSection}
+                  onLockedSection={handleLockedSection}
+                  onCollectOrb={handleCollectOrb}
+                  onEnableAudio={enableAudio}
+                  completedIds={completedIdList}
+                  unlockedIds={unlockedIdList}
+                  collectedOrbIds={collectedOrbIdList}
+                  reducedMotion={reducedMotion}
+                />
+              </Suspense>
+            ) : (
+              <GameCanvasPlaceholder />
+            )}
 
-          {shouldLoadGame && <MobileGameControls />}
+            {shouldLoadGame && <MobileGameControls />}
+          </div>
+
+          <FragmentLog
+            collectedOrbs={collectedOrbIds.length}
+            fragmentLogItems={fragmentLogItems}
+            totalOrbs={totalOrbs}
+          />
         </div>
 
         <MissionTracker
