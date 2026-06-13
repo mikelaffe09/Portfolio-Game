@@ -920,6 +920,125 @@ function createPlayer(
   return player;
 }
 
+function createObjectiveMarker(
+  k: KaboomCtx,
+  target: StationWorldConfig,
+  player: ReturnType<typeof createPlayer>,
+  reducedMotion: boolean
+) {
+  const { x, y } = target.position;
+  const badgeX = k.clamp(x, 84, worldSize.width - 84);
+  const badgeY = k.clamp(y - target.radius - 58, 104, worldSize.height - 36);
+
+  const beaconAura = k.add([
+    k.circle(target.radius + 36),
+    k.pos(x, y),
+    k.anchor("center"),
+    k.color(target.accent[0], target.accent[1], target.accent[2]),
+    k.opacity(0.08),
+    k.scale(1),
+    k.z(12),
+    "ambient",
+  ]);
+
+  const beaconRing = k.add([
+    k.circle(target.radius + 20),
+    k.pos(x, y),
+    k.anchor("center"),
+    k.color(target.accent[0], target.accent[1], target.accent[2]),
+    k.outline(2, getRgb(k, target.accent)),
+    k.opacity(0.22),
+    k.scale(1),
+    k.z(13),
+    "ambient",
+  ]);
+
+  const badge = k.add([
+    k.rect(78, 25, { radius: 999 }),
+    k.pos(badgeX, badgeY),
+    k.anchor("center"),
+    k.color(5, 12, 20),
+    k.outline(1, getRgb(k, target.accent)),
+    k.opacity(0.94),
+    k.scale(1),
+    k.z(38),
+    "ambient",
+  ]);
+
+  const badgeText = k.add([
+    k.text("NEXT", { size: 10 }),
+    k.pos(badgeX, badgeY + 1),
+    k.anchor("center"),
+    k.color(target.accent[0], target.accent[1], target.accent[2]),
+    k.opacity(1),
+    k.z(39),
+    "ambient",
+  ]);
+
+  const routeDots = Array.from({ length: 6 }, (_, index) => {
+    return k.add([
+      k.circle(index === 5 ? 5 : 3),
+      k.pos(x, y),
+      k.anchor("center"),
+      k.color(target.accent[0], target.accent[1], target.accent[2]),
+      k.opacity(0),
+      k.scale(1),
+      k.z(37),
+      "ambient",
+    ]);
+  });
+
+  const updateGuide = () => {
+    const dx = x - player.pos.x;
+    const dy = y - player.pos.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const visible = distance > target.radius + 44;
+
+    if (!visible || distance === 0) {
+      routeDots.forEach((dot) => {
+        dot.opacity = 0;
+      });
+      return;
+    }
+
+    const unitX = dx / distance;
+    const unitY = dy / distance;
+    const startDistance = 34;
+    const endDistance = distance - target.radius - 34;
+    const guideLength = Math.max(0, endDistance - startDistance);
+    const offset = reducedMotion ? 0 : (k.time() * 0.32) % 1;
+
+    routeDots.forEach((dot, index) => {
+      const baseProgress = (index + 1) / (routeDots.length + 1);
+      const progress = reducedMotion
+        ? baseProgress
+        : (baseProgress + offset) % 1;
+      const distanceAlong = startDistance + progress * guideLength;
+
+      dot.pos.x = player.pos.x + unitX * distanceAlong;
+      dot.pos.y = player.pos.y + unitY * distanceAlong;
+      dot.opacity = reducedMotion ? 0.38 : 0.22 + progress * 0.48;
+      dot.scale = reducedMotion
+        ? k.vec2(1)
+        : k.vec2(0.82 + Math.max(0, Math.sin(k.time() * 4 + index)) * 0.22);
+    });
+  };
+
+  beaconAura.onUpdate(() => {
+    updateGuide();
+
+    if (reducedMotion) return;
+
+    const pulse = Math.max(0, Math.sin(k.time() * 3.2));
+    beaconAura.opacity = 0.06 + pulse * 0.09;
+    beaconAura.scale = k.vec2(1 + pulse * 0.08);
+    beaconRing.opacity = 0.2 + pulse * 0.14;
+    beaconRing.scale = k.vec2(1 + pulse * 0.045);
+    badge.scale = k.vec2(1 + pulse * 0.018);
+    badgeText.opacity = 0.82 + pulse * 0.18;
+  });
+}
+
 function createCollectibles(
   k: KaboomCtx,
   collectedOrbIds: string[],
@@ -1108,6 +1227,11 @@ export function createMainScene(k: KaboomCtx, options: CreateMainSceneOptions) {
     initialPlayerPosition,
     onPlayerPositionChange
   );
+  const nextObjectiveConfig = getNextObjectiveConfig(completedIds, unlockedIds);
+
+  if (nextObjectiveConfig) {
+    createObjectiveMarker(k, nextObjectiveConfig, player, reducedMotion);
+  }
 
   createCollectibles(k, collectedOrbIds, onCollectOrb, reducedMotion);
 
