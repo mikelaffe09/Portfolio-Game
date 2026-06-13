@@ -1151,7 +1151,7 @@ function createFinaleEffect(k: KaboomCtx, reducedMotion: boolean) {
   ]);
 
   k.add([
-    k.text("All portfolio zones are synced", { size: 10 }),
+    k.text("Endgame console unlocked below", { size: 10 }),
     k.pos(center.x, center.y + 12),
     k.anchor("center"),
     k.color(209, 213, 219),

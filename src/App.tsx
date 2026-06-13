@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import EndgameActions from "./components/EndgameActions";
 import FragmentLog from "./components/FragmentLog";
 import HUD from "./components/HUD";
 import MissionTracker from "./components/MissionTracker";
@@ -231,7 +232,7 @@ export default function App() {
         }
         showToast(
           "Portfolio Run Complete",
-          "Every zone is synced. Recruiter Mode and the contact route are highlighted for the next step.",
+          "Every zone is synced. The endgame console now links to the recruiter scan, CV, contact, and projects.",
           "complete"
         );
         return;
@@ -327,6 +328,14 @@ export default function App() {
       });
     }, 0);
   }, [recruiterMode, reducedMotion, showToast, toggleRecruiterMode]);
+
+  const handleOpenEndgameContact = useCallback(() => {
+    setActiveSectionId("contact");
+  }, []);
+
+  const handleReviewEndgameProjects = useCallback(() => {
+    setActiveSectionId("projects");
+  }, []);
 
   const handleCollectOrb = useCallback(
     (orbId: string) => {
@@ -485,6 +494,13 @@ export default function App() {
             collectedOrbs={collectedOrbIds.length}
             fragmentLogItems={fragmentLogItems}
             totalOrbs={totalOrbs}
+          />
+
+          <EndgameActions
+            visible={allStationsComplete}
+            onOpenContact={handleOpenEndgameContact}
+            onReviewBestProjects={handleReviewEndgameProjects}
+            onViewRecruiterScan={handleOpenRecruiterScan}
           />
         </div>
 
