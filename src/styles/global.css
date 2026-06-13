@@ -456,6 +456,27 @@ kbd {
   touch-action: none;
 }
 
+.game-canvas-placeholder {
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(rgba(45, 212, 191, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 212, 191, 0.06) 1px, transparent 1px),
+    #04070c;
+  background-size: 44px 44px;
+}
+
+.game-canvas-placeholder::after {
+  width: 76px;
+  height: 76px;
+  border: 1px solid rgba(45, 212, 191, 0.42);
+  border-radius: 50%;
+  content: "";
+  box-shadow:
+    0 0 0 18px rgba(45, 212, 191, 0.04),
+    0 0 42px rgba(45, 212, 191, 0.16);
+}
+
 .game-canvas canvas {
   display: block;
   width: 100% !important;

@@ -221,7 +221,12 @@ function RecruiterProjectCard({
       className={`recruiter-project-card ${featured ? "is-featured" : ""}`}
     >
       {previewImage ? (
-        <img src={previewImage} alt={getProjectPreviewAlt(project)} />
+        <img
+          src={previewImage}
+          alt={getProjectPreviewAlt(project)}
+          loading={featured ? "eager" : "lazy"}
+          decoding="async"
+        />
       ) : (
         <div className="project-preview-empty">Screenshot unavailable</div>
       )}

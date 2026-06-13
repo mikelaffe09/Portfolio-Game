@@ -1,5 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import GameCanvas from "./components/GameCanvas";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import HUD from "./components/HUD";
 import MissionTracker from "./components/MissionTracker";
 import MobilePortfolioMap from "./components/MobilePortfolioMap";
@@ -21,7 +28,13 @@ import { collectibleConfigs } from "./game/config/worldConfig";
 import { usePortfolioProgress } from "./hooks/usePortfolioProgress";
 import { useReducedMotion } from "./hooks/useReducedMotion";
 import MobileGameControls from "./components/MobileGameControls";
+import {
+  getHomeSeo,
+  getProjectSeo,
+  updateDocumentMetadata,
+} from "./utils/seo";
 
+const GameCanvas = lazy(() => import("./components/GameCanvas"));
 const collectedOrbIdsStorageKey = "signal-run-collected-orbs-v1";
 
 type AppRoute =
@@ -70,12 +83,24 @@ function getCurrentRoute(): AppRoute {
   return { name: "home" };
 }
 
+function GameCanvasPlaceholder() {
+  return (
+    <div
+      className="game-canvas game-canvas-placeholder"
+      aria-label="Interactive portfolio game loading"
+    />
+  );
+}
+
 export default function App() {
   const [route, setRoute] = useState<AppRoute>(() => getCurrentRoute());
   const [activeSectionId, setActiveSectionId] = useState<StationId | null>(null);
   const [toast, setToast] = useState<ProgressToastMessage | null>(null);
   const [collectedOrbIds, setCollectedOrbIds] = useState<string[]>(
     () => loadCollectedOrbIds()
+  );
+  const [shouldLoadGame, setShouldLoadGame] = useState(
+    () => typeof window !== "undefined" && !("IntersectionObserver" in window)
   );
   const collectedOrbIdsRef = useRef(new Set(collectedOrbIds));
   const toastIdRef = useRef(0);
@@ -138,6 +163,30 @@ export default function App() {
       // Collected orb progress is best-effort browser state.
     }
   }, [collectedOrbIds]);
+
+  useEffect(() => {
+    if (shouldLoadGame) return;
+
+    const playdeck = playdeckRef.current;
+
+    if (!playdeck) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+
+        setShouldLoadGame(true);
+        observer.disconnect();
+      },
+      { rootMargin: "240px 0px" }
+    );
+
+    observer.observe(playdeck);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [shouldLoadGame]);
 
   const showToast = useCallback(
     (title: string, message: string, tone: ProgressToastTone) => {
@@ -238,6 +287,7 @@ export default function App() {
   }, [recruiterMode, showToast, toggleRecruiterMode]);
 
   const handleEnterHub = useCallback(() => {
+    setShouldLoadGame(true);
     playdeckRef.current?.scrollIntoView({
       behavior: reducedMotion ? "auto" : "smooth",
       block: "start",
@@ -282,6 +332,18 @@ export default function App() {
 
   const activeProjectPage =
     route.name === "project" ? getPortfolioProject(route.projectId) : null;
+
+  const seoMetadata = useMemo(() => {
+    if (route.name === "project") {
+      return getProjectSeo(activeProjectPage, route.projectId);
+    }
+
+    return getHomeSeo();
+  }, [activeProjectPage, route]);
+
+  useEffect(() => {
+    updateDocumentMetadata(seoMetadata);
+  }, [seoMetadata]);
 
   const projectsCount = portfolioSectionById.projects.projects?.length ?? 0;
   const totalOrbs = collectibleConfigs.length;
@@ -355,18 +417,24 @@ export default function App() {
         aria-label="Interactive portfolio game"
       >
         <div className="game-wrapper">
-  <GameCanvas
-    onOpenSection={openSection}
-    onLockedSection={handleLockedSection}
-    onCollectOrb={handleCollectOrb}
-    completedIds={completedIdList}
-    unlockedIds={unlockedIdList}
-    collectedOrbIds={collectedOrbIdList}
-    reducedMotion={reducedMotion}
-  />
+          {shouldLoadGame ? (
+            <Suspense fallback={<GameCanvasPlaceholder />}>
+              <GameCanvas
+                onOpenSection={openSection}
+                onLockedSection={handleLockedSection}
+                onCollectOrb={handleCollectOrb}
+                completedIds={completedIdList}
+                unlockedIds={unlockedIdList}
+                collectedOrbIds={collectedOrbIdList}
+                reducedMotion={reducedMotion}
+              />
+            </Suspense>
+          ) : (
+            <GameCanvasPlaceholder />
+          )}
 
-  <MobileGameControls />
-</div>
+          {shouldLoadGame && <MobileGameControls />}
+        </div>
 
         <MissionTracker
           allComplete={allStationsComplete}

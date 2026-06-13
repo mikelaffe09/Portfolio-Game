@@ -1,4 +1,4 @@
-import heroImage from "../assets/hero.png";
+import heroImage from "../assets/hero.webp";
 import type { StationId } from "../data/portfolioData";
 import type { StationProgressItem } from "../hooks/usePortfolioProgress";
 
@@ -36,7 +36,7 @@ export default function MissionTracker({
   return (
     <aside className="mission-panel" aria-labelledby="mission-title">
       <div className="mission-identity">
-        <img className="mission-art" src={heroImage} alt="" />
+        <img className="mission-art" src={heroImage} alt="" decoding="async" />
         <div>
           <p className="panel-label">Quest Console</p>
           <h1 id="mission-title">Mike Allaffi Portfolio</h1>

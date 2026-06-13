@@ -446,6 +446,8 @@ function ProjectsBossRoom({
                 <img
                   src={previewImage}
                   alt={getProjectPreviewAlt(activeProject)}
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div className="preview-content">

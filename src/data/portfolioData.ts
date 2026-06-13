@@ -8,6 +8,7 @@ import galaFlowersHomepageScreenshot from "../assets/projects/gala-flowers-homep
 import galaFlowersServicesScreenshot from "../assets/projects/gala-flowers-services.jpg";
 import mrFixHomepageScreenshot from "../assets/projects/mr-fix-homepage.jpg";
 import mrFixServicesScreenshot from "../assets/projects/mr-fix-services.jpg";
+import portfolioGamePreviewScreenshot from "../assets/projects/portfolio-game-preview.webp";
 import smartGarageHomeDashboardScreenshot from "../assets/projects/smartgarage-home-dashboard.jpg";
 
 export const stationOrder = ["about", "skills", "projects", "contact"] as const;
@@ -377,6 +378,63 @@ export const portfolioSections: PortfolioSection[] = [
         nextImprovements: [
           "Capture a dedicated signed-in mobile screen once the production demo account is ready to share.",
           "Surface stronger product metrics and architecture notes after the senior-project submission is finalized.",
+        ],
+      },
+      {
+        id: "portfolio-game",
+        title: "Interactive Portfolio Game",
+        shortDescription:
+          "Playable React and Kaboom portfolio hub with recruiter mode, project case studies, progress tracking, and SEO/social metadata.",
+        description:
+          "This portfolio turns a traditional developer profile into a small playable hub while keeping a fast recruiter-friendly scan available. Visitors can explore stations for profile, skills, projects, and contact details, or open direct case-study pages for selected work.",
+        problem:
+          "A junior developer portfolio needs to stand out without making hiring managers work too hard. The challenge was to show frontend craft, interaction design, accessibility, and project evidence while preserving a traditional review path.",
+        solution:
+          "The app pairs a Kaboom-powered neon quest hub with data-driven React portfolio sections, a recruiter mode, accessible modals, mobile controls, reduced-motion support, local progress persistence, project routes, and social sharing metadata.",
+        role: "Designed and built the portfolio experience end to end: React structure, game scene, responsive UI, portfolio data model, modal/recruiter flows, project case-study pages, and publish-readiness improvements.",
+        bestFeature:
+          "Recruiter Mode keeps the portfolio practical: the same content can be reviewed as a normal professional profile without requiring anyone to play through the game.",
+        impact:
+          "Shows frontend product thinking, canvas/game integration, accessibility care, responsive UI, and portfolio storytelling in the same live project.",
+        tech: [
+          "React",
+          "TypeScript",
+          "Vite",
+          "Kaboom",
+          "GSAP",
+          "CSS",
+          "Responsive UI",
+          "Accessibility",
+          "SEO",
+        ],
+        status: "live",
+        category: "frontend",
+        screenshotUrl: portfolioGamePreviewScreenshot,
+        previewImage: portfolioGamePreviewScreenshot,
+        previewAlt:
+          "Interactive portfolio game showing the playable hub, recruiter mode, and project case-study interface.",
+        galleryImages: [
+          {
+            src: portfolioGamePreviewScreenshot,
+            alt: "Interactive portfolio game preview with neon game hub and portfolio interface.",
+            label: "Portfolio Game Preview",
+            caption:
+              "A playable portfolio surface backed by structured project data, route-aware case studies, and recruiter-friendly review paths.",
+          },
+        ],
+        path: "/projects/portfolio-game",
+        demoUrl: "https://mikelaffe09.github.io/portfolio-game/",
+        repositoryNote:
+          "This is the current portfolio codebase; repository availability can be shared with the live deployment or during review.",
+        lessons: [
+          "Interactive portfolios need a fast traditional path so the concept does not slow down recruiters or clients.",
+          "A data-driven project model makes the game hub, recruiter scan, and case-study pages stay consistent as content grows.",
+          "Reduced-motion, keyboard access, and mobile controls need to be treated as core interaction design, not cleanup work.",
+        ],
+        nextImprovements: [
+          "Optimize the large preview and hero assets into modern image formats for a lighter first load.",
+          "Add automated smoke tests for the game hub, recruiter mode, modal focus behavior, and project routes.",
+          "Add prerendered project metadata if each case-study URL needs fully route-specific social cards.",
         ],
       },
   /*     {

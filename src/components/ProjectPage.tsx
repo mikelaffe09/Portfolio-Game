@@ -163,7 +163,12 @@ export default function ProjectPage({
               onClick={() => onNavigateProject(item.id)}
             >
               {getProjectPreviewImage(item) ? (
-                <img src={getProjectPreviewImage(item)} alt="" />
+                <img
+                  src={getProjectPreviewImage(item)}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
               ) : (
                 <span className="switcher-preview-empty" aria-hidden="true" />
               )}
@@ -210,7 +215,12 @@ function ProjectMediaGallery({
           }`}
           key={`${image.label}-${image.src}`}
         >
-          <img src={image.src} alt={image.alt} />
+          <img
+            src={image.src}
+            alt={image.alt}
+            loading={index === 0 ? "eager" : "lazy"}
+            decoding="async"
+          />
           <figcaption>
             <span>{image.label}</span>
             <strong>{image.caption}</strong>
