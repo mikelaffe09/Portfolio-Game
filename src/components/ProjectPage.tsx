@@ -120,6 +120,8 @@ export default function ProjectPage({
         )}
       </section>
 
+      <ProjectEvidenceSection evidence={project.evidence} />
+
       {(project.lessons?.length || project.nextImprovements?.length) && (
         <section className="project-page-learning" aria-label="Project learning">
           {project.lessons?.length && (
@@ -181,6 +183,43 @@ export default function ProjectPage({
         })}
       </nav>
     </main>
+  );
+}
+
+type ProjectEvidenceSectionProps = {
+  evidence: PortfolioProject["evidence"];
+};
+
+function ProjectEvidenceSection({ evidence }: ProjectEvidenceSectionProps) {
+  const evidenceGroups: [string, string[]][] = [
+    ["What I built", evidence.built],
+    ["Technical decisions", evidence.technicalDecisions],
+    ["Result", evidence.results],
+  ];
+
+  return (
+    <section
+      className="project-page-evidence"
+      aria-labelledby="project-evidence-title"
+    >
+      <div className="project-page-section-title">
+        <p className="panel-label">Evidence</p>
+        <h2 id="project-evidence-title">Project Evidence</h2>
+      </div>
+
+      <div className="project-evidence-grid">
+        {evidenceGroups.map(([title, items]) => (
+          <article className="project-evidence-card" key={title}>
+            <span>{title}</span>
+            <ul>
+              {items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 

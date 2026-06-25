@@ -74,6 +74,12 @@ export type ProjectLink = {
   href: string;
 };
 
+export type ProjectEvidence = {
+  built: string[];
+  technicalDecisions: string[];
+  results: string[];
+};
+
 export type PortfolioProject = {
   id: string;
   title: string;
@@ -102,6 +108,7 @@ export type PortfolioProject = {
   githubUrl?: string;
   repositoryNote?: string;
   links?: ProjectLink[];
+  evidence: ProjectEvidence;
   lessons?: string[];
   nextImprovements?: string[];
 };
@@ -371,6 +378,26 @@ export const portfolioSections: PortfolioSection[] = [
         demoUrl: "https://www.smartgarage.website/",
         repositoryNote:
           "Repository is private because this is a senior-project codebase with team coursework and deployment configuration history.",
+        evidence: {
+          built: [
+            "Authentication flow for vehicle-management access.",
+            "Vehicle dashboard UI for profiles, reminders, expenses, and maintenance history.",
+            "AI mechanic assistant flow backed by RAG project work.",
+            "Admin and dashboard workflows for managing project data and review surfaces.",
+            "Responsive web and mobile-facing screens.",
+          ],
+          technicalDecisions: [
+            "Used Supabase because it gave the project a practical database and auth foundation while keeping iteration speed high.",
+            "Used ASP.NET Core APIs because the product needed typed backend structure for vehicle, maintenance, and admin workflows.",
+            "Used OpenAI, Pinecone, and RAG because mechanic guidance needed project-specific retrieval instead of generic chat only.",
+            "Kept the repository private because it contains senior-project team code, coursework context, and deployment configuration history.",
+          ],
+          results: [
+            "Live deployed project website.",
+            "Working vehicle-management flow with dashboards and AI mechanic support.",
+            "Full-stack senior-project evidence covering frontend, backend, database, deployment, and AI integration.",
+          ],
+        },
         lessons: [
           "Vehicle tools need fast access to routine records and enough structure for long-term service history.",
           "AI features are stronger when they live inside the product workflow instead of as a detached chatbot.",
@@ -426,6 +453,26 @@ export const portfolioSections: PortfolioSection[] = [
         demoUrl: "https://mikelaffe09.github.io/portfolio-game/",
         repositoryNote:
           "This is the current portfolio codebase; repository availability can be shared with the live deployment or during review.",
+        evidence: {
+          built: [
+            "Playable React and Kaboom portfolio hub.",
+            "Resume View for a normal professional scan.",
+            "Project case-study pages with route-aware navigation.",
+            "Progress tracking, collected fragments, toasts, and reduced-motion support.",
+            "Responsive desktop/mobile layouts and touch controls.",
+          ],
+          technicalDecisions: [
+            "Used Vite because the React app needed fast local iteration and a simple static deployment path.",
+            "Used Kaboom because it provides a focused game loop and collision model without building a game engine from scratch.",
+            "Used a structured portfolio data model because game stations, Resume View, modals, and project pages need to stay consistent.",
+            "Kept repository availability controlled because this portfolio codebase changes frequently during active publishing work.",
+          ],
+          results: [
+            "Live deployed interactive portfolio.",
+            "Working resume-first fallback for employers who do not want to play.",
+            "Shareable project pages with SEO/social metadata and accessible modal flows.",
+          ],
+        },
         lessons: [
           "Interactive portfolios need a fast traditional path so the concept does not slow down recruiters or clients.",
           "A data-driven project model makes the game hub, Resume View, and case-study pages stay consistent as content grows.",
@@ -530,6 +577,26 @@ export const portfolioSections: PortfolioSection[] = [
         demoUrl: "https://galaflowers.cresvia.co/",
         repositoryNote:
           "Repository is private for client-site work; production screenshots and live deployment are public.",
+        evidence: {
+          built: [
+            "Luxury homepage and services/portfolio sections.",
+            "Floral category presentation for bouquets, weddings, events, indoor plants, and seasonal work.",
+            "WhatsApp-first inquiry flow.",
+            "Responsive mobile layout.",
+            "SEO-ready page structure and visual hierarchy.",
+          ],
+          technicalDecisions: [
+            "Used Vite because the site needed a lightweight static React build with quick iteration.",
+            "Used React and Tailwind CSS because reusable sections made service and portfolio content easier to maintain.",
+            "Used WhatsApp links because the business inquiry flow is more direct than a heavy booking system for this local service.",
+            "Kept the repository private because it is client-site work with implementation details not needed for public review.",
+          ],
+          results: [
+            "Live deployed website.",
+            "Clear quote and inquiry path through WhatsApp.",
+            "Responsive floral service presentation for desktop and mobile visitors.",
+          ],
+        },
         lessons: [
           "Visual service businesses need product-quality imagery, fast category scanning, and direct inquiry actions.",
           "A focused WhatsApp flow can be more useful than a heavy booking system for a local floral brand.",
@@ -580,6 +647,27 @@ export const portfolioSections: PortfolioSection[] = [
         demoUrl: "https://mrfix.cresvia.co/",
         repositoryNote:
           "Repository is private for client-site and lead-management implementation details.",
+        evidence: {
+          built: [
+            "Service homepage and service-category pages.",
+            "Quote/contact form.",
+            "Supabase lead storage.",
+            "Admin dashboard connected to submitted leads.",
+            "Responsive mobile layout.",
+          ],
+          technicalDecisions: [
+            "Used Supabase because contact submissions needed persistent lead storage without a heavy custom backend.",
+            "Used Vite because the public site needed a fast, deployable React frontend.",
+            "Used a private repo because client lead-management implementation details should not be exposed publicly.",
+            "Built the admin panel separately from marketing content because lead review needs a quieter operational UI.",
+          ],
+          results: [
+            "Live deployed website.",
+            "Working quote form connected to submissions.",
+            "Admin dashboard connected to Supabase leads.",
+            "Mobile-responsive service-business experience.",
+          ],
+        },
         lessons: [
           "Service websites need clear location coverage, direct contact options, and trust signals before visual polish matters.",
           "Lead storage and admin review make a landing page more operationally useful.",
@@ -631,6 +719,26 @@ export const portfolioSections: PortfolioSection[] = [
           "Private mobile build; walkthrough available during an interview or code review.",
         repositoryNote:
           "Repository is private because the project focuses on local encrypted storage and mobile privacy patterns.",
+        evidence: {
+          built: [
+            "Calculator-style entry UI.",
+            "Private vault sections for files, images, notes, contacts, text snippets, folders, and trash.",
+            "Local encrypted-storage flow.",
+            "Protected vault organization and navigation.",
+            "Mobile-first responsive screens.",
+          ],
+          technicalDecisions: [
+            "Used React Native and Expo because the project is a mobile app and benefits from fast device iteration.",
+            "Used local storage and encryption because the product goal is device-local privacy, not cloud-first sync.",
+            "Used a calculator front because it keeps ordinary calculator behavior and protected vault access clearly separated.",
+            "Kept the repository and build private because the project covers security and privacy implementation details.",
+          ],
+          results: [
+            "Working private mobile build.",
+            "Vault UI with multiple protected content sections.",
+            "Interview-ready walkthrough for local-first storage and mobile privacy decisions.",
+          ],
+        },
         lessons: [
           "Privacy products need simple interaction patterns and clear separation between public and protected flows.",
           "Local-first mobile storage changes the UX tradeoffs around backup, recovery, and device trust.",
@@ -689,6 +797,26 @@ export const portfolioSections: PortfolioSection[] = [
             href: "https://www.cresvialb.com/",
           },
         ],
+        evidence: {
+          built: [
+            "Responsive business website sections.",
+            "Landing pages for service-oriented brands.",
+            "Portfolio and category filtering presentation.",
+            "Direct call-to-action flows.",
+            "Deployment-ready static sites.",
+          ],
+          technicalDecisions: [
+            "Used Vite because repeated static site builds need fast local iteration and simple deployment.",
+            "Used reusable React and Tailwind CSS section patterns because similar service businesses need consistent structure with tailored content.",
+            "Used private repos because client and agency source details are not public.",
+            "Kept content hierarchy simple because visitors need services, proof, and a contact path quickly.",
+          ],
+          results: [
+            "Live deployed Cresvia and Cresvia Lebanon web properties.",
+            "Reusable service-business pattern for faster delivery.",
+            "Responsive layouts across desktop and mobile.",
+          ],
+        },
         lessons: [
           "Business sites need clear messaging and conversion paths more than decorative complexity.",
           "Reusable layout patterns help ship faster while still tailoring each site to its service category.",
