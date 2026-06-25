@@ -1,6 +1,6 @@
 # Interactive Frontend Developer Portfolio
 
-An interactive developer portfolio for Mike Allaffi built with React, TypeScript, Vite, Kaboom, GSAP, and plain CSS. The site presents the same portfolio content in two modes: a playable neon quest hub and a recruiter-friendly traditional scan.
+An interactive developer portfolio for Mike Allaffi built with React, TypeScript, Vite, Kaboom, GSAP, and plain CSS. The site presents the same portfolio content in two modes: a playable neon quest hub and a traditional Resume View.
 
 The project is intentionally more than a profile page. It is also a live frontend work sample that demonstrates responsive UI, stateful interactions, canvas/game integration, accessible modal behavior, data-driven case studies, SEO/social metadata, and static-hosting deployment constraints.
 
@@ -42,22 +42,22 @@ Generated folders such as `node_modules` and `dist` should not be committed or s
 Visitors can use the portfolio in either path:
 
 - Game Mode: move through a small neon portfolio world, unlock stations, collect signal fragments, and open portfolio sections.
-- Recruiter Mode: scan the same profile, skills, experience, projects, education, and contact details in a conventional layout.
+- Resume View: scan the same profile, skills, projects, experience, education, and contact details in a conventional layout.
 
-The game layer is meant to add personality, not block access. Recruiter Mode exists so hiring managers, clients, and collaborators can review the portfolio quickly without learning the game interaction.
+The game layer is meant to add personality, not block access. Resume View exists so hiring managers, clients, and collaborators can review the portfolio quickly without learning the game interaction.
 
 ## Features
 
 - Playable Kaboom quest hub with keyboard controls
 - Mobile controls for touch devices
-- Lazy-loaded game canvas so the Kaboom chunk is not required for the first recruiter scan
+- Lazy-loaded game canvas so the Kaboom chunk is not required for the first resume view
 - Data-driven About, Skills, Projects, and Contact sections
-- Recruiter Mode with professional summary, skills, experience, education, projects, and contact links
+- Resume View with professional summary, skills, projects, experience, education, and contact links
 - Project case-study pages with problem, solution, role, standout feature, impact, stack, lessons, and planned improvements
 - Portfolio-game case study included as a project entry
 - Accessible modal behavior with labelled dialog, Escape close, focus trap, and focus restoration
 - Reduced-motion handling for CSS, the spiral animation, and the game scene
-- Local progress persistence for completed stations, recruiter preference, and collected fragments
+- Local progress persistence for completed stations, Resume View preference, and collected fragments
 - Social preview image and Open Graph/Twitter metadata
 - Static sitemap and robots file
 - No backend, no public frontend secrets, and no server-only environment variables
@@ -173,17 +173,17 @@ Important files:
 
 - `src/App.tsx` owns high-level app state, route state, modal state, toasts, lazy game loading, and metadata updates.
 - `src/data/portfolioData.ts` stores profile content, experience, education, skills, contact links, sections, and project case studies.
-- `src/hooks/usePortfolioProgress.ts` owns unlock rules, completion state, localStorage persistence, and Recruiter Mode preference.
+- `src/hooks/usePortfolioProgress.ts` owns unlock rules, completion state, localStorage persistence, and Resume View preference.
 - `src/hooks/useReducedMotion.ts` reads the system reduced-motion preference.
 - `src/components/GameCanvas.tsx` mounts and cleans up Kaboom.
 - `src/game/scenes/MainScene.ts` defines the game world, player movement, stations, collectibles, particles, and interactions.
 - `src/components/PortfolioModal.tsx` renders section details and the project showcase modal.
 - `src/components/ProjectPage.tsx` renders shareable case-study pages.
-- `src/components/RecruiterMode.tsx` renders the traditional portfolio view.
+- `src/components/RecruiterMode.tsx` renders the resume view.
 - `src/components/MobilePortfolioMap.tsx` renders touch-friendly section navigation.
 - `src/components/MobileGameControls.tsx` maps touch controls into game input.
 - `src/utils/seo.ts` updates document title, canonical URL, Open Graph, and Twitter metadata after route changes.
-- `src/styles/global.css` contains the main layout, responsive behavior, recruiter mode, modal, project page, and reduced-motion styles.
+- `src/styles/global.css` contains the main layout, responsive behavior, Resume View, modal, project page, and reduced-motion styles.
 - `src/styles/project-showcase.css` contains the project showcase modal styles.
 
 ## Routes
@@ -238,7 +238,7 @@ Recommended social/README screenshots before publishing:
 
 - Game hub on desktop
 - Game hub or Mission Map on mobile
-- Recruiter Mode scan on desktop
+- Resume View on desktop
 - Project showcase modal
 - Individual project case-study page
 
@@ -287,7 +287,7 @@ Current performance choices:
 
 - The Kaboom game canvas is lazy-loaded from `src/App.tsx`.
 - The game chunk loads when the game section nears the viewport or when the user clicks Enter Hub.
-- The recruiter path can render before the game chunk is needed.
+- Resume View can render before the game chunk is needed.
 - Large PNG artwork was replaced with WebP.
 - Project images use `loading` and `decoding` attributes where appropriate.
 - Reduced-motion mode lowers visual activity in CSS, the spiral animation, and the game.
@@ -311,7 +311,7 @@ Next performance improvements:
 
 Current accessibility behavior:
 
-- Recruiter Mode provides a non-game reading path.
+- Resume View provides a non-game reading path.
 - Modal uses `role="dialog"`, `aria-modal`, labelled headings, Escape close, focus trap, and focus restoration.
 - Keyboard users can use standard DOM controls and the game controls.
 - Game movement supports WASD and arrow keys.
@@ -325,7 +325,7 @@ Recommended manual checks:
 - Navigate the home page with keyboard only.
 - Open and close each modal with keyboard only.
 - Confirm focus returns to the trigger after closing a modal.
-- Confirm Recruiter Mode content reads logically with headings.
+- Confirm Resume View content reads logically with headings.
 - Confirm mobile controls do not overlap content.
 - Confirm reduced-motion mode removes or limits distracting animation.
 - Test high-contrast readability of badges, cards, buttons, and modal text.
@@ -333,7 +333,7 @@ Recommended manual checks:
 Future hardening:
 
 - Add automated axe checks.
-- Add Playwright smoke tests for route navigation, modal focus, Recruiter Mode, and project pages.
+- Add Playwright smoke tests for route navigation, modal focus, Resume View, and project pages.
 - Review `aria-disabled` button patterns for locked route nodes so screen reader behavior matches click behavior.
 - Add a formal test script once automated tests are introduced; the current project uses linting and TypeScript/build checks only.
 
@@ -382,7 +382,7 @@ Before sharing publicly:
 - `npm run build` passes.
 - `npm run preview` serves the built app locally.
 - Home page loads without console errors.
-- Recruiter Mode opens from the hero and HUD.
+- Resume View opens from the hero and HUD.
 - Enter Hub loads the game canvas.
 - Keyboard movement works in the game.
 - Mobile controls render on touch-sized viewports.
@@ -421,7 +421,7 @@ The game canvas is lazy-loaded intentionally. It loads when the game section nea
 
 ### Progress seems stuck or already complete
 
-Progress is stored in browser `localStorage`. Clear site data for the local/dev URL to reset station completion, collected fragments, and Recruiter Mode preference.
+Progress is stored in browser `localStorage`. Clear site data for the local/dev URL to reset station completion, collected fragments, and Resume View preference.
 
 ### Build fails on Linux but works on Windows
 

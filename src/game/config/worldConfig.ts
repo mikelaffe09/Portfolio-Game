@@ -106,7 +106,7 @@ export const collectibleConfigs: CollectibleConfig[] = [
       kind: "Skill Proof",
       title: "Data-driven React surfaces",
       description:
-        "Portfolio sections, recruiter mode, modals, and project pages reuse one structured content model instead of duplicated screens.",
+        "Portfolio sections, Resume View, modals, and project pages reuse one structured content model instead of duplicated screens.",
     },
   },
   {
@@ -132,7 +132,7 @@ export const collectibleConfigs: CollectibleConfig[] = [
       kind: "Bonus Evidence",
       title: "Responsive interface craft",
       description:
-        "The hub, recruiter scan, project pages, mobile controls, and reduced-motion states are tuned as one responsive experience.",
+        "The hub, Resume View, project pages, mobile controls, and reduced-motion states are tuned as one responsive experience.",
     },
   },
   {
@@ -145,7 +145,7 @@ export const collectibleConfigs: CollectibleConfig[] = [
       kind: "Bonus Evidence",
       title: "Accessible review path",
       description:
-        "Keyboard controls, focusable mission routes, polite progress toasts, and recruiter mode keep the playful concept practical.",
+        "Keyboard controls, focusable mission routes, polite progress toasts, and Resume View keep the playful concept practical.",
     },
   },
   {

@@ -42,7 +42,7 @@ export default function MissionTracker({
           <h1 id="mission-title">Mike Allaffi Portfolio</h1>
           <p>
             Explore Mike's profile, skills, experience, projects, and contact
-            details through the hub or switch to a traditional scan.
+            details through the hub or switch to Resume View.
           </p>
         </div>
       </div>
@@ -111,7 +111,7 @@ export default function MissionTracker({
           aria-pressed={recruiterMode}
           onClick={onToggleRecruiterMode}
         >
-          {recruiterMode ? "Hide Recruiter Mode" : "Recruiter Mode"}
+          {recruiterMode ? "Hide Resume View" : "Resume View"}
         </button>
       </div>
     </aside>

@@ -3,23 +3,24 @@ import {
   educationItems,
   experienceItems,
   getPortfolioProjectLinks,
-  getProjectPreviewAlt,
-  getProjectPreviewImage,
   languageItems,
   portfolioProfile,
   portfolioProjects,
   skillGroups,
   type ContactMethod,
   type PortfolioProject,
-  type StationId,
 } from "../data/portfolioData";
 
 type Props = {
   visible: boolean;
   onBackToGame: () => void;
-  onOpenSection: (sectionId: StationId) => void;
   onOpenProjectPage: (projectId: string) => void;
 };
+
+const resumeMethod = portfolioProfile.contactMethods.find(
+  (method) => method.id === "resume"
+);
+const resumeHeaderContactIds = new Set(["phone", "email-primary", "github"]);
 
 function formatProjectMeta(value: string | undefined) {
   if (!value) return null;
@@ -33,248 +34,265 @@ function formatProjectMeta(value: string | undefined) {
 export default function RecruiterMode({
   visible,
   onBackToGame,
-  onOpenSection,
   onOpenProjectPage,
 }: Props) {
   if (!visible) return null;
 
-  return (
-    <section className="recruiter-mode" aria-labelledby="recruiter-title">
-      <div className="recruiter-hero">
-        <div>
-          <p className="panel-label">Traditional Portfolio</p>
-          <h2 id="recruiter-title">
-            {portfolioProfile.name} - {portfolioProfile.role}
-          </h2>
-          <p>{portfolioProfile.professionalSummary}</p>
+  const headerContactMethods = portfolioProfile.contactMethods.filter((method) =>
+    resumeHeaderContactIds.has(method.id)
+  );
 
-          <div className="recruiter-hero-actions">
-            <button type="button" onClick={() => onOpenSection("projects")}>
-              Review Projects
-            </button>
-            <button type="button" onClick={() => onOpenSection("contact")}>
-              Contact
-            </button>
+  return (
+    <section
+      className="recruiter-mode resume-view"
+      aria-labelledby="resume-view-title"
+    >
+      <div className="resume-document">
+        <header className="resume-header">
+          <div>
+            <p className="panel-label">Resume View</p>
+            <h2 id="resume-view-title">{portfolioProfile.name}</h2>
+            <p className="resume-role">{portfolioProfile.role}</p>
+            <p className="resume-availability">
+              {portfolioProfile.availability}
+            </p>
+          </div>
+
+          <div className="resume-header-actions">
+            {resumeMethod?.href && (
+              <a href={resumeMethod.href} download>
+                Download PDF
+              </a>
+            )}
             <button type="button" onClick={onBackToGame}>
-              Back to Game Mode
+              Back to Game View
             </button>
           </div>
-        </div>
 
-        <aside className="recruiter-snapshot" aria-label="Portfolio snapshot">
-          <span>{portfolioProfile.location}</span>
-          <strong>{portfolioProfile.availability}</strong>
-          <ul>
-            {portfolioProfile.currentFocus.map((focus) => (
-              <li key={focus}>{focus}</li>
+          <ul className="resume-contact-line" aria-label="Primary contact">
+            <li>{portfolioProfile.location}</li>
+            {headerContactMethods.map((method) => (
+              <li key={method.id}>
+                {method.href ? (
+                  <a href={method.href}>{method.value}</a>
+                ) : (
+                  method.value
+                )}
+              </li>
             ))}
           </ul>
-        </aside>
-      </div>
+        </header>
 
-      <section className="recruiter-section" aria-labelledby="skills-title">
-        <div className="section-heading">
-          <p className="panel-label">Capabilities</p>
-          <h3 id="skills-title">Skills by category</h3>
-        </div>
+        <section className="resume-section" aria-labelledby="summary-title">
+          <div className="resume-section-heading">
+            <p className="panel-label">01</p>
+            <h3 id="summary-title">Summary</h3>
+          </div>
 
-        <div className="recruiter-skill-grid">
-          {skillGroups.map((group) => (
-            <article className="recruiter-skill-card" key={group.title}>
-              <span>{group.title}</span>
-              <p>{group.description}</p>
-              <div className="tech-list">
-                {group.skills.map((skill) => (
-                  <span key={skill}>{skill}</span>
-                ))}
+          <div className="resume-summary-content">
+            <p className="resume-summary-lead">
+              {portfolioProfile.professionalSummary}
+            </p>
+            <ul className="resume-bullet-list">
+              {portfolioProfile.strengths.map((strength) => (
+                <li key={strength}>{strength}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section className="resume-section" aria-labelledby="skills-title">
+          <div className="resume-section-heading">
+            <p className="panel-label">02</p>
+            <h3 id="skills-title">Skills</h3>
+          </div>
+
+          <div className="resume-skill-list">
+            {skillGroups.map((group) => (
+              <div className="resume-skill-row" key={group.title}>
+                <strong>{group.title}</strong>
+                <p>{group.skills.join(", ")}</p>
               </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="resume-section" aria-labelledby="projects-title">
+          <div className="resume-section-heading">
+            <p className="panel-label">03</p>
+            <h3 id="projects-title">Projects</h3>
+          </div>
+
+          <div className="resume-entry-list">
+            {portfolioProjects.map((project) => (
+              <ResumeProjectEntry
+                key={project.id}
+                project={project}
+                onOpenProjectPage={onOpenProjectPage}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="resume-section" aria-labelledby="experience-title">
+          <div className="resume-section-heading">
+            <p className="panel-label">04</p>
+            <h3 id="experience-title">Experience</h3>
+          </div>
+
+          <div className="resume-entry-list">
+            {experienceItems.map((item) => (
+              <article
+                className="resume-entry"
+                key={`${item.company}-${item.role}`}
+              >
+                <div className="resume-entry-head">
+                  <div>
+                    <h4>{item.company}</h4>
+                    <p className="resume-entry-subtitle">
+                      {item.role} - {item.location}
+                    </p>
+                  </div>
+                  <span>{item.dates}</span>
+                </div>
+
+                <ul className="resume-bullet-list">
+                  {item.highlights.map((highlight) => (
+                    <li key={highlight}>{highlight}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="resume-section" aria-labelledby="education-title">
+          <div className="resume-section-heading">
+            <p className="panel-label">05</p>
+            <h3 id="education-title">Education</h3>
+          </div>
+
+          <div className="resume-education-grid">
+            <article className="resume-education-block">
+              <span>Education</span>
+              {educationItems.map((item) => (
+                <div key={`${item.institution}-${item.dates}`}>
+                  <strong>{item.institution}</strong>
+                  <p>
+                    {item.credential} - {item.dates}
+                  </p>
+                  {item.details.map((detail) => (
+                    <small key={detail}>{detail}</small>
+                  ))}
+                </div>
+              ))}
             </article>
-          ))}
-        </div>
-      </section>
 
-      <section className="recruiter-section" aria-labelledby="experience-title">
-        <div className="section-heading">
-          <p className="panel-label">Experience</p>
-          <h3 id="experience-title">Operations and delivery background</h3>
-        </div>
-
-        <div className="recruiter-experience-grid">
-          {experienceItems.map((item) => (
-            <article className="experience-card" key={`${item.company}-${item.role}`}>
-              <span>{item.dates}</span>
-              <h4>{item.company}</h4>
-              <strong>
-                {item.role} - {item.location}
-              </strong>
-              <ul>
-                {item.highlights.map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
+            <article className="resume-education-block">
+              <span>Courses</span>
+              <ul className="resume-bullet-list">
+                {courseItems.map((course) => (
+                  <li key={course}>{course}</li>
                 ))}
               </ul>
             </article>
-          ))}
-        </div>
-      </section>
 
-      <section className="recruiter-section" aria-labelledby="education-title">
-        <div className="section-heading">
-          <p className="panel-label">Education</p>
-          <h3 id="education-title">Education, courses, and languages</h3>
-        </div>
-
-        <div className="recruiter-education-grid">
-          <article className="education-card">
-            <span>Education</span>
-            {educationItems.map((item) => (
-              <div key={`${item.institution}-${item.dates}`}>
-                <strong>{item.institution}</strong>
-                <p>
-                  {item.credential} - {item.dates}
-                </p>
-                {item.details.map((detail) => (
-                  <small key={detail}>{detail}</small>
+            <article className="resume-education-block">
+              <span>Languages</span>
+              <div className="resume-language-list">
+                {languageItems.map((item) => (
+                  <p key={item.language}>
+                    <strong>{item.language}</strong>
+                    <small>{item.level}</small>
+                  </p>
                 ))}
               </div>
-            ))}
-          </article>
+            </article>
+          </div>
+        </section>
 
-          <article className="education-card">
-            <span>Courses</span>
-            <ul>
-              {courseItems.map((course) => (
-                <li key={course}>{course}</li>
-              ))}
-            </ul>
-          </article>
+        <section className="resume-section" aria-labelledby="contact-title">
+          <div className="resume-section-heading">
+            <p className="panel-label">06</p>
+            <h3 id="contact-title">Contact</h3>
+          </div>
 
-          <article className="education-card">
-            <span>Languages</span>
-            <div className="language-list">
-              {languageItems.map((item) => (
-                <p key={item.language}>
-                  <strong>{item.language}</strong>
-                  <small>{item.level}</small>
-                </p>
+          <div className="resume-contact-panel">
+            <p>
+              Direct contact details, GitHub, live project link, and downloadable
+              resume.
+            </p>
+            <div className="contact-method-grid">
+              {portfolioProfile.contactMethods.map((method) => (
+                <ContactMethodCard key={method.id} method={method} />
               ))}
             </div>
-          </article>
-        </div>
-      </section>
-
-      <section className="recruiter-section" aria-labelledby="projects-title">
-        <div className="section-heading">
-          <p className="panel-label">Featured Work</p>
-          <h3 id="projects-title">Selected projects</h3>
-        </div>
-
-        <div className="recruiter-projects">
-          {portfolioProjects.map((project, index) => (
-            <RecruiterProjectCard
-              key={project.id}
-              project={project}
-              featured={index === 0}
-              onOpenProjectPage={onOpenProjectPage}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="recruiter-contact" aria-labelledby="contact-title">
-        <div>
-          <p className="panel-label">Next Step</p>
-          <h3 id="contact-title">Contact and professional links</h3>
-          <p>
-            Direct contact details from Mike's CV, plus GitHub, the live
-            SmartGarage project, and a downloadable resume.
-          </p>
-        </div>
-
-        <div className="contact-method-grid">
-          {portfolioProfile.contactMethods.map((method) => (
-            <ContactMethodCard key={method.id} method={method} />
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
+      </div>
     </section>
   );
 }
 
-type RecruiterProjectCardProps = {
-  featured: boolean;
+type ResumeProjectEntryProps = {
   project: PortfolioProject;
   onOpenProjectPage: (projectId: string) => void;
 };
 
-function RecruiterProjectCard({
-  featured,
+function ResumeProjectEntry({
   project,
   onOpenProjectPage,
-}: RecruiterProjectCardProps) {
-  const previewImage = getProjectPreviewImage(project);
+}: ResumeProjectEntryProps) {
   const projectLinks = getPortfolioProjectLinks(project);
   const status = formatProjectMeta(project.status);
   const category = formatProjectMeta(project.category);
+  const metaItems = [status, category].filter(
+    (item): item is string => Boolean(item)
+  );
 
   return (
-    <article
-      className={`recruiter-project-card ${featured ? "is-featured" : ""}`}
-    >
-      {previewImage ? (
-        <img
-          src={previewImage}
-          alt={getProjectPreviewAlt(project)}
-          loading={featured ? "eager" : "lazy"}
-          decoding="async"
-        />
-      ) : (
-        <div className="project-preview-empty">Screenshot unavailable</div>
-      )}
-
-      <div>
-        <div className="project-badges">
-          {status && <span>{status}</span>}
-          {category && <span>{category}</span>}
-        </div>
-        <h4>{project.title}</h4>
-        <p>{project.shortDescription}</p>
-        <strong>{project.impact}</strong>
-
-        <div className="tech-list">
-          {project.tech.map((tech) => (
-            <span key={tech}>{tech}</span>
-          ))}
-        </div>
-
-        <div className="project-actions">
-          <a
-            href={project.path}
-            onClick={(event) => {
-              event.preventDefault();
-              onOpenProjectPage(project.id);
-            }}
-          >
-            Case Study
-          </a>
-          {project.demoUrl && (
-            <a href={project.demoUrl} target="_blank" rel="noreferrer">
-              Live Demo
-            </a>
-          )}
-          {projectLinks.map((link) => (
-            <a href={link.href} key={link.href} target="_blank" rel="noreferrer">
-              {link.label}
-            </a>
-          ))}
-          {project.githubUrl && (
-            <a href={project.githubUrl} target="_blank" rel="noreferrer">
-              GitHub
-            </a>
+    <article className="resume-entry">
+      <div className="resume-entry-head">
+        <div>
+          <h4>{project.title}</h4>
+          {metaItems.length > 0 && (
+            <p className="resume-entry-meta">{metaItems.join(" - ")}</p>
           )}
         </div>
-
-        <ProjectAvailabilityNotes project={project} />
+        <span>{project.tech.slice(0, 6).join(", ")}</span>
       </div>
+
+      <p>{project.shortDescription}</p>
+      <strong>{project.impact}</strong>
+
+      <div className="resume-project-links">
+        <a
+          href={project.path}
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenProjectPage(project.id);
+          }}
+        >
+          Case Study
+        </a>
+        {project.demoUrl && (
+          <a href={project.demoUrl} target="_blank" rel="noreferrer">
+            Live Demo
+          </a>
+        )}
+        {projectLinks.map((link) => (
+          <a href={link.href} key={link.href} target="_blank" rel="noreferrer">
+            {link.label}
+          </a>
+        ))}
+        {project.githubUrl && (
+          <a href={project.githubUrl} target="_blank" rel="noreferrer">
+            GitHub
+          </a>
+        )}
+      </div>
+
+      <ProjectAvailabilityNotes project={project} />
     </article>
   );
 }

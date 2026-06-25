@@ -4,7 +4,7 @@ type Props = {
   visible: boolean;
   onOpenContact: () => void;
   onReviewBestProjects: () => void;
-  onViewRecruiterScan: () => void;
+  onViewResumeView: () => void;
 };
 
 const resumeMethod = portfolioProfile.contactMethods.find(
@@ -15,7 +15,7 @@ export default function EndgameActions({
   visible,
   onOpenContact,
   onReviewBestProjects,
-  onViewRecruiterScan,
+  onViewResumeView,
 }: Props) {
   if (!visible) return null;
 
@@ -31,9 +31,9 @@ export default function EndgameActions({
       </div>
 
       <div className="endgame-action-grid">
-        <button type="button" onClick={onViewRecruiterScan}>
+        <button type="button" onClick={onViewResumeView}>
           <span>Primary path</span>
-          <strong>View recruiter scan</strong>
+          <strong>Open Resume View</strong>
         </button>
         <a href={resumeMethod?.href ?? "/Mike_Allaffi_CV.pdf"} download>
           <span>Resume</span>

@@ -232,7 +232,7 @@ export default function App() {
         }
         showToast(
           "Portfolio Run Complete",
-          "Every zone is synced. The endgame console now links to the recruiter scan, CV, contact, and projects.",
+          "Every zone is synced. The endgame console now links to Resume View, CV, contact, and projects.",
           "complete"
         );
         return;
@@ -295,8 +295,8 @@ export default function App() {
 
     if (!recruiterMode) {
       showToast(
-        "Recruiter mode enabled",
-        "A clean scan of the same portfolio content is now available below the game.",
+        "Resume View enabled",
+        "A clean one-page resume version is now available below the game.",
         "success"
       );
     }
@@ -311,12 +311,12 @@ export default function App() {
     });
   }, [enableAudio, reducedMotion]);
 
-  const handleOpenRecruiterScan = useCallback(() => {
+  const handleOpenResumeView = useCallback(() => {
     if (!recruiterMode) {
       toggleRecruiterMode();
       showToast(
-        "Recruiter mode enabled",
-        "A clean scan of the same portfolio content is now available below the game.",
+        "Resume View enabled",
+        "A clean one-page resume version is now available below the game.",
         "success"
       );
     }
@@ -454,13 +454,24 @@ export default function App() {
         onToggleRecruiterMode={handleToggleRecruiterMode}
       />
 
+      <button
+        className="resume-view-switch"
+        type="button"
+        aria-pressed={recruiterMode}
+        onClick={
+          recruiterMode ? handleToggleRecruiterMode : handleOpenResumeView
+        }
+      >
+        {recruiterMode ? "Back to Game View" : "Switch to Resume View"}
+      </button>
+
       <SpiralGateway
         allComplete={allStationsComplete}
         nextStationTitle={nextStationTitle}
         progressPercent={progressPercent}
         reducedMotion={reducedMotion}
         onEnterHub={handleEnterHub}
-        onOpenRecruiterScan={handleOpenRecruiterScan}
+        onOpenResumeView={handleOpenResumeView}
       />
 
       <section
@@ -500,7 +511,7 @@ export default function App() {
             visible={allStationsComplete}
             onOpenContact={handleOpenEndgameContact}
             onReviewBestProjects={handleReviewEndgameProjects}
-            onViewRecruiterScan={handleOpenRecruiterScan}
+            onViewResumeView={handleOpenResumeView}
           />
         </div>
 
@@ -530,7 +541,6 @@ export default function App() {
       <RecruiterMode
         visible={recruiterMode}
         onBackToGame={handleToggleRecruiterMode}
-        onOpenSection={openSection}
         onOpenProjectPage={navigateToProject}
       />
 

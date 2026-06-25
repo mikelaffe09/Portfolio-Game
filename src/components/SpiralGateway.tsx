@@ -6,7 +6,7 @@ type Props = {
   progressPercent: number;
   reducedMotion: boolean;
   onEnterHub: () => void;
-  onOpenRecruiterScan: () => void;
+  onOpenResumeView: () => void;
 };
 
 export default function SpiralGateway({
@@ -15,7 +15,7 @@ export default function SpiralGateway({
   progressPercent,
   reducedMotion,
   onEnterHub,
-  onOpenRecruiterScan,
+  onOpenResumeView,
 }: Props) {
   return (
     <section className="spiral-gateway" aria-labelledby="spiral-gateway-title">
@@ -28,8 +28,8 @@ export default function SpiralGateway({
         <h2 id="spiral-gateway-title">Mike Allaffi Developer Portfolio</h2>
         <p>
           Explore Mike's projects, skills, experience, and contact details
-          through the playable hub, or open the recruiter scan for a faster
-          traditional review.
+          through the playable hub, or open Resume View for a faster traditional
+          review.
         </p>
 
         <dl className="spiral-gateway-stats" aria-label="Portfolio run status">
@@ -47,8 +47,8 @@ export default function SpiralGateway({
           <button type="button" onClick={onEnterHub}>
             Enter Hub
           </button>
-          <button type="button" onClick={onOpenRecruiterScan}>
-            Recruiter Scan
+          <button type="button" onClick={onOpenResumeView}>
+            Resume View
           </button>
         </div>
       </div>

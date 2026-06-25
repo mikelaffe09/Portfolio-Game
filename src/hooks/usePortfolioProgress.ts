@@ -95,7 +95,7 @@ export function usePortfolioProgress() {
     try {
       window.localStorage.setItem(recruiterModeStorageKey, String(recruiterMode));
     } catch {
-      // Recruiter mode is optional UI preference state.
+      // Resume view is optional UI preference state.
     }
   }, [recruiterMode]);
 

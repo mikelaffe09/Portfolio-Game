@@ -81,10 +81,13 @@ export default function HUD({
       <button
         className="hud-recruiter-toggle"
         type="button"
+        aria-label={
+          recruiterMode ? "Return to game view" : "Switch to Resume View"
+        }
         aria-pressed={recruiterMode}
         onClick={onToggleRecruiterMode}
       >
-        {recruiterMode ? "Game + Scan" : "Recruiter Mode"}
+        {recruiterMode ? "Game View" : "Resume View"}
       </button>
     </header>
   );
